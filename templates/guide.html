@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide - Calorease</title>
+    <script src="guide_files/3.4.16"></script>
+    <link href="guide_files/css2.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f6ffed, #d4f7c5, #a2e3a5);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .accordion-content.show {
+            max-height: 500px;
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-button.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .modal.show {
+            display: flex;
+
+        }
+    </style>
+    <style>
+        *,
+        ::before,
+        ::after {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        ::backdrop {
+            --tw-border-spacing-x: 0;
+            --tw-border-spacing-y: 0;
+            --tw-translate-x: 0;
+            --tw-translate-y: 0;
+            --tw-rotate: 0;
+            --tw-skew-x: 0;
+            --tw-skew-y: 0;
+            --tw-scale-x: 1;
+            --tw-scale-y: 1;
+            --tw-pan-x: ;
+            --tw-pan-y: ;
+            --tw-pinch-zoom: ;
+            --tw-scroll-snap-strictness: proximity;
+            --tw-gradient-from-position: ;
+            --tw-gradient-via-position: ;
+            --tw-gradient-to-position: ;
+            --tw-ordinal: ;
+            --tw-slashed-zero: ;
+            --tw-numeric-figure: ;
+            --tw-numeric-spacing: ;
+            --tw-numeric-fraction: ;
+            --tw-ring-inset: ;
+            --tw-ring-offset-width: 0px;
+            --tw-ring-offset-color: #fff;
+            --tw-ring-color: rgb(59 130 246 / 0.5);
+            --tw-ring-offset-shadow: 0 0 #0000;
+            --tw-ring-shadow: 0 0 #0000;
+            --tw-shadow: 0 0 #0000;
+            --tw-shadow-colored: 0 0 #0000;
+            --tw-blur: ;
+            --tw-brightness: ;
+            --tw-contrast: ;
+            --tw-grayscale: ;
+            --tw-hue-rotate: ;
+            --tw-invert: ;
+            --tw-saturate: ;
+            --tw-sepia: ;
+            --tw-drop-shadow: ;
+            --tw-backdrop-blur: ;
+            --tw-backdrop-brightness: ;
+            --tw-backdrop-contrast: ;
+            --tw-backdrop-grayscale: ;
+            --tw-backdrop-hue-rotate: ;
+            --tw-backdrop-invert: ;
+            --tw-backdrop-opacity: ;
+            --tw-backdrop-saturate: ;
+            --tw-backdrop-sepia: ;
+            --tw-contain-size: ;
+            --tw-contain-layout: ;
+            --tw-contain-paint: ;
+            --tw-contain-style:
+        }
+
+        /* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */
+        *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb
+        }
+
+        ::after,
+        ::before {
+            --tw-content: ''
+        }
+
+        :host,
+        html {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            margin: 0;
+            line-height: inherit
+        }
+
+        hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px
+        }
+
+        abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-size: inherit;
+            font-weight: inherit
+        }
+
+        a {
+            color: inherit;
+            text-decoration: inherit
+        }
+
+        b,
+        strong {
+            font-weight: bolder
+        }
+
+        code,
+        kbd,
+        pre,
+        samp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-feature-settings: normal;
+            font-variation-settings: normal;
+            font-size: 1em
+        }
+
+        small {
+            font-size: 80%
+        }
+
+        sub,
+        sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline
+        }
+
+        sub {
+            bottom: -.25em
+        }
+
+        sup {
+            top: -.5em
+        }
+
+        table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse
+        }
+
+        button,
+        input,
+        optgroup,
+        select,
+        textarea {
+            font-family: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0
+        }
+
+        button,
+        select {
+            text-transform: none
+        }
+
+        button,
+        input:where([type=button]),
+        input:where([type=reset]),
+        input:where([type=submit]) {
+            -webkit-appearance: button;
+            background-color: transparent;
+            background-image: none
+        }
+
+        :-moz-focusring {
+            outline: auto
+        }
+
+        :-moz-ui-invalid {
+            box-shadow: none
+        }
+
+        progress {
+            vertical-align: baseline
+        }
+
+        ::-webkit-inner-spin-button,
+        ::-webkit-outer-spin-button {
+            height: auto
+        }
+
+        [type=search] {
+            -webkit-appearance: textfield;
+            outline-offset: -2px
+        }
+
+        ::-webkit-search-decoration {
+            -webkit-appearance: none
+        }
+
+        ::-webkit-file-upload-button {
+            -webkit-appearance: button;
+            font: inherit
+        }
+
+        summary {
+            display: list-item
+        }
+
+        blockquote,
+        dd,
+        dl,
+        figure,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        hr,
+        p,
+        pre {
+            margin: 0
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0
+        }
+
+        legend {
+            padding: 0
+        }
+
+        menu,
+        ol,
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        dialog {
+            padding: 0
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            opacity: 1;
+            color: #9ca3af
+        }
+
+        [role=button],
+        button {
+            cursor: pointer
+        }
+
+        :disabled {
+            cursor: default
+        }
+
+        audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
+            display: block;
+            vertical-align: middle;
+        }
+
+        img,
+        video {
+            max-width: 100%;
+            height: auto
+        }
+
+        [hidden]:where(:not([hidden=until-found])) {
+            display: none
+        }
+
+        .fixed {
+            position: fixed
+        }
+
+        .absolute {
+            position: absolute
+        }
+
+        .relative {
+            position: relative
+        }
+
+        .right-4 {
+            right: 1rem
+        }
+
+        .top-4 {
+            top: 1rem
+        }
+
+        .z-50 {
+            z-index: 50
+        }
+
+        .mx-4 {
+            margin-left: 1rem;
+            margin-right: 1rem
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem
+        }
+
+        .mt-4 {
+            margin-top: 1rem
+        }
+
+        .block {
+            display: block
+        }
+
+        .flex {
+            display: flex
+        }
+
+        .grid {
+            display: grid
+        }
+
+        .h-12 {
+            height: 3rem
+        }
+
+        .h-4 {
+            height: 1rem
+        }
+
+        .h-48 {
+            height: 12rem
+        }
+
+        .h-6 {
+            height: 1.5rem
+        }
+
+        .h-64 {
+            height: 16rem
+        }
+
+        .w-12 {
+            width: 3rem
+        }
+
+        .w-4 {
+            width: 1rem
+        }
+
+        .w-48 {
+            width: 12rem
+        }
+
+        .w-6 {
+            width: 1.5rem
+        }
+
+        .w-full {
+            width: 100%
+        }
+
+        .max-w-2xl {
+            max-width: 42rem
+        }
+
+        .max-w-4xl {
+            max-width: 56rem
+        }
+
+        .max-w-md {
+            max-width: 28rem
+        }
+
+        .flex-1 {
+            flex: 1 1 0%
+        }
+
+        .transform {
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr))
+        }
+
+        .flex-col {
+            flex-direction: column
+        }
+
+        .items-start {
+            align-items: flex-start
+        }
+
+        .items-center {
+            align-items: center
+        }
+
+        .justify-center {
+            justify-content: center
+        }
+
+        .justify-between {
+            justify-content: space-between
+        }
+
+        .gap-6 {
+            gap: 1.5rem
+        }
+
+        .gap-8 {
+            gap: 2rem
+        }
+
+        .space-x-3> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(0.75rem * var(--tw-space-x-reverse));
+            margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .space-x-5> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(1.25rem * var(--tw-space-x-reverse));
+            margin-left: calc(1.25rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .space-x-6> :not([hidden])~ :not([hidden]) {
+            --tw-space-x-reverse: 0;
+            margin-right: calc(1.5rem * var(--tw-space-x-reverse));
+            margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)))
+        }
+
+        .space-y-2> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+        }
+
+        .space-y-4> :not([hidden])~ :not([hidden]) {
+            --tw-space-y-reverse: 0;
+            margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+            margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+        }
+
+        .overflow-hidden {
+            overflow: hidden
+        }
+
+        .rounded-full {
+            border-radius: 9999px
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem
+        }
+
+        .rounded-md {
+            border-radius: 0.375rem
+        }
+
+        .border {
+            border-width: 1px
+        }
+
+        .border-t-4 {
+            border-top-width: 4px
+        }
+
+        .border-gray-300 {
+            --tw-border-opacity: 1;
+            border-color: rgb(209 213 219 / var(--tw-border-opacity, 1))
+        }
+
+        .border-green-500 {
+            --tw-border-opacity: 1;
+            border-color: rgb(34 197 94 / var(--tw-border-opacity, 1))
+        }
+
+        .bg-amber-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(245 158 11 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-blue-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(59 130 246 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-gray-900 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(17 24 39 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-50 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(240 253 244 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-green-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-lime-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(132 204 22 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-red-500 {
+            --tw-bg-opacity: 1;
+            background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-white {
+            --tw-bg-opacity: 1;
+            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+        }
+
+        .bg-white\/70 {
+            background-color: rgb(255 255 255 / 0.7)
+        }
+
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops))
+        }
+
+        .from-green-600 {
+            --tw-gradient-from: #16a34a var(--tw-gradient-from-position);
+            --tw-gradient-to: rgb(22 163 74 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+        }
+
+        .via-lime-500 {
+            --tw-gradient-to: rgb(132 204 22 / 0) var(--tw-gradient-to-position);
+            --tw-gradient-stops: var(--tw-gradient-from), #84cc16 var(--tw-gradient-via-position), var(--tw-gradient-to)
+        }
+
+        .to-teal-600 {
+            --tw-gradient-to: #0d9488 var(--tw-gradient-to-position)
+        }
+
+        .bg-clip-text {
+            -webkit-background-clip: text;
+            background-clip: text
+        }
+
+        .p-4 {
+            padding: 1rem
+        }
+
+        .p-6 {
+            padding: 1.5rem
+        }
+
+        .p-8 {
+            padding: 2rem
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem
+        }
+
+        .py-10 {
+            padding-top: 2.5rem;
+            padding-bottom: 2.5rem
+        }
+
+        .py-16 {
+            padding-top: 4rem;
+            padding-bottom: 4rem
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem
+        }
+
+        .pb-16 {
+            padding-bottom: 4rem
+        }
+
+        .pb-6 {
+            padding-bottom: 0.2rem
+        }
+
+        .pt-32 {
+            padding-top: 8rem
+        }
+
+        .text-left {
+            text-align: left
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem
+        }
+
+        .text-5xl {
+            font-size: 3rem;
+            line-height: 1
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem
+        }
+
+        .font-bold {
+            font-weight: 700
+        }
+
+        .font-extrabold {
+            font-weight: 800
+        }
+
+        .font-medium {
+            font-weight: 500
+        }
+
+        .font-semibold {
+            font-weight: 600
+        }
+
+        .text-gray-500 {
+            --tw-text-opacity: 1;
+            color: rgb(107 114 128 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-700 {
+            --tw-text-opacity: 1;
+            color: rgb(55 65 81 / var(--tw-text-opacity, 1))
+        }
+
+        .text-gray-900 {
+            --tw-text-opacity: 1;
+            color: rgb(17 24 39 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-400 {
+            --tw-text-opacity: 1;
+            color: rgb(74 222 128 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-600 {
+            --tw-text-opacity: 1;
+            color: rgb(22 163 74 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-700 {
+            --tw-text-opacity: 1;
+            color: rgb(21 128 61 / var(--tw-text-opacity, 1))
+        }
+
+        .text-green-800 {
+            --tw-text-opacity: 1;
+            color: rgb(22 101 52 / var(--tw-text-opacity, 1))
+        }
+
+        .text-transparent {
+            color: transparent
+        }
+
+        .text-white {
+            --tw-text-opacity: 1;
+            color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+        }
+
+        .shadow-lg {
+            --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .shadow-md {
+            --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .shadow-sm {
+            --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .shadow-xl {
+            --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+        }
+
+        .backdrop-blur-md {
+            --tw-backdrop-blur: blur(12px);
+            -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+            backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)
+        }
+
+        .transition-colors {
+            transition-property: color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms
+        }
+
+        .transition-transform {
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms
+        }
+
+        .after\:block::after {
+            content: var(--tw-content);
+            display: block
+        }
+
+        .after\:h-0\.5::after {
+            content: var(--tw-content);
+            height: 0.125rem
+        }
+
+        .after\:w-full::after {
+            content: var(--tw-content);
+            width: 100%
+        }
+
+        .after\:scale-x-0::after {
+            content: var(--tw-content);
+            --tw-scale-x: 0;
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .after\:bg-green-600::after {
+            content: var(--tw-content);
+            --tw-bg-opacity: 1;
+            background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1))
+        }
+
+        .after\:transition-transform::after {
+            content: var(--tw-content);
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms
+        }
+
+        .after\:duration-300::after {
+            content: var(--tw-content);
+            transition-duration: 300ms
+        }
+
+        .hover\:scale-110:hover {
+            --tw-scale-x: 1.1;
+            --tw-scale-y: 1.1;
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .hover\:bg-green-50:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(240 253 244 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:bg-green-600:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(22 163 74 / var(--tw-bg-opacity, 1))
+        }
+
+        .hover\:text-gray-700:hover {
+            --tw-text-opacity: 1;
+            color: rgb(55 65 81 / var(--tw-text-opacity, 1))
+        }
+
+        .hover\:text-green-300:hover {
+            --tw-text-opacity: 1;
+            color: rgb(134 239 172 / var(--tw-text-opacity, 1))
+        }
+
+        .hover\:text-green-500:hover {
+            --tw-text-opacity: 1;
+            color: rgb(34 197 94 / var(--tw-text-opacity, 1))
+        }
+
+        .hover\:text-green-600:hover {
+            --tw-text-opacity: 1;
+            color: rgb(22 163 74 / var(--tw-text-opacity, 1))
+        }
+
+        .hover\:underline:hover {
+            -webkit-text-decoration-line: underline;
+            text-decoration-line: underline
+        }
+
+        .hover\:after\:scale-x-100:hover::after {
+            content: var(--tw-content);
+            --tw-scale-x: 1;
+            transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+        }
+
+        .focus\:border-green-500:focus {
+            --tw-border-opacity: 1;
+            border-color: rgb(34 197 94 / var(--tw-border-opacity, 1))
+        }
+
+        .focus\:outline-none:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px
+        }
+
+        .focus\:ring-2:focus {
+            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)
+        }
+
+        .focus\:ring-green-500:focus {
+            --tw-ring-opacity: 1;
+            --tw-ring-color: rgb(34 197 94 / var(--tw-ring-opacity, 1))
+        }
+
+        .focus\:ring-offset-2:focus {
+            --tw-ring-offset-width: 2px
+        }
+
+        @media (min-width: 768px) {
+            .md\:w-1\/2 {
+                width: 50%
+            }
+
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .md\:flex-row {
+                flex-direction: row
+            }
+        }
+    </style>
+</head>
+
+<body class="text-gray-900" data-new-gr-c-s-check-loaded="8.927.0" data-gr-ext-installed="">
+    <nav class="fixed w-full bg-white/70 backdrop-blur-md shadow-md flex justify-between items-center p-6 z-50">
+        <div class="flex items-center space-x-3">
+            <img src="logo.png" alt="Logo" class="w-12 h-12 mb-2 transform hover:scale-110 transition-transform">
+            <h1 class="text-2xl font-bold text-green-600">Calorease</h1>
+        </div>
+        <div class="flex space-x-6">
+            <a href="#" onclick="openModal(); return false;"
+                class="hover:text-green-600 transition-colors relative after:block after:w-full after:h-0.5 after:bg-green-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Login</a>
+            <a href="landing.html"
+                class="hover:text-green-600 transition-colors relative after:block after:w-full after:h-0.5 after:bg-green-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Home</a>
+            <a href="#1" class="text-green-600 font-semibold">Guide</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-16 px-6 text-center">
+        <h1 class="text-5xl font-extrabold text-green-800">Your Guide to <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-lime-500 to-teal-600">Smart</span>
+            Nutrition</h1>
+        <p class="text-lg text-green-700 mt-4 max-w-2xl mx-auto">Understanding calories and how your body uses them is
+            the first step toward achieving your health goals.</p>
+    </section>
+
+    <!-- What is a Calorie Section -->
+    <section class="py-16 px-6 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold text-green-800 mb-6">What is a Calorie?</h2>
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex-1">
+                    <p class="text-green-700 mb-4">A calorie is a unit of energy. Specifically, it's the amount of
+                        energy needed to raise the temperature of 1 kilogram of water by 1 degree Celsius.</p>
+                    <p class="text-green-700">When we talk about food calories, we're actually talking about
+                        kilocalories (kcal). One food calorie equals 1,000 regular calories.</p>
+                </div>
+                <svg class="w-48 h-48" viewBox="0 0 200 200">
+                    <circle cx="100" r="80" fill="#f0fdf4" stroke="#22c55e" stroke-width="4" cy="90"></circle>
+                    <path stroke="#22c55e" stroke-width="4" d="M100 30 L100 150 M60 90 L140 90"></path>
+                    <circle cx="100" r="20" fill="#22c55e" cy="90"></circle>
+                    <text text-anchor="middle" class="text-sm" fill="#22c55e" x="100" style="margin-top: 100px;"
+                        y="185">Energy Unit</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+    <div id="loginModal" class="modal items-center justify-center">
+        <div class="bg-white rounded-lg p-8 shadow-xl max-w-md w-full mx-4 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <h2 class="text-2xl font-bold text-green-600 mb-6">Login to Calorease</h2>
+            <form class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" name="username"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="flex items-center justify-between">
+                    <a href="#" class="text-sm text-green-600 hover:text-green-500">Forgot your password?</a>
+                    <a href="Kurien's Main HomePage.html"
+                        class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Sign in
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <section class="py-16 px-6 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold text-green-800 mb-6">Understanding TDEE</h2>
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <p class="text-green-700 mb-4">Total Daily Energy Expenditure (TDEE) is the total number of calories your
+                body burns in a day. It's made up of several components:</p>
+
+            <div class="flex flex-col md:flex-row gap-8 items-center mb-8">
+                <svg class="w-full md:w-1/2 h-64" viewBox="0 0 400 300">
+                    <g class="progress-ring">
+                        <!-- Background circle -->
+                        <circle cx="200" cy="150" r="120" fill="none" stroke="#e2e8f0" stroke-width="40"></circle>
+
+                        <!-- BMR 55% -->
+                        <circle cx="200" cy="150" r="120" fill="none" stroke="#3b82f6" stroke-width="40"
+                            stroke-dasharray="414.7 754" stroke-dashoffset="0"></circle>
+
+                        <!-- NEAT 20% -->
+                        <circle cx="200" cy="150" r="120" fill="none" stroke="#f59e0b" stroke-width="40"
+                            stroke-dasharray="150.8 754" stroke-dashoffset="-414.7"></circle>
+
+                        <!-- Exercise 15% -->
+                        <circle cx="200" cy="150" r="120" fill="none" stroke="#ef4444" stroke-width="40"
+                            stroke-dasharray="113.1 754" stroke-dashoffset="-565.5"></circle>
+
+                        <!-- TEF 10% -->
+                        <circle cx="200" cy="150" r="120" fill="none" stroke="#84cc16" stroke-width="40"
+                            stroke-dasharray="75.4 754" stroke-dashoffset="-678.6"></circle>
+                    </g>
+
+                    <!-- Labels -->
+                    <text x="160" y="100" fill="#3b82f6" class="text-sm">BMR (55%)</text>
+                    <text x="160" y="130" fill="#f59e0b" class="text-sm">NEAT (20%)</text>
+                    <text x="160" y="160" fill="#ef4444" class="text-sm">Exercise (15%)</text>
+                    <text x="160" y="190" fill="#84cc16" class="text-sm">TEF (10%)</text>
+                </svg>
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-green-800 mb-4">Components of TDEE:</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="w-4 h-4 mt-1 mr-2 bg-blue-500 rounded-full"></span>
+                            <div>
+                                <span class="font-semibold">BMR (Basal Metabolic Rate):</span>
+                                <p class="text-green-700">The calories your body burns at rest to maintain basic life
+                                    functions.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="w-4 h-4 mt-1 mr-2 bg-amber-500 rounded-full"></span>
+                            <div>
+                                <span class="font-semibold">NEAT (Non-Exercise Activity Thermogenesis):</span>
+                                <p class="text-green-700">Calories burned through daily activities like walking,
+                                    fidgeting, and standing.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="w-4 h-4 mt-1 mr-2 bg-red-500 rounded-full"></span>
+                            <div>
+                                <span class="font-semibold">Exercise Activity:</span>
+                                <p class="text-green-700">Calories burned through intentional exercise and sports.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="w-4 h-4 mt-1 mr-2 bg-lime-500 rounded-full"></span>
+                            <div>
+                                <span class="font-semibold">TEF (Thermic Effect of Food):</span>
+                                <p class="text-green-700">Calories burned during the digestion, absorption, and
+                                    processing of food.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEAT Section -->
+    <section class="py-16 px-6 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold text-green-800 mb-6">The Power of NEAT</h2>
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <p class="text-green-700 mb-6">NEAT can vary significantly between individuals and can make a huge
+                difference in your daily calorie burn. Here are some common NEAT activities:</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-2">Daily Movement</h4>
+                    <ul class="space-y-2 text-green-700">
+                        <li>• Walking to work</li>
+                        <li>• Taking the stairs</li>
+                        <li>• Shopping</li>
+                        <li>• Household chores</li>
+                    </ul>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-2">Workplace Activity</h4>
+                    <ul class="space-y-2 text-green-700">
+                        <li>• Standing desk usage</li>
+                        <li>• Walking meetings</li>
+                        <li>• Fidgeting</li>
+                        <li>• Taking breaks to move</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 px-6 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold text-green-800 mb-6">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+            <!-- FAQ items -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <button
+                    class="faq-button w-full p-6 text-left font-semibold text-green-800 focus:outline-none hover:bg-green-50 flex justify-between items-center"
+                    onclick="toggleAccordion(this, 'faq1')">
+                    <span>How long until I see results?</span>
+                    <i class="fas fa-chevron-down faq-icon text-green-600"></i>
+                </button>
+                <div id="faq1" class="accordion-content px-6 bg-green-50" style="padding-bottom: 0.2rem ;">
+                    <p class="text-green-700">Most people start seeing initial changes within 4-6 weeks of consistent
+                        calorie tracking and exercise. However, sustainable weight change typically occurs at a rate of
+                        1-2 pounds per week. Remember, the journey is a marathon, not a sprint!</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <button
+                    class="faq-button w-full p-6 text-left font-semibold text-green-800 focus:outline-none hover:bg-green-50 flex justify-between items-center"
+                    onclick="toggleAccordion(this, 'faq2')">
+                    <span>What is BMR and how is it calculated?</span>
+                    <i class="fas fa-chevron-down faq-icon text-green-600"></i>
+                </button>
+                <div id="faq2" class="accordion-content px-6 bg-green-50" style="padding-bottom: 0.2rem ;">
+                    <p class="text-green-700">BMR (Basal Metabolic Rate) is the number of calories your body burns at
+                        rest. It's calculated using factors like age, weight, height, and gender. The most common
+                        formula used is the Harris-Benedict equation: BMR = 655 + (9.6 × weight in kg) + (1.8 × height
+                        in cm) - (4.7 × age in years) for women, with a different constant for men.</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <button
+                    class="faq-button w-full p-6 text-left font-semibold text-green-800 focus:outline-none hover:bg-green-50 flex justify-between items-center"
+                    onclick="toggleAccordion(this, 'faq3')">
+                    <span>Should I eat back exercise calories?</span>
+                    <i class="fas fa-chevron-down faq-icon text-green-600"></i>
+                </button>
+                <div id="faq3" class="accordion-content px-6 bg-green-50"
+                    style="padding-bottom: 0.2rem ; padding-left: 1.5rem;">
+                    <p class="text-green-700">It depends on your goals. If you're trying to lose weight, it's generally
+                        recommended not to eat back all your exercise calories. If you're maintaining or building
+                        muscle, you might want to eat back some or all of them. The key is to monitor your progress and
+                        adjust accordingly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="w-full py-10 bg-gray-900 text-white text-center border-t-4 border-green-500">
+        <div class="flex justify-center space-x-5 mb-4">
+            <a href="#" class="text-green-400 hover:text-green-300 text-xl"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="text-green-400 hover:text-green-300 text-xl"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-green-400 hover:text-green-300 text-xl"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>© 2025 Calorease. All rights reserved.</p>
+        <p>Contact us: <a href="mailto:support@calorease.com"
+                class="text-green-400 hover:underline">support@calorease.com</a></p>
+    </footer>
+
+    <script>
+        function toggleAccordion(button, id) {
+            const content = document.getElementById(id);
+            content.classList.toggle('show');
+            button.classList.toggle('active');
+        }
+
+        function openModal() {
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+
+</html>

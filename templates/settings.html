@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorease - Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f6ffed, #d4f7c5, #a2e3a5);
+            color: #000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .settings-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        h2,
+        h3 {
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #000;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            padding: 18px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            background: #000;
+            color: white;
+            min-width: 250px;
+            /* Increased minimum width */
+            width: auto;
+            margin: 30px auto;
+            /* Increased margin top and bottom */
+            display: block;
+        }
+
+        button:hover {
+            background: #1e4520;
+            transform: translateY(-2px);
+        }
+
+        .danger {
+            background: #dc3545;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="settings-container">
+        <h2>Settings</h2>
+
+        <section class="profile-settings">
+            <h3>Profile Settings</h3>
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Your username">
+            <label for="currentPassword">Password:</label>
+            <input type="password" id="currentPassword" placeholder="Current password">
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" placeholder="New password">
+            <label for="confirmPassword">Confirm New Password:</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm new password">
+            <button>Save Changes</button>
+        </section>
+
+        <section class="preferences">
+            <h3>Preferences</h3>
+            <label for="darkMode"><input type="checkbox" id="darkMode"> Enable Dark Mode</label>
+            <label for="emailNotifications"><input type="checkbox" id="emailNotifications"> Email Notifications</label>
+            <button>Update Preferences</button>
+        </section>
+
+        <section class="health-settings">
+            <h3>Health & Goals</h3>
+            <label for="weight">Weight (kg):</label>
+            <input type="number" id="weight" placeholder="Your weight">
+            <label for="height">Height (cm):</label>
+            <input type="number" id="height" placeholder="Your height">
+            <label for="age">Age:</label>
+            <input type="number" id="age" placeholder="Your age">
+            <label>Gender:</label>
+            <div>
+                <input type="radio" name="gender" value="male" id="male"> <label for="male">Male</label>
+                <input type="radio" name="gender" value="female" id="female"> <label for="female">Female</label>
+                <input type="radio" name="gender" value="other" id="other"> <label for="other">Other</label>
+            </div>
+            <label for="targetWeight">Target Weight (kg):</label>
+            <input type="number" id="targetWeight" placeholder="Your target weight">
+            <label for="timeframe">Timeframe (weeks):</label>
+            <input type="number" id="timeframe" placeholder="Weeks">
+            <label for="activityLevel">Activity Level:</label>
+            <select id="activityLevel">
+                <option value="sedentary">Sedentary</option>
+                <option value="light">Lightly Active</option>
+                <option value="moderate">Moderately Active</option>
+                <option value="very">Very Active</option>
+            </select>
+            <label for="dietaryPreferences">Dietary Preferences:</label>
+            <select id="dietaryPreferences">
+                <option value="none">No Preference</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="keto">Keto</option>
+                <option value="paleo">Paleo</option>
+            </select>
+            <button style="margin-top: 10px; text-align: center; margin-left: auto; margin-right: auto;">Update Health
+                Goals</button>
+        </section>
+
+        <section class="account-management">
+            <h3>Account Management</h3>
+            <button class="danger">Delete Account</button>
+        </section>
+    </div>
+</body>
+
+</html>

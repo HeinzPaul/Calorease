@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorease - Smarter Calorie Tracking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .hero-section {
+            position: relative;
+            background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.8), rgba(16, 185, 129, 0.8));
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .content-wrapper {
+            background: linear-gradient(135deg, #f6ffed, #d4f7c5, #a2e3a5);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .image-container {
+            width: 100%;
+            max-width: 480px;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body class="text-gray-900">
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal items-center justify-center">
+        <div class="bg-white rounded-lg p-8 shadow-xl max-w-md w-full mx-4 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2 class="text-2xl font-bold text-green-600 mb-6">Login to Calorease</h2>
+            <form class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" name="username"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="flex items-center justify-between">
+                    <a href="#" class="text-sm text-green-600 hover:text-green-500">Forgot your password?</a>
+                    <a href="homepage_refreshing.html"
+                        class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Sign in
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <nav class="fixed w-full bg-white/100 backdrop-blur-md shadow-md flex justify-between items-center p-6 z-50">
+        <div class="flex items-center space-x-3">
+            <img src="logo.png" alt="Logo"
+                class="w-12 h-12 rounded-full transform hover:scale-110 transition-transform">
+            <h1 class="text-2xl font-bold text-green-600">Calorease</h1>
+        </div>
+        <div class="flex space-x-6">
+            <a href="#" onclick="openModal(); return false;"
+                class="hover:text-green-600 transition-colors relative after:block after:w-full after:h-0.5 after:bg-green-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Login</a>
+            <a href="#1" class="text-green-600 font-semibold">Home</a>
+            <a href="guide.html"
+                class="hover:text-green-600 transition-colors relative after:block after:w-full after:h-0.5 after:bg-green-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Guide</a>
+        </div>
+    </nav>
+
+    <section id="home" class="hero-section h-screen flex flex-col justify-center items-center text-center px-6">
+        <div class="hero-content">
+            <h1 class="text-5xl font-extrabold text-white "><span class="">Track</span>
+                Smarter, <span class="  ">Live</span>
+                Healthier</h1>
+            <p class="text-lg text-white mt-4">Master Your Nutrition with Ease</p>
+            <a href="firsttime.html"
+                class="mt-6 px-8 py-3 bg-white text-green-600 font-semibold rounded-lg shadow-lg hover:bg-green-50 transform hover:scale-105 transition-all inline-block">
+                Start Tracking Now
+            </a>
+        </div>
+    </section>
+
+    <div class="content-wrapper">
+        <section class="flex flex-col md:flex-row items-center justify-center gap-16 px-10 py-32">
+            <div class="max-w-lg">
+                <h2 class="text-4xl font-bold text-green-800"><span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-lime-500 to-teal-600">Crush</span>
+                    Your Health Goals with Confidence</h2>
+                <p class="text-green-700 mt-4">Stop guessing. Start making progress.</p>
+                <p class="text-green-700 mt-2">With Calorease, you can effortlessly track your daily intake, stay
+                    motivated
+                    with streaks, and even get expert fitness guidance—all in one place.</p>
+            </div>
+            <div class="image-container">
+                <img src="newlaptop.png" alt="Modern laptop showing health tracking app" class="rounded-lg shadow-xl">
+            </div>
+        </section>
+
+        <section class="py-32 px-10 text-center">
+            <h2 class="text-4xl font-bold text-green-800">Tracking Calories Shouldn't Be <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-lime-500 to-teal-600">Complicated</span>
+            </h2>
+            <p class="text-green-700 mt-4">We get it—most calorie-tracking apps are overwhelming and confusing.</p>
+            <p class="text-green-700 mt-2">That's why we built Calorease: to make tracking simple, engaging, and
+                actually
+                fun.</p>
+        </section>
+
+        <section class="flex flex-col md:flex-row items-center justify-center gap-16 px-10 py-32">
+            <div class="max-w-lg">
+                <h2 class="text-4xl font-bold text-green-800">Designed for <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-lime-500 to-teal-600">beginners</span>,
+                    built for <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-lime-500 to-teal-600">everyone</span>.
+                </h2>
+                <ul class="mt-4 text-green-700 space-y-2">
+                    <li>✅ Easy-to-use calorie tracker</li>
+                    <li>✅ Interactive streak system to stay motivated</li>
+                    <li>✅ Professional fitness trainer support</li>
+                    <li>✅ A seamless, frustration-free experience</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80"
+                    alt="Weight tracking and fitness" class="rounded-lg shadow-xl">
+            </div>
+        </section>
+
+        <section class="py-32 text-center">
+            <h2 class="text-4xl font-bold text-green-800">Your Path to Smarter Tracking Starts <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-lime-500 to-teal-600">Here</span>
+            </h2>
+            <p class="text-green-700 mt-4 max-w-2xl mx-auto">Discover how easy and effective calorie tracking can be
+                with
+                Calorease. Whether you're looking to manage your weight, optimize nutrition, or simply make healthier
+                choices, our intuitive platform guides you every step of the way.</p>
+        </section>
+    </div>
+
+    <footer class="w-full py-10 bg-gray-900 text-white text-center border-t-4 border-green-500">
+        <div class="flex justify-center space-x-5 mb-4">
+            <a href="#" class="text-green-400 hover:text-green-300 text-xl"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="text-green-400 hover:text-green-300 text-xl"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-green-400 hover:text-green-300 text-xl"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>&copy; 2025 Calorease. All rights reserved.</p>
+        <p>Contact us: <a href="mailto:support@calorease.com"
+                class="text-green-400 hover:underline">support@calorease.com</a></p>
+    </footer>
+
+    <script>
+        function openModal() {
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+
+</html>

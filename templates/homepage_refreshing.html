@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorease</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #a8cd70;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #24882f;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0.2, 0.3);
+        }
+
+        /* Hamburger Menu Styles */
+        .menu-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .hamburger {
+            width: 30px;
+            height: 3px;
+            background-color: #000;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 3px;
+            background-color: #000;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before {
+            top: -10px;
+        }
+
+        .hamburger::after {
+            top: 10px;
+        }
+
+        .menu-container:hover .hamburger {
+            transform: scale(1.1);
+        }
+
+        .nav-menu {
+            display: none;
+            background: #ffffff;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 100%;
+            padding: 50px 20px;
+            text-align: right;
+        }
+
+        .nav-menu a {
+            display: block;
+            color: #000000;
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin: 20px 0;
+        }
+
+        .nav-menu a:hover {
+            color: #57b837;
+        }
+
+        .hamburger.active {
+            transform: rotate(45deg);
+        }
+
+        .hamburger.active::before {
+            transform: rotate(90deg);
+            top: 0;
+        }
+
+        .hamburger.active::after {
+            transform: rotate(90deg);
+            top: 0;
+        }
+
+        .nav-menu.active {
+            display: block;
+        }
+
+        /*progress rings*/
+        .kur-progress-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .main-progress-container {
+            position: relative;
+            text-align: center;
+        }
+
+
+        .kur-progress-bar {
+            transform: rotate(360deg);
+        }
+
+        .circle-background {
+            stroke: #ddd;
+            stroke-width: 8%;
+        }
+
+        .circle-progress {
+            stroke: #2b9e44;
+            ;
+            stroke-width: 12%;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .small-main-progress-container {
+            height: 125px;
+            position: relative;
+            text-align: center;
+        }
+
+        .small-progress-bar {
+            transform: rotate(360deg);
+        }
+
+        .small-circle-background {
+            stroke: #ddd;
+            stroke-width: 8%;
+        }
+
+        .carbs-circle-progress,
+        .fats-circle-progress,
+        .fibre-circle-progress,
+        .proteins-circle-progress {
+            stroke: #2b9e44;
+            stroke-width: 12%;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .carbs-circle-progress {
+            stroke-dashoffset: 50px;
+        }
+
+        .fats-circle-progress {
+            stroke-dashoffset: 50px;
+        }
+
+        .fibre-circle-progress {
+            stroke-dashoffset: 50px;
+        }
+
+        .proteins-circle-progress {
+            stroke-dashoffset: 50px;
+        }
+
+        .percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .small-progress {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .progress_cent {
+            text-align: center;
+            padding-top: 40%;
+        }
+
+        .progress-box .small-progress span {
+            font-size: 12px;
+        }
+
+        .carbs-percentage,
+        .fat-percentage,
+        .fibre-percentage,
+        .protein-percentage {
+            font-size: 1rem;
+        }
+
+        .refresh {
+            display: flex;
+            justify-content: right;
+        }
+
+        .refreshbutton {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            color: white;
+            margin-top: 2%;
+            margin-left: 85%;
+            background-color: #57b837;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            line-height: 2rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.7rem;
+            padding-bottom: 0.7rem;
+            cursor: pointer;
+            text-align: center;
+            margin-right: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            border: none;
+        }
+
+        .refreshbutton:hover {
+            background-color: #448e2b;
+        }
+
+        .refreshbutton svg {
+            display: inline;
+            width: 1.8rem;
+            height: 1.8rem;
+            margin-right: 0.75rem;
+            color: white;
+        }
+
+
+        /* Meal Box and Other Styles */
+        .mealbox,
+        .weightbox {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #e7e4e4;
+            color: #000000;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .mealbox:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .mealbox span {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .mealbox button {
+            background: #57b837;
+            color: #000000;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .mealbox button:hover {
+            background: #2b9e44;
+        }
+
+        .mealdata {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #ffffff;
+            color: #000000;
+            border-radius: 5px;
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .meal-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #e63946;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar div {
+            height: 100%;
+            width: 50%;
+            background: #2a9d8f;
+            transition: width 0.5s;
+        }
+
+        /* Modal Card and Blur Effect */
+        .blur-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .modal-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            display: none;
+            width: 75%;
+            height: auto;
+            max-height: 500px;
+            overflow-y: auto;
+            max-width: 800px;
+        }
+
+        .workout-modal-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            display: none;
+            width: 75%;
+            height: auto;
+            max-height: 500px;
+            overflow-y: auto;
+            max-width: 800px;
+        }
+
+
+        .modal-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .workout-modal-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-card button.close-btn {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .workout-modal-card button.close-btn {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .modal-card button.close-btn:hover {
+            background-color: darkred;
+        }
+
+        .workout-modal-card button.close-btn:hover {
+            background-color: darkred;
+        }
+
+        .modal-card.active {
+            display: block;
+        }
+
+        .workout-modal-card.active {
+            display: block;
+        }
+
+        .blur-background.active {
+            display: block;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+
+        /* Search Results */
+        .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background-color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-item:hover {
+            background-color: #e7e4e4;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quantity-selector button {
+            background: #57b837;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .quantity-selector button:hover {
+            background: #2b9e44;
+        }
+
+        .quantity-selector span {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .back-button {
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .back-button:hover {
+            background: #444;
+        }
+
+        .food-details {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .food-details h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .calories-display {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .nutrition-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nutrition-info div {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .add-btn {
+            background-color: #57b837;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background-color: #2b9e44;
+        }
+
+        .done-btn {
+            background: #57b837;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .done-btn:hover {
+            background: #2b9e44;
+        }
+
+        .progress-bars-container {
+            display: none;
+            margin: 15px;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 5px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .progress-bar-wrapper {
+            margin: 10px 0;
+        }
+
+        .progress-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .progress-fill.red {
+            background-color: #e63946;
+        }
+
+        .progress-fill.yellow {
+            background-color: #ffb703;
+        }
+
+        .progress-fill.green {
+            background-color: #2a9d8f;
+        }
+
+        .progress-bars-container {
+            color: #383535;
+        }
+
+        .weightdata {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 5px;
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .weight-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .weight-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .weight-add-btn {
+            background: #57b837;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .weight-add-btn:hover {
+            background: #2b9e44;
+        }
+
+        .weight-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2b9e44;
+        }
+
+        .weight-history {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .weight-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .weight-entry:last-child {
+            border-bottom: none;
+        }
+
+        .entry-weight {
+            font-weight: 600;
+            color: #2b9e44;
+        }
+
+        .entry-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .delete-weight {
+            background: #e63946;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .delete-weight:hover {
+            background: #c1121f;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .header {
+            margin-top: -10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header img {
+            height: 60px;
+            margin-top: -8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #24882f;
+        }
+
+        .tracker-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .water-tracker,
+        .weight-tracker,
+        .workout-tracker {
+            width: 100%;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .water-progress {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .water-progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #4287f5;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .workout-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .workout-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .add-workout-btn {
+            background-color: #57b837;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .water-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .water-tracker .mealbox span,
+        .weight-tracker .mealbox span,
+        .water-details,
+        .workout-tracker strong {
+            color: black;
+        }
+
+        .delete-workout {
+            background-color: #e63946;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .workout-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .workout-item>div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .workout-item span {
+            color: black;
+            margin-bottom: 5px;
+        }
+
+        .horizontal-calendar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #a8cd70;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .calendar-days {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 5px;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .calendar-day.today {
+            background: #24882f;
+            color: white;
+        }
+
+        .calendar-day:hover {
+            background: #57b837;
+            color: white;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="logo.png" alt="Logo">
+        <h1>Calorease</h1>
+    </div>
+
+    <!-- Hamburger Menu -->
+    <div class="menu-container" onclick="toggleMenu()">
+        <div class="hamburger"></div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="nav-menu">
+        <a href="settings.html">Settings</a>
+        <a href="guide.html">Guide</a>
+        <a href="landing.html">Logout</a>
+    </div>
+
+    <div class="horizontal-calendar">
+        <button class="calendar-nav" onclick="prevDays()">&#9665;</button>
+        <div class="calendar-days" id="calendarDays"></div>
+        <button class="calendar-nav" onclick="nextDays()">&#9655;</button>
+    </div>
+
+    <div class="container">
+        <div class="kur-progress-box">
+            <div class="main-progress-container">
+                <svg class="kur-progress-bar" viewBox="0 0 36 36" width="180" height="180">
+                    <path class="circle-background" fill="none" stroke="#e6e6e6" stroke-width="2"
+                        d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83" />
+                    <path class="circle-progress" fill="none" stroke="#4caf50" stroke-width="2" stroke-dasharray="100"
+                        stroke-dashoffset="100"
+                        d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83" />
+                </svg>
+                <div class="percentage">50</div>
+            </div>
+            X/X<br>
+            Total calories burnt
+
+            <div class="small-progress">
+                <div class="small-main-progress-container">
+
+                    <svg class="small-progress-bar" viewBox="0 0 36 36" width="60" height="90">
+                        <path class="small-circle-background" fill="none" stroke="#e6e6e6" stroke-width="1.5"
+                            d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83"></path>
+                        <path class="carbs-circle-progress" fill="none" stroke="#4caf50" stroke-width="1.5"
+                            stroke-dasharray="100" stroke-dashoffset="100"
+                            d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83"></path>
+                    </svg>
+
+
+                    <b>Carbs</b>
+                    <div class="carbs-percentage">60</div>
+                </div>
+            </div>
+
+
+            <div class="small-progress">
+                <div class="small-main-progress-container">
+                    <svg class="small-progress-bar" viewBox="0 0 36 36" width="60" height="90">
+                        <path class="small-circle-background" fill="none" stroke="#e6e6e6" stroke-width="1.5"
+                            d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83"></path>
+                        <path class="proteins-circle-progress" fill="none" stroke="#4caf50" stroke-width="1.5"
+                            stroke-dasharray="100" stroke-dashoffset="100"
+                            d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83"></path>
+                    </svg>
+                    <b>Proteins</b>
+                    <div class="protein-percentage">30</div>
+                </div>
+            </div>
+
+
+            <div class="small-progress">
+                <div class="small-main-progress-container">
+                    <svg class="small-progress-bar" viewBox="0 0 36 36" width="60" height="90">
+                        <path class="small-circle-background" fill="none" stroke="#e6e6e6" stroke-width="1.5"
+                            d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83"></path>
+                        <path class="fibre-circle-progress" fill="none" stroke="#4caf50" stroke-width="1.5"
+                            stroke-dasharray="100" stroke-dashoffset="100"
+                            d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83"></path>
+                    </svg>
+                    <b>Fibre</b>
+                    <div class="fibre-percentage">40</div>
+                </div>
+            </div>
+
+
+            <div class="small-progress">
+                <div class="small-main-progress-container">
+                    <svg class="small-progress-bar" viewBox="0 0 36 36" width="60" height="90">
+                        <path class="small-circle-background" fill="none" stroke="#e6e6e6" stroke-width="1.5"
+                            d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83"></path>
+                        <path class="fats-circle-progress" fill="none" stroke="#4caf50" stroke-width="1.5"
+                            stroke-dasharray="100" stroke-dashoffset="100"
+                            d="M18 2.0845a15.915 15.915 0 1 1 0 31.83 15.915 15.915 0 1 1 0-31.83"></path>
+                    </svg>
+                    <b>Fats</b>
+                    <div class="fat-percentage">70</div>
+                </div>
+            </div>
+        </div>
+        <button class="refreshbutton" onclick="refresh_temp()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                <path
+                    d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z">
+                </path>
+                <path fill-rule="evenodd"
+                    d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z">
+                </path>
+            </svg>
+            Refresh
+        </button>
+    </div>
+    </div>
+
+    <div class="container">
+        <!-- Meal Sections -->
+        <div class="mealbox">
+            <span>Breakfast</span>
+            <button onclick="openCard('Breakfast')">+</button>
+        </div>
+        <div class="mealdata">No data added yet.</div>
+        <div class="progress-bars-container">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Protein</span>
+                    <span class="progress-value">0g / 56g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="protein"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Carbs</span>
+                    <span class="progress-value">0g / 300g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="carbs"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fats</span>
+                    <span class="progress-value">0g / 65g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fats"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fiber</span>
+                    <span class="progress-value">0g / 30g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fiber"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mealbox">
+            <span>Morning Snack</span>
+            <button onclick="openCard('Morning Snack')">+</button>
+        </div>
+        <div class="mealdata">No data added yet.</div>
+        <div class="progress-bars-container">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Protein</span>
+                    <span class="progress-value">0g / 56g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="protein"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Carbs</span>
+                    <span class="progress-value">0g / 300g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="carbs"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fats</span>
+                    <span class="progress-value">0g / 65g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fats"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fiber</span>
+                    <span class="progress-value">0g / 30g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fiber"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mealbox">
+            <span>Lunch</span>
+            <button onclick="openCard('Lunch')">+</button>
+        </div>
+        <div class="mealdata">No data added yet.</div>
+        <div class="progress-bars-container">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Protein</span>
+                    <span class="progress-value">0g / 56g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="protein"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Carbs</span>
+                    <span class="progress-value">0g / 300g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="carbs"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fats</span>
+                    <span class="progress-value">0g / 65g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fats"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fiber</span>
+                    <span class="progress-value">0g / 30g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fiber"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mealbox">
+            <span>Evening Snack</span>
+            <button onclick="openCard('Evening Snack')">+</button>
+        </div>
+        <div class="mealdata">No data added yet.</div>
+        <div class="progress-bars-container">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Protein</span>
+                    <span class="progress-value">0g / 56g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="protein"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Carbs</span>
+                    <span class="progress-value">0g / 300g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="carbs"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fats</span>
+                    <span class="progress-value">0g / 65g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fats"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fiber</span>
+                    <span class="progress-value">0g / 30g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fiber"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mealbox">
+            <span>Dinner</span>
+            <button onclick="openCard('Dinner')">+</button>
+        </div>
+        <div class="mealdata">No data added yet.</div>
+        <div class="progress-bars-container">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Protein</span>
+                    <span class="progress-value">0g / 56g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="protein"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Carbs</span>
+                    <span class="progress-value">0g / 300g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="carbs"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fats</span>
+                    <span class="progress-value">0g / 65g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fats"></div>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-label">
+                    <span>Fiber</span>
+                    <span class="progress-value">0g / 30g</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" data-nutrient="fiber"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:30px; background-color:rgb(213, 200, 82)" class="container">
+        <div class="mealbox">
+            <span>Weight Tracking</span>
+            <button onclick="toggleWeightSection()">+</button>
+        </div>
+        <div class="weightdata">
+            <div class="weight-input-row">
+                <input type="number" class="weight-input" id="weightInput" placeholder="Enter weight (kg)" step="0.1">
+                <button class="weight-add-btn" onclick="addWeight()">Add</button>
+            </div>
+            <div class="weight-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Starting</span>
+                    <span class="stat-value" id="startWeight">0.0 kg</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Current</span>
+                    <span class="stat-value" id="currentWeight">0.0 kg</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Change</span>
+                    <span class="stat-value" id="weightChange">0.0 kg</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="weightChart"></canvas>
+            </div>
+            <div class="weight-history" id="weightHistory"></div>
+        </div>
+    </div>
+
+    <div class="tracker-container">
+        <div style="background-color: #87CEEB" class="container water-tracker">
+            <div class="mealbox">
+                <span>Water Intake</span>
+                <div class="water-buttons">
+                    <button onclick="addWater()">+</button>
+                    <button onclick="resetWater()" style="background-color: #e63946; color: white;">Reset</button>
+                </div>
+            </div>
+            <div class="water-progress">
+                <div class="water-progress-fill"></div>
+            </div>
+            <div class="water-details">
+                <span id="water-count">0/8 glasses</span>
+            </div>
+        </div>
+        <div style="background-color: rgb(213, 200, 82)" class="container weight-tracker">
+            <div class="mealbox">
+                <span>Workouts</span>
+                <button onclick="openWorkoutModal()">+</button>
+            </div>
+            <div class="workout-list" id="workout-list"></div>
+            <div style="background-color: #FFD700" class="container workout-tracker">
+                <strong>Total Calories Burned: <span id="total-workout-calories">0</span></strong>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Workout Modal -->
+    <div class="workout-modal-card" id="workout-modal">
+        <h2>Add Workout</h2>
+        <button class="close-btn" onclick="closeWorkoutModal()">Close</button>
+        <select id="workout-type">
+            <option value="">Select Workout</option>
+            <option value="Walking">Walking</option>
+            <option value="Running">Running</option>
+            <option value="Dancing">Dancing</option>
+            <option value="WeightTraining">Weight Training</option>
+        </select>
+        <input type="number" id="workout-duration" placeholder="Duration (minutes)">
+        <button class="done-btn" onclick="saveWorkout()">Save Workout</button>
+    </div>
+    <!-- Modal Card -->
+    <div class="blur-background"></div>
+    <div class="modal-card">
+        <h2 id="modal-title">Meal Details</h2>
+        <button class="close-btn" onclick="closeCard()">Close</button>
+        <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
+        <div id="searchResults" class="search-results"></div>
+        <div id="nutritionInfo" class="nutrition-info"></div>
+    </div>
+
+    <script>
+
+        function progressload() {
+            //main progress
+            const progressElement = document.querySelector('.circle-progress');
+            const percentageElement = document.querySelector('.percentage');
+            let progressValue = parseInt(percentageElement.textContent);
+            const strokeDashoffset = 100 - progressValue;
+            progressElement.style.strokeDashoffset = strokeDashoffset;
+            percentageElement.textContent = `${progressValue}%`;
+
+            //carb progress
+            const carb_progressElement = document.querySelector('.carbs-circle-progress');
+            const carb_percentageElement = document.querySelector('.carbs-percentage');
+            let carb_progressValue = parseInt(carb_percentageElement.textContent);
+            const carb_strokeDashoffset = 100 - carb_progressValue;
+            carb_progressElement.style.strokeDashoffset = carb_strokeDashoffset;
+            carb_percentageElement.textContent = `${carb_progressValue}%`;
+
+            //protein progress
+            const protein_progressElement = document.querySelector('.proteins-circle-progress');
+            const protein_percentageElement = document.querySelector('.protein-percentage');
+            let protein_progressValue = parseInt(protein_percentageElement.textContent);
+            const protein_strokeDashoffset = 100 - protein_progressValue;
+            protein_progressElement.style.strokeDashoffset = protein_strokeDashoffset;
+            protein_percentageElement.textContent = `${protein_progressValue}%`;
+
+            //fat progress
+            const fat_progressElement = document.querySelector('.fats-circle-progress');
+            const fat_percentageElement = document.querySelector('.fat-percentage');
+            let fat_progressValue = parseInt(fat_percentageElement.textContent);
+            const fat_strokeDashoffset = 100 - fat_progressValue;
+            fat_progressElement.style.strokeDashoffset = fat_strokeDashoffset;
+            fat_percentageElement.textContent = `${fat_progressValue}%`;
+
+            //fibre progress
+            const fibre_progressElement = document.querySelector('.fibre-circle-progress');
+            const fibre_percentageElement = document.querySelector('.fibre-percentage');
+            let fibre_progressValue = parseInt(fibre_percentageElement.textContent);
+            const fibre_strokeDashoffset = 100 - fibre_progressValue;
+            fibre_progressElement.style.strokeDashoffset = fibre_strokeDashoffset;
+
+            fibre_percentageElement.textContent = `${fibre_progressValue}%`;
+        }
+
+        progressload();
+
+        function refresh_temp() {
+            document.querySelector('.percentage').textContent = 75;
+            document.querySelector('.carbs-percentage').textContent = 35;;
+            document.querySelector('.protein-percentage').textContent = 6;;
+            document.querySelector('.fat-percentage').textContent = 50;;
+            document.querySelector('.fibre-percentage').textContent = 86;;
+
+            progressload();
+        }
+
+        function togglePopup() {
+            var popup = document.getElementById("myPopup");
+            var overlay = document.getElementById("overlay");
+            popup.style.display = popup.style.display === "none" ? "block" : "none";
+            overlay.style.display = popup.style.display;
+        }
+
+
+        const foodItems = [
+            { name: 'Apple', calories: 52, fats: 0.2, fiber: 2.4, protein: 0.3, carbs: 14 },
+            { name: 'Banana', calories: 89, fats: 0.3, fiber: 2.6, protein: 1.1, carbs: 23 },
+            { name: 'Carrot', calories: 41, fats: 0.2, fiber: 2.8, protein: 0.9, carbs: 10 },
+            { name: 'Chicken Breast', calories: 165, fats: 3.6, fiber: 0, protein: 31, carbs: 0 },
+            { name: 'Broccoli', calories: 55, fats: 0.6, fiber: 2.6, protein: 4, carbs: 11 },
+            { name: 'Egg', calories: 68, fats: 4.8, fiber: 0, protein: 5.5, carbs: 0.6 },
+            { name: 'Salmon', calories: 208, fats: 13, fiber: 0, protein: 20, carbs: 0 },
+            { name: 'Almonds', calories: 579, fats: 49, fiber: 12.5, protein: 21, carbs: 22 },
+            { name: 'Oats', calories: 389, fats: 6.9, fiber: 10.6, protein: 16.9, carbs: 66 },
+            { name: 'Sweet Potato', calories: 86, fats: 0.1, fiber: 3, protein: 1.6, carbs: 20 },
+            { name: 'Avocado', calories: 160, fats: 15, fiber: 6.7, protein: 2, carbs: 9 },
+            { name: 'Tofu', calories: 76, fats: 4.8, fiber: 0.3, protein: 8, carbs: 1.9 },
+            { name: 'Brown Rice', calories: 111, fats: 0.9, fiber: 1.8, protein: 2.6, carbs: 23 },
+            { name: 'Lentils', calories: 116, fats: 0.4, fiber: 7.9, protein: 9, carbs: 20 },
+            { name: 'Spinach', calories: 23, fats: 0.4, fiber: 2.2, protein: 2.9, carbs: 3.6 },
+            { name: 'Strawberry', calories: 32, fats: 0.3, fiber: 2, protein: 0.7, carbs: 7.7 },
+            { name: 'Peanut Butter', calories: 588, fats: 50, fiber: 6, protein: 25, carbs: 20 },
+            { name: 'Greek Yogurt', calories: 59, fats: 0.4, fiber: 0, protein: 10, carbs: 3.6 },
+            { name: 'Mushroom', calories: 22, fats: 0.3, fiber: 1, protein: 3.1, carbs: 3.3 },
+            { name: 'Cottage Cheese', calories: 98, fats: 4.3, fiber: 0, protein: 11, carbs: 3.4 },
+            { name: 'Oranges', calories: 47, fats: 0.1, fiber: 2.4, protein: 0.9, carbs: 12 },
+            { name: 'Tomato', calories: 18, fats: 0.2, fiber: 1.2, protein: 0.9, carbs: 3.9 },
+            { name: 'Chia Seeds', calories: 486, fats: 31, fiber: 34, protein: 16, carbs: 42 },
+            { name: 'Walnuts', calories: 654, fats: 65, fiber: 6.7, protein: 15, carbs: 14 },
+            { name: 'Milk', calories: 42, fats: 1, fiber: 0, protein: 3.4, carbs: 5 }
+        ];
+
+        let weightData = JSON.parse(localStorage.getItem('weightData')) || [];
+        let weightChart = null;
+
+        // for the hamburger menu
+        function toggleMenu() {
+            const menu = document.querySelector('.nav-menu');
+            const hamburger = document.querySelector('.hamburger');
+            menu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        function openCard(meal) {
+            const modalCard = document.querySelector('.modal-card');
+            const blurBackground = document.querySelector('.blur-background');
+            const searchResults = document.getElementById('searchResults');
+
+            document.getElementById('modal-title').textContent = meal;
+            modalCard.classList.add('active');
+            blurBackground.classList.add('active');
+
+            showSearchView();
+        }
+
+        const dailyTargets = {
+            protein: 56,  // grams for average adult
+            carbs: 300,   // grams
+            fats: 65,     // grams
+            fiber: 30     // grams
+        };
+
+        function updateProgressBars(progressContainer, mealdata) {
+            if (!progressContainer || !mealdata) return;
+
+            const mealItems = mealdata.querySelectorAll('.meal-item');
+
+            if (mealItems.length > 0) {
+                progressContainer.style.display = 'block';
+
+                let totalNutrients = {
+                    protein: 0,
+                    carbs: 0,
+                    fats: 0,
+                    fiber: 0
+                };
+
+                mealItems.forEach(item => {
+                    const foodName = item.querySelector('span').textContent.split(' (x')[0];
+                    const quantity = parseInt(item.querySelector('span').textContent.split('x')[1]);
+                    const foodItem = foodItems.find(f => f.name === foodName);
+
+                    if (foodItem) {
+                        totalNutrients.protein += foodItem.protein * quantity;
+                        totalNutrients.carbs += foodItem.carbs * quantity;
+                        totalNutrients.fats += foodItem.fats * quantity;
+                        totalNutrients.fiber += foodItem.fiber * quantity;
+                    }
+                });
+
+                Object.keys(totalNutrients).forEach(nutrient => {
+                    const progressFill = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`);
+                    const progressValue = progressFill.parentElement.previousElementSibling.querySelector('.progress-value');
+
+                    const percentage = (totalNutrients[nutrient] / (dailyTargets[nutrient] / 5)) * 100;
+                    progressFill.style.width = `${Math.min(percentage, 100)}%`;
+
+                    progressFill.classList.remove('red', 'yellow', 'green');
+                    if (percentage <= 35) {
+                        progressFill.classList.add('red');
+                    } else if (percentage <= 70) {
+                        progressFill.classList.add('yellow');
+                    } else {
+                        progressFill.classList.add('green');
+                    }
+
+                    progressValue.textContent = `${totalNutrients[nutrient].toFixed(1)}g / ${(dailyTargets[nutrient] / 5).toFixed(1)}g`;
+                });
+            }
+        }
+
+        function showSearchView() {
+            const modalContent = document.querySelector('.modal-card');
+            const searchHTML = `
+                <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
+                <button class="close-btn" onclick="closeCard()">Close</button>
+                <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
+                <div id="searchResults" class="search-results"></div>
+                <div id="nutritionInfo" class="nutrition-info"></div>
+            `;
+            modalContent.innerHTML = searchHTML;
+            searchItems();
+        }
+
+        function addToMeal(foodName) {
+            const modalCard = document.querySelector('.modal-card');
+            const selectedFood = foodItems.find(item => item.name === foodName);
+            let quantity = 1;
+
+            const detailsHTML = `
+                <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
+                <button class="close-btn" onclick="closeCard()">Close</button>
+                <button class="back-button" onclick="showSearchView()">← Back to Search</button>
+                <div class="food-details">
+                    <h3>${foodName}</h3>
+                    <div class="calories-display" id="calories-display">
+                        ${selectedFood.calories} calories
+                    </div>
+                    <div class="quantity-selector">
+                        <button onclick="updateQuantity(-1)">-</button>
+                        <span id="quantity">1</span>
+                        <button onclick="updateQuantity(1)">+</button>
+                    </div>
+                    <div class="nutrition-info">
+                        <div>
+                            <strong>Protein</strong>
+                            <div id="protein">${selectedFood.protein}g</div>
+                        </div>
+                        <div>
+                            <strong>Carbs</strong>
+                            <div id="carbs">${selectedFood.carbs}g</div>
+                        </div>
+                        <div>
+                            <strong>Fats</strong>
+                            <div id="fats">${selectedFood.fats}g</div>
+                        </div>
+                        <div>
+                            <strong>Fiber</strong>
+                            <div id="fiber">${selectedFood.fiber}g</div>
+                        </div>
+                    </div>
+                    <button class="done-btn" onclick="addToMealBox('${foodName}')">Done</button>
+                </div>
+            `;
+
+            modalCard.innerHTML = detailsHTML;
+        }
+
+        function updateQuantity(change) {
+            const quantityElement = document.getElementById('quantity');
+            let currentQuantity = parseInt(quantityElement.textContent);
+            const newQuantity = Math.max(1, currentQuantity + change);
+            quantityElement.textContent = newQuantity;
+
+            const foodName = document.querySelector('.food-details h3').textContent;
+            const foodItem = foodItems.find(item => item.name === foodName);
+
+            const caloriesDisplay = document.getElementById('calories-display');
+            caloriesDisplay.textContent = `${(foodItem.calories * newQuantity).toFixed(1)} calories`;
+
+            document.getElementById('protein').textContent = (foodItem.protein * newQuantity).toFixed(1) + 'g';
+            document.getElementById('carbs').textContent = (foodItem.carbs * newQuantity).toFixed(1) + 'g';
+            document.getElementById('fats').textContent = (foodItem.fats * newQuantity).toFixed(1) + 'g';
+            document.getElementById('fiber').textContent = (foodItem.fiber * newQuantity).toFixed(1) + 'g';
+        }
+
+        function addToMealBox(foodName) {
+            const mealTitle = document.getElementById('modal-title').textContent;
+            const quantity = parseInt(document.getElementById('quantity').textContent);
+            const foodItem = foodItems.find(item => item.name === foodName);
+            const totalCalories = (foodItem.calories * quantity).toFixed(1);
+
+            const mealboxes = document.querySelectorAll('.mealbox');
+            let targetMealbox = null;
+
+            mealboxes.forEach(box => {
+                if (box.querySelector('span').textContent === mealTitle) {
+                    targetMealbox = box;
+                }
+            });
+
+            if (targetMealbox) {
+                const targetMealdata = targetMealbox.nextElementSibling;
+                const progressContainer = targetMealdata.nextElementSibling;
+
+                if (targetMealdata.textContent === 'No data added yet.') {
+                    targetMealdata.innerHTML = '';
+                }
+
+                const mealItem = document.createElement('div');
+                mealItem.className = 'meal-item';
+                mealItem.innerHTML = `<span>${foodName} (x${quantity})</span><span>${totalCalories} cal</span>`;
+                targetMealdata.appendChild(mealItem);
+
+                updateProgressBars(progressContainer, targetMealdata);
+            }
+
+            closeCard();
+        }
+
+        function closeCard() {
+            const modalCard = document.querySelector('.modal-card');
+            const blurBackground = document.querySelector('.blur-background');
+            modalCard.classList.remove('active');
+            blurBackground.classList.remove('active');
+        }
+
+        function searchItems() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '';
+
+            const filteredItems = foodItems.filter(item =>
+                item.name.toLowerCase().includes(searchInput)
+            );
+
+            filteredItems.forEach(item => {
+                const searchItem = document.createElement('div');
+                searchItem.classList.add('search-item');
+                searchItem.innerHTML = `
+                    ${item.name}
+                    <button class="add-btn" onclick="addToMeal('${item.name}')">Add</button>
+                `;
+                searchResults.appendChild(searchItem);
+            });
+        }
+
+        function initializeChart() {
+            const ctx = document.getElementById('weightChart').getContext('2d');
+
+            if (weightChart) {
+                weightChart.destroy();
+            }
+
+            weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: weightData.map(entry => new Date(entry.date).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Weight Progress',
+                        data: weightData.map(entry => entry.weight),
+                        borderColor: '#57b837',
+                        backgroundColor: 'rgba(87, 184, 55, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Weight (kg)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateWeightHistory() {
+            const historyContainer = document.getElementById('weightHistory');
+            historyContainer.innerHTML = '';
+
+            weightData.slice().reverse().forEach(entry => {
+                const weightEntry = document.createElement('div');
+                weightEntry.className = 'weight-entry';
+                weightEntry.innerHTML = `
+                    <span class="entry-weight">${entry.weight.toFixed(1)} kg</span>
+                    <span class="entry-date">${new Date(entry.date).toLocaleDateString()}</span>
+                    <button class="delete-weight" onclick="deleteWeight(${entry.id})">×</button>
+                `;
+                historyContainer.appendChild(weightEntry);
+            });
+        }
+
+        function addWeight() {
+            const weightInput = document.getElementById('weightInput');
+            const weight = parseFloat(weightInput.value);
+
+            if (isNaN(weight) || weight <= 0) {
+                alert('Please enter a valid weight');
+                return;
+            }
+
+            const newEntry = {
+                id: Date.now(),
+                weight: weight,
+                date: new Date().toISOString()
+            };
+
+            weightData.push(newEntry);
+            weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            localStorage.setItem('weightData', JSON.stringify(weightData));
+
+            updateWeightStats();
+            updateWeightHistory();
+            initializeChart();
+
+            weightInput.value = '';
+        }
+
+        function deleteWeight(id) {
+            weightData = weightData.filter(entry => entry.id !== id);
+            localStorage.setItem('weightData', JSON.stringify(weightData));
+
+            updateWeightStats();
+            updateWeightHistory();
+            initializeChart();
+        }
+
+        function updateWeightStats() {
+            if (weightData.length === 0) {
+                document.getElementById('startWeight').textContent = '0.0 kg';
+                document.getElementById('currentWeight').textContent = '0.0 kg';
+                document.getElementById('weightChange').textContent = '0.0 kg';
+                return;
+            }
+
+            const startWeight = weightData[0].weight;
+            const currentWeight = weightData[weightData.length - 1].weight;
+            const change = currentWeight - startWeight;
+
+            document.getElementById('startWeight').textContent = `${startWeight.toFixed(1)} kg`;
+            document.getElementById('currentWeight').textContent = `${currentWeight.toFixed(1)} kg`;
+            document.getElementById('weightChange').textContent = `${change >= 0 ? '+' : ''}${change.toFixed(1)} kg`;
+
+            const weightChangeElement = document.getElementById('weightChange');
+            weightChangeElement.style.color = change > 0 ? '#e63946' : change < 0 ? '#2b9e44' : '#666';
+        }
+
+        function toggleWeightSection() {
+            const weightdata = document.querySelector('.weightdata');
+            if (weightdata.style.display === 'none' || weightdata.style.display === '') {
+                weightdata.style.display = 'block';
+                initializeChart();
+            } else {
+                weightdata.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateWeightStats();
+            updateWeightHistory();
+        });
+        const workouts = {
+            Walking: { caloriesPerMinute: 3.5 },
+            Running: { caloriesPerMinute: 11.4 },
+            Dancing: { caloriesPerMinute: 7.2 },
+            WeightTraining: { caloriesPerMinute: 6.0 }
+        };
+
+        let waterIntake = parseInt(localStorage.getItem('waterIntake') || '0');
+        let workoutLog = JSON.parse(localStorage.getItem('workoutLog') || '[]');
+
+        function addWater() {
+            if (waterIntake < 8) {
+                waterIntake++;
+                updateWaterProgress();
+            }
+        }
+
+        function updateWaterProgress() {
+            const waterProgressFill = document.querySelector('.water-progress-fill');
+            const waterCountDisplay = document.getElementById('water-count');
+
+            waterProgressFill.style.width = `${(waterIntake / 8) * 100}%`;
+            waterCountDisplay.textContent = `${waterIntake}/8 glasses`;
+
+            localStorage.setItem('waterIntake', waterIntake);
+        }
+
+        function openWorkoutModal() {
+            const modal = document.getElementById('workout-modal');
+            modal.classList.add('active');
+            document.querySelector('.blur-background').classList.add('active');
+        }
+
+        function closeWorkoutModal() {
+            const modal = document.getElementById('workout-modal');
+            modal.classList.remove('active');
+            document.querySelector('.blur-background').classList.remove('active');
+        }
+
+        function saveWorkout() {
+            const workoutType = document.getElementById('workout-type').value;
+            const duration = parseInt(document.getElementById('workout-duration').value);
+
+            if (!workoutType || !duration) {
+                alert('Please select a workout and enter duration');
+                return;
+            }
+
+            const caloriesBurned = Math.round(workouts[workoutType].caloriesPerMinute * duration);
+
+            const workout = {
+                type: workoutType,
+                duration: duration,
+                calories: caloriesBurned,
+                date: new Date().toISOString()
+            };
+
+            workoutLog.push(workout);
+            localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+
+            updateWorkoutDisplay();
+            closeWorkoutModal();
+        }
+
+        function updateWorkoutDisplay() {
+            const workoutList = document.getElementById('workout-list');
+            const totalCaloriesElement = document.getElementById('total-workout-calories');
+
+            workoutList.innerHTML = '';
+            const totalCalories = workoutLog.reduce((sum, workout) => sum + workout.calories, 0);
+
+            workoutLog.slice().reverse().forEach((workout, index) => {
+                const workoutItem = document.createElement('div');
+                workoutItem.className = 'workout-item';
+                workoutItem.innerHTML = `
+            <div>
+                <span>${workout.type} (${workout.duration} mins)</span>
+                <span>${workout.calories} cal</span>
+            </div>
+            <button class="delete-workout" onclick="removeWorkout(${workoutLog.length - 1 - index})">×</button>
+        `;
+                workoutList.appendChild(workoutItem);
+            });
+
+            totalCaloriesElement.textContent = totalCalories;
+        }
+        function removeWorkout(index) {
+            workoutLog.splice(index, 1);
+            localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+            updateWorkoutDisplay();
+        }
+        function addWater() {
+            if (waterIntake < 8) {
+                waterIntake++;
+                updateWaterProgress();
+            }
+        }
+
+        function resetWater() {
+            waterIntake = 0;
+            updateWaterProgress();
+        }
+
+        // Modify water tracking initialization
+        function initializeWaterTracking() {
+            // Always start at 0 when page is refreshed
+            waterIntake = 0;
+            updateWaterProgress();
+        }
+
+        // Replace existing DOMContentLoaded listener
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeWaterTracking();
+            updateWeightStats();
+            updateWeightHistory();
+            updateWorkoutDisplay();
+        });
+
+        function generateCalendar(daysBefore = 6) {
+            const calendarContainer = document.getElementById("calendarDays");
+            calendarContainer.innerHTML = "";
+            const today = new Date();
+
+            for (let i = daysBefore; i >= 0; i--) {
+                let date = new Date();
+                date.setDate(today.getDate() - i);
+
+                let dayElement = document.createElement("div");
+                dayElement.classList.add("calendar-day");
+                if (i === 0) {
+                    dayElement.classList.add("today");
+                }
+                dayElement.textContent = date.getDate();
+                calendarContainer.appendChild(dayElement);
+            }
+        }
+
+        function prevDays() {
+            generateCalendar(10); // Show older dates
+        }
+
+        function nextDays() {
+            generateCalendar(6); // Go back to recent dates
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            generateCalendar();
+        });
+
+
+    </script>
+</body>
+
+</html>
