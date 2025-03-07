@@ -19,6 +19,87 @@
             padding: 20px;
         }
 
+        .menu-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .hamburger {
+            width: 30px;
+            height: 3px;
+            background-color: #000;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 3px;
+            background-color: #000;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before {
+            top: -10px;
+        }
+
+        .hamburger::after {
+            top: 10px;
+        }
+
+        .menu-container:hover .hamburger {
+            transform: scale(1.1);
+        }
+
+        .nav-menu {
+            display: none;
+            background: #ffffff;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 100%;
+            padding: 50px 20px;
+            text-align: right;
+        }
+
+        .nav-menu a {
+            display: block;
+            color: #000000;
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin: 20px 0;
+        }
+
+        .nav-menu a:hover {
+            color: #57b837;
+        }
+
+        .hamburger.active {
+            transform: rotate(45deg);
+        }
+
+        .hamburger.active::before {
+            transform: rotate(90deg);
+            top: 0;
+        }
+
+        .hamburger.active::after {
+            transform: rotate(90deg);
+            top: 0;
+        }
+
+        .nav-menu.active {
+            display: block;
+        }
+
         .settings-container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -105,6 +186,16 @@
 </head>
 
 <body>
+    <div class="menu-container" onclick="toggleMenu()">
+        <div class="hamburger"></div>
+    </div>
+    <!-- Navigation Menu -->
+    <div class="nav-menu">
+        <a href="{{ url_for('home')}}">Homepage</a>
+        <a href="{{ url_for('guide')}}">Guide</a>
+        <a href="{{ url_for('hello')}}">Logout</a>
+    </div>
+
     <div class="settings-container">
         <h2>Settings</h2>
 
@@ -171,5 +262,14 @@
         </section>
     </div>
 </body>
+
+<script>
+     function toggleMenu() {
+            const menu = document.querySelector('.nav-menu');
+            const hamburger = document.querySelector('.hamburger');
+            menu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+</script>
 
 </html>

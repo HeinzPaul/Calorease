@@ -97,7 +97,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                     <a href="#" class="text-sm text-green-600 hover:text-green-500">Forgot your password?</a>
-                    <a href="{{ url_for('firsttime') }}"
+                    <a href="{{ url_for('home') }}"
                         class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         Sign in
                     </a>
@@ -108,7 +108,7 @@
 
     <nav class="fixed w-full bg-white/100 backdrop-blur-md shadow-md flex justify-between items-center p-6 z-50">
         <div class="flex items-center space-x-3">
-            <img src="logo.png" alt="Logo"
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"
                 class="w-12 h-12 rounded-full transform hover:scale-110 transition-transform">
             <h1 class="text-2xl font-bold text-green-600">Calorease</h1>
         </div>
@@ -146,7 +146,7 @@
                     with streaks, and even get expert fitness guidance—all in one place.</p>
             </div>
             <div class="image-container">
-                <img src="newlaptop.png" alt="Modern laptop showing health tracking app" class="rounded-lg shadow-xl">
+                <img src="{{ url_for('static', filename='newlaptop.png') }}" alt="Modern laptop showing health tracking app" class="rounded-lg shadow-xl">
             </div>
         </section>
 

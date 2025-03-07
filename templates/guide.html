@@ -1026,13 +1026,13 @@
 <body class="text-gray-900" data-new-gr-c-s-check-loaded="8.927.0" data-gr-ext-installed="">
     <nav class="fixed w-full bg-white/70 backdrop-blur-md shadow-md flex justify-between items-center p-6 z-50">
         <div class="flex items-center space-x-3">
-            <img src="logo.png" alt="Logo" class="w-12 h-12 mb-2 transform hover:scale-110 transition-transform">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="w-12 h-12 mb-2 transform hover:scale-110 transition-transform">
             <h1 class="text-2xl font-bold text-green-600">Calorease</h1>
         </div>
         <div class="flex space-x-6">
             <a href="#" onclick="openModal(); return false;"
                 class="hover:text-green-600 transition-colors relative after:block after:w-full after:h-0.5 after:bg-green-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Login</a>
-            <a href="landing.html"
+            <a href="{{ url_for('hello') }}"
                 class="hover:text-green-600 transition-colors relative after:block after:w-full after:h-0.5 after:bg-green-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Home</a>
             <a href="#1" class="text-green-600 font-semibold">Guide</a>
         </div>
@@ -1091,7 +1091,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                     <a href="#" class="text-sm text-green-600 hover:text-green-500">Forgot your password?</a>
-                    <a href="Kurien's Main HomePage.html"
+                    <a href="{{ url_for('home') }}"
                         class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         Sign in
                     </a>

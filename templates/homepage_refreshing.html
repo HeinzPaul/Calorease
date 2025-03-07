@@ -912,7 +912,7 @@
 
 <body>
     <div class="header">
-        <img src="logo.png" alt="Logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
         <h1>Calorease</h1>
     </div>
 
@@ -923,9 +923,9 @@
 
     <!-- Navigation Menu -->
     <div class="nav-menu">
-        <a href="settings.html">Settings</a>
-        <a href="guide.html">Guide</a>
-        <a href="landing.html">Logout</a>
+        <a href="{{ url_for('settings')}}">Settings</a>
+        <a href="{{ url_for('guide')}}">Guide</a>
+        <a href="{{ url_for('hello')}}">Logout</a>
     </div>
 
     <div class="horizontal-calendar">
