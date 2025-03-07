@@ -302,7 +302,7 @@
 
                 <div class="btn-container">
                     <button type="button" class="btn" id="finishButton">
-                        <a href="Kurien's Main HomePage.html">Finish</a>
+                        <a href="{{ url_for('home') }}">Finish</a>
                     </button>
                 </div>
             </div>
@@ -337,20 +337,7 @@
             });
         });
 
-        document.getElementById('finishButton').addEventListener('click', (event) => {
-            event.preventDefault();
-
-            if (validateCurrentStep()) {
-                // Store form data if needed
-                const formData = new FormData(document.getElementById('onboardingForm'));
-
-                // Process the form data here if needed
-
-                // Redirect to trydawg.html
-                window.location.href = "homepage_refreshing.html";
-            }
-        });
-
+        
         function validateCurrentStep() {
             const currentStepElement = steps[currentStep];
             const inputs = currentStepElement.querySelectorAll('input, select');

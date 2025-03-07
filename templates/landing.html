@@ -116,7 +116,7 @@
             <a href="#" onclick="openModal(); return false;"
                 class="hover:text-green-600 transition-colors relative after:block after:w-full after:h-0.5 after:bg-green-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Login</a>
             <a href="#1" class="text-green-600 font-semibold">Home</a>
-            <a href="guide.html"
+            <a href="{{ url_for('guide') }}"
                 class="hover:text-green-600 transition-colors relative after:block after:w-full after:h-0.5 after:bg-green-600 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">Guide</a>
         </div>
     </nav>
@@ -127,7 +127,7 @@
                 Smarter, <span class="  ">Live</span>
                 Healthier</h1>
             <p class="text-lg text-white mt-4">Master Your Nutrition with Ease</p>
-            <a href="firsttime.html"
+            <a href="{{ url_for('firsttime') }}"
                 class="mt-6 px-8 py-3 bg-white text-green-600 font-semibold rounded-lg shadow-lg hover:bg-green-50 transform hover:scale-105 transition-all inline-block">
                 Start Tracking Now
             </a>
