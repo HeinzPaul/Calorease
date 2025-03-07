@@ -17,11 +17,11 @@ def guide():
     return render_template("guide.html")
 
 @app.route('/settings')
-def hello():
+def settings():
     return render_template("settings.html")
 
 @app.route('/homepage')
-def hello():
+def home():
     return render_template("homepage_refreshing.html")
 
 
