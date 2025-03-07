@@ -1,12 +1,31 @@
-from flask import Flask
+from flask import Flask,render_template
 
+# Initialize the Flask app
 app = Flask(__name__)
 
+# Define a route
 @app.route('/')
-def home():
-    return "Hello, Flask!"
+def hello():
+    return render_template("landing.html")
+
+@app.route('/firsttimeusers')
+def firsttime():
+    return render_template("firsttime.html")
+
+@app.route('/guidepage')
+def guide():
+    return render_template("guide.html")
+
+@app.route('/settings')
+def hello():
+    return render_template("settings.html")
+
+@app.route('/homepage')
+def hello():
+    return render_template("homepage_refreshing.html")
 
 
 
+# Run the app
 if __name__ == '__main__':
     app.run(debug=True)
