@@ -1,5 +1,8 @@
 from flask import Flask,render_template,request, session, redirect, url_for,jsonify, url_for # type: ignore,
 from pymongo import MongoClient
+import bcrypt  # Add bcrypt to hash passwords
+from bson.objectid import ObjectId
+
 # Initialize the Flask app
 app = Flask(__name__)
 MONGO_URI = "mongodb+srv://heinzbinjupaul:HEINZISTHEBEST@cluster0.uhtsv.mongodb.net/"
@@ -10,6 +13,9 @@ client = MongoClient(MONGO_URI)
 # Select the database and collection
 db = client["Calorease"]
 user_collection = db["user_data"]
+
+def hash_password(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 
 def calc_tdee(weight,height,age,gender,activity_level):
@@ -46,18 +52,49 @@ def hello1():
 def hello():
     return render_template("landing.html")
 
-@app.route('/firsttimeusers',methods=['POST','GET'])
+@app.route('/firsttimeusers', methods=['POST', 'GET'])
 def firsttime():
     if request.method == "POST":
-        data = request.form
-        tdee = calc_tdee(weight=data['weight'], 
-        height=data['height'], 
-        age=data['age'], 
-        gender=data['gender'], 
-        activity_level=data['activity'])
-        return f"Received: Name - {tdee},{data.get('height')},{data.get('weight')},{data.get('age')},{data.get('activity')}"
+        # Collect form data
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirmpassword")
+        
+        weight = request.form.get("weight")
+        height = request.form.get("height")
+        age = request.form.get("age")
+        gender = request.form.get("gender")
+        activity_level = request.form.get("activity")
 
-    
+        # Hash the password before saving
+        if password != confirm_password:
+            return "Passwords do not match"
+
+        hashed_password = hash_password(password)
+
+        # Calculate TDEE
+        tdee = calc_tdee(weight=weight, height=height, age=age, gender=gender, activity_level=activity_level)
+
+        # Create a new user document to insert into MongoDB
+        user_data = {
+            "name": name,
+            "email": email,
+            "password": hashed_password,
+            "weight": weight,
+            "height": height,
+            "age": age,
+            "gender": gender,
+            "activity_level": activity_level,
+            "tdee": tdee
+        }
+
+        # Insert the new user into MongoDB
+        user_collection.insert_one(user_data)
+
+        # Redirect or render a success page
+        return redirect(url_for('home'))
+
     return render_template("firsttime.html")
 
 @app.route('/guidepage')
