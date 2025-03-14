@@ -171,7 +171,7 @@
             <div class="progress" id="progress"></div>
         </div>
 
-        <form id="onboardingForm">
+        <form id="onboardingForm" method="POST">
             <!-- Step 1 -->
             <div class="step active" id="step1">
                 <h2>Welcome! Let's get to know you.</h2>
@@ -301,8 +301,8 @@
                 </div>
 
                 <div class="btn-container">
-                    <button type="button" class="btn" id="finishButton">
-                        <a href="{{ url_for('home') }}">Finish</a>
+                    <button type="submit" class="btn" id="finishButton">
+
                     </button>
                 </div>
             </div>
@@ -337,19 +337,6 @@
             });
         });
 
-        document.getElementById('finishButton').addEventListener('click', (event) => {
-            event.preventDefault();
-
-            if (validateCurrentStep()) {
-                // Store form data if needed
-                const formData = new FormData(document.getElementById('onboardingForm'));
-
-                // Process the form data here if needed
-
-                // Redirect to trydawg.html
-                window.location.href = "homepage_refreshing.html";
-            }
-        });
 
         function validateCurrentStep() {
             const currentStepElement = steps[currentStep];
