@@ -83,17 +83,24 @@ if __name__ == '__main__':
     "password": "hashedpassword",
     "bmr": 1800,
     "tdee": 2200,
+    "calories_to_burn_daily": 500, 
     "start_date": "2025-03-14",
     "current_day": 1,
     "calories_to_eat": 2000,
     "calories_currently_eaten": 500,
+    "calories_currently_burned": 200,
     "meals": {
         "breakfast": [],
         "lunch": [],
-        "dinner": []
+        "dinner": [],
+        "snacks": []
     },
     "weight": 75,
     "target_weight": 70,
-    "calories_currently_burned": 200,
-    "target_weight_loss_end_date": "2025-06-14"
-}'''
+    "target_weight_loss_end_date": "2025-06-14",
+    "weight_log": [
+        {"date": "2025-03-14", "weight": 75},
+        {"date": "2025-03-15", "weight": 74.8}
+    ]
+}
+'''
