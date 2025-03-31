@@ -156,8 +156,8 @@ def home():
         return redirect(url_for('hello'))  # Redirect to login if not logged in
     print(user_id)
     # Fetch the user's data from MongoDB
-    user_data = user_collection.find_one({"_id": ObjectId(user_id)})
-    print("its working lets'go")
+    user_data = user_collection.find_one({"_id": user_id})
+    print(user_data)
     # Get the total calories to eat (cals_to_eat)
     cals_to_eat = user_data.get('cals_to_eat', 0)
 
