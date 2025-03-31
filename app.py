@@ -17,6 +17,7 @@ client = MongoClient(MONGO_URI)
 # Select the database and collection
 db = client["Calorease"]
 user_collection = db["user_data"]
+user_daily = db["user_daily_data"]
 
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -133,7 +134,7 @@ def firsttime():
     "weight_log": [
     ]
         }
-
+        user_daily.insert_one(user_daily_data)
         # Redirect or render a success page
         session["user_id"] = str(user_id)
         return redirect(url_for('home'))
