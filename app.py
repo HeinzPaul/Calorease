@@ -131,8 +131,6 @@ def firsttime():
     ]
         }
 
-       
-
         # Redirect or render a success page
         return redirect(url_for('home'))
 
