@@ -2,6 +2,7 @@ from flask import Flask,render_template,request, session, redirect, url_for,json
 from pymongo import MongoClient
 import bcrypt  # Add bcrypt to hash passwords
 from bson.objectid import ObjectId
+from datetime import datetime
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -71,6 +72,7 @@ def firsttime():
         email = request.form.get("email")
         password = request.form.get("password")
         confirm_password = request.form.get("confirmpassword")
+        user_id = str(ObjectId())
         
         weight = request.form.get("weight")
         height = request.form.get("height")
@@ -79,7 +81,8 @@ def firsttime():
         activity_level = request.form.get("activity")
         target_weight = request.form.get("goal")
         weight_loss_rate = float(request.form.get("lossperweek"))
-        print("hellosunshine",weight_loss_rate)
+        
+        today_date = datetime.today().strftime('%Y-%m-%d')
 
 
         # Hash the password before saving
@@ -94,6 +97,7 @@ def firsttime():
         cals_to_eat = calc_cals_to_eat(weight_loss_rate=weight_loss_rate,tdee=tdee,gender=gender)
         # Create a new user document to insert into MongoDB
         user_data = {
+            "_id":user_id,
             "name": name,
             "email": email,
             "password": hashed_password,
@@ -105,9 +109,29 @@ def firsttime():
             "tdee": tdee,
             "cals_to_eat":cals_to_eat
         }
-
-        # Insert the new user into MongoDB
+ # Insert the new user into MongoDB
         user_collection.insert_one(user_data)
+        
+        user_daily_data = {"_id":user_id,
+             "name": name,
+    "start_date": today_date,  # Assign today's date
+    "current_day": 1,
+    "cals_to_eat":cals_to_eat,
+    "calories_currently_eaten": 0,
+    "calories_currently_burned": 0,
+    "meals": {
+        "breakfast": [],
+        "morning_snack":[],
+        "lunch": [],
+        "evening_snack":[],
+        "dinner": [],
+    },
+    "starting_weight": weight,
+    "weight_log": [
+    ]
+        }
+
+       
 
         # Redirect or render a success page
         return redirect(url_for('home'))
