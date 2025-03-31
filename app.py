@@ -158,3 +158,21 @@ if __name__ == '__main__':
     ]
 }
 '''
+
+@app.route('/homepage')
+def home():
+    # Assuming the user is logged in and their ID is stored in the session
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('hello'))  # Redirect to login if not logged in
+
+    # Fetch the user's data from MongoDB
+    user_data = user_collection.find_one({"_id": ObjectId(user_id)})
+    if not user_data:
+        return "User not found", 404
+
+    # Get the total calories to eat (cals_to_eat)
+    cals_to_eat = user_data.get('cals_to_eat', 0)
+
+    # Pass the data to the template
+    return render_template("homepage_refreshing.html", cals_to_eat=cals_to_eat)
