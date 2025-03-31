@@ -157,9 +157,11 @@ def home():
     print(user_id)
     # Fetch the user's data from MongoDB
     user_data = user_collection.find_one({"_id": user_id})
+    user_daily_data = user_collection.find_one({"_id": user_id})
     print(user_data)
     # Get the total calories to eat (cals_to_eat)
     cals_to_eat = user_data.get('cals_to_eat', 0)
+    calories_currently_eaten = user_daily_data.get('calories_currently_eaten', 0)
 
     # Pass the data to the template
     return render_template("homepage_refreshing.html", cals_to_eat=cals_to_eat)
