@@ -946,7 +946,7 @@
                 </svg>
                 <div class="percentage">0</div>
             </div>
-            X/{{ cals_to_eat }}<br>
+            <span id="calories-eaten">{{ calories_currently_eaten }}</span> / <span id="calories-to-eat">{{ cals_to_eat }}</span><br>
             Total calories eaten
 
             <div class="small-progress">
@@ -1336,9 +1336,11 @@
 
         function progressload() {
             //main progress
-            const progressElement = document.querySelector('.circle-progress');
-            const percentageElement = document.querySelector('.percentage');
-            let progressValue = parseInt(percentageElement.textContent);
+            const caloriesEaten = parseFloat(document.getElementById('calories-eaten').textContent);
+            const caloriesToEat = parseFloat(document.getElementById('calories-to-eat').textContent);
+
+            // Calculate the percentage
+            const progressValue = (caloriesEaten / caloriesToEat) * 100;
             const strokeDashoffset = 100 - progressValue;
             progressElement.style.strokeDashoffset = strokeDashoffset;
             percentageElement.textContent = `${progressValue}%`;

@@ -165,9 +165,7 @@ def home():
     calories_currently_eaten = user_daily_data.get('calories_currently_eaten', 0)
 
     # Pass the data to the template
-    return render_template("homepage_refreshing.html", cals_to_eat=cals_to_eat)
-
-
+    return render_template("homepage_refreshing.html", cals_to_eat=cals_to_eat, calories_currently_eaten=calories_currently_eaten)
 
 # Run the app
 if __name__ == '__main__':
