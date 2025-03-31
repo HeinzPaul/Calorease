@@ -38,6 +38,17 @@ def calc_tdee(weight,height,age,gender,activity_level):
     tdee = bmr * activity_multipliers[activity_level]
     return round(tdee,2)
 
+def calc_cals_to_eat(weight_loss_rate,tdee,gender):
+    
+        onekg = 7700
+        daily_deficit = (onekg*weight_loss_rate)/7
+        cals_to_eat=tdee-daily_deficit
+
+        min_calories = 1200 if gender.lower() == "female" else 1500
+        cals_to_eat = max(cals_to_eat, min_calories)
+        return round(cals_to_eat,0)
+
+    
 # Define a route
 @app.route('/trial', methods=['GET', 'POST'])
 def hello1():
@@ -66,6 +77,10 @@ def firsttime():
         age = request.form.get("age")
         gender = request.form.get("gender")
         activity_level = request.form.get("activity")
+        target_weight = request.form.get("goal")
+        weight_loss_rate = float(request.form.get("lossperweek"))
+        print("hellosunshine",weight_loss_rate)
+
 
         # Hash the password before saving
         if password != confirm_password:
@@ -75,7 +90,8 @@ def firsttime():
 
         # Calculate TDEE
         tdee = calc_tdee(weight=weight, height=height, age=age, gender=gender, activity_level=activity_level)
-
+        #Calculate Calories to eat in a day in order to lose weight
+        cals_to_eat = calc_cals_to_eat(weight_loss_rate=weight_loss_rate,tdee=tdee,gender=gender)
         # Create a new user document to insert into MongoDB
         user_data = {
             "name": name,
@@ -86,7 +102,8 @@ def firsttime():
             "age": age,
             "gender": gender,
             "activity_level": activity_level,
-            "tdee": tdee
+            "tdee": tdee,
+            "cals_to_eat":cals_to_eat
         }
 
         # Insert the new user into MongoDB
