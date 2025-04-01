@@ -1343,7 +1343,7 @@
     </div>
 
     <script>
-
+        let foodItems = []; // Global array to store food items
         function progressload() {
             //main progress
             const caloriesEaten = parseFloat(document.getElementById('calories-eaten').textContent);
@@ -1478,6 +1478,7 @@
                 });
             }
         }
+
         function openCard(meal) {
             const modalCard = document.querySelector('.modal-card');
             const blurBackground = document.querySelector('.blur-background');
@@ -1505,6 +1506,7 @@
             fetch('/api/random_food')
                 .then(response => response.json())
                 .then(data => {
+                    foodItems = data; // Populate the global foodItems array
                     const searchResults = document.getElementById('searchResults');
                     searchResults.innerHTML = ''; // Clear previous results
 
@@ -1536,6 +1538,7 @@
             fetch(`/api/search_food?q=${encodeURIComponent(searchInput)}`)
                 .then(response => response.json())
                 .then(data => {
+                    foodItems = data; // Populate the global foodItems array
                     if (data.length === 0) {
                         searchResults.innerHTML = '<p>No results found.</p>';
                         return;
@@ -1559,6 +1562,7 @@
                     searchResults.innerHTML = '<p>Error fetching data.</p>';
                 });
         }
+
         function addToMeal(name, unit, calories, protein, fats, carbs, fiber) {
             const modalCard = document.querySelector('.modal-card');
             let quantity = 1;
@@ -1573,9 +1577,9 @@
                 ${calories} calories per ${unit}
             </div>
             <div class="quantity-selector">
-                <button onclick="updateQuantity(-1)">-</button>
+                <button onclick="updateNutrientLevels(-1)">-</button>
                 <span id="quantity">1</span>
-                <button onclick="updateQuantity(1)">+</button>
+                <button onclick="updateNutrientLevels(1)">+</button>
             </div>
             <div class="nutrition-info">
                 <div>
@@ -1601,16 +1605,24 @@
 
             modalCard.innerHTML = detailsHTML;
         }
-
-        function updateQuantity(change) {
+        function updateNutrientLevels(change) {
             const quantityElement = document.getElementById('quantity');
             let currentQuantity = parseInt(quantityElement.textContent);
             const newQuantity = Math.max(1, currentQuantity + change);
             quantityElement.textContent = newQuantity;
 
-            const foodName = document.querySelector('.food-details h3').textContent;
-            const foodItem = foodItems.find(item => item.name === foodName);
+            const foodName = document.querySelector('.food-details h3').textContent.trim();
+            console.log('Food Name:', foodName); // Debug: Check the extracted food name
 
+            const foodItem = foodItems.find(item => item.name === foodName);
+            console.log('Food Item:', foodItem); // Debug: Check if the correct food item is found
+
+            if (!foodItem) {
+                console.error('Food item not found in foodItems array');
+                return;
+            }
+
+            // Update calories and nutrient values
             const caloriesDisplay = document.getElementById('calories-display');
             caloriesDisplay.textContent = `${(foodItem.calories * newQuantity).toFixed(1)} calories`;
 
@@ -1619,7 +1631,6 @@
             document.getElementById('fats').textContent = (foodItem.fats * newQuantity).toFixed(1) + 'g';
             document.getElementById('fiber').textContent = (foodItem.fiber * newQuantity).toFixed(1) + 'g';
         }
-
         function addToMealBox(foodName) {
             const mealTitle = document.getElementById('modal-title').textContent;
             const quantity = parseInt(document.getElementById('quantity').textContent);
