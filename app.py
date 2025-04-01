@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import bcrypt  # Add bcrypt to hash passwords
 from bson.objectid import ObjectId
 from datetime import datetime
-
+from werkzeug.security import check_password_hash
 
 
 # Initialize the Flask app
@@ -67,6 +67,29 @@ def hello1():
 @app.route('/')
 def hello():
     return render_template("landing.html")
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+
+    user = user_collection.find_one({"email": email})  # Query MongoDB
+
+    
+    if not user:
+        return jsonify({"success": False, "message": "User not found"}), 401
+
+    stored_password = user.get("password", "").encode('utf-8')
+
+    if not bcrypt.checkpw(password.encode('utf-8'), stored_password):
+        return jsonify({"success": False, "message": "Invalid password"}), 401
+
+    session["user_id"] = str(user["_id"])  # Store user ID in session
+    return jsonify({"success": True, "message": "Login successful"})
+
+
+
 
 @app.route('/firsttimeusers', methods=['POST', 'GET'])
 def firsttime():
@@ -151,6 +174,8 @@ def settings():
 
 @app.route('/homepage')
 def home():
+    if "user_id" not in session:
+        return redirect(url_for("hello"))
     # Assuming the user is logged in and their ID is stored in the session
     user_id = session.get('user_id')
     if not user_id:
