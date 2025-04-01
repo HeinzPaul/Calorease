@@ -18,6 +18,7 @@ client = MongoClient(MONGO_URI)
 db = client["Calorease"]
 user_collection = db["user_data"]
 user_daily = db["user_daily_data"]
+food_details = db["food_info"]
 
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -191,6 +192,29 @@ def home():
 
     # Pass the data to the template
     return render_template("homepage_refreshing.html", cals_to_eat=cals_to_eat, calories_currently_eaten=calories_currently_eaten)
+
+@app.route('/api/search_food', methods=['GET'])
+def search_food():
+    query = request.args.get('q', '').lower()
+    if not query:
+        return jsonify([])
+
+    # Search for food items in MongoDB and limit to 5 results
+    results = food_details.find({"name": {"$regex": query, "$options": "i"}}).limit(5)
+    food_items = [
+        {
+            "name": item["name"],
+            "calories": item["calories_per_unit"],
+            "protein": item["protein_per_unit"],
+            "fats": item["fats_per_unit"],
+            "carbs": item["carbs_per_unit"],
+            "fiber": item["fibre_per_unit"],
+            "unit": item["unit"]
+        }
+        for item in results
+    ]
+
+    return jsonify(food_items)
 
 # Run the app
 if __name__ == '__main__':

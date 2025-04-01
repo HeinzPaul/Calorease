@@ -364,10 +364,27 @@
             z-index: 1;
             display: none;
             width: 75%;
-            height: auto;
-            max-height: 500px;
-            overflow-y: auto;
             max-width: 800px;
+            height: 500px;
+            /* Set a fixed height for the modal */
+            overflow-y: auto;
+            /* Enable scrolling for overflow content */
+        }
+
+        /* Set a fixed height for the search results container */
+        .search-results {
+            max-height: 300px;
+            /* Set a fixed maximum height */
+            overflow-y: auto;
+            /* Enable vertical scrolling for overflow content */
+            padding: 10px;
+            /* Add some padding for better appearance */
+            background-color: #f9f9f9;
+            /* Optional: Background color for better visibility */
+            border-radius: 5px;
+            /* Optional: Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* Optional: Add a subtle shadow */
         }
 
         .workout-modal-card {
@@ -453,15 +470,7 @@
             font-size: 1rem;
         }
 
-        /* Search Results */
-        .search-results {
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 5px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+
 
         .search-item {
             padding: 8px;
@@ -946,7 +955,8 @@
                 </svg>
                 <div class="percentage">0</div>
             </div>
-            <span id="calories-eaten">{{ calories_currently_eaten }}</span> / <span id="calories-to-eat">{{ cals_to_eat }}</span><br>
+            <span id="calories-eaten">{{ calories_currently_eaten }}</span> / <span id="calories-to-eat">{{ cals_to_eat
+                }}</span><br>
             Total calories eaten
 
             <div class="small-progress">
@@ -1399,33 +1409,6 @@
         }
 
 
-        const foodItems = [
-            { name: 'Apple', calories: 52, fats: 0.2, fiber: 2.4, protein: 0.3, carbs: 14 },
-            { name: 'Banana', calories: 89, fats: 0.3, fiber: 2.6, protein: 1.1, carbs: 23 },
-            { name: 'Carrot', calories: 41, fats: 0.2, fiber: 2.8, protein: 0.9, carbs: 10 },
-            { name: 'Chicken Breast', calories: 165, fats: 3.6, fiber: 0, protein: 31, carbs: 0 },
-            { name: 'Broccoli', calories: 55, fats: 0.6, fiber: 2.6, protein: 4, carbs: 11 },
-            { name: 'Egg', calories: 68, fats: 4.8, fiber: 0, protein: 5.5, carbs: 0.6 },
-            { name: 'Salmon', calories: 208, fats: 13, fiber: 0, protein: 20, carbs: 0 },
-            { name: 'Almonds', calories: 579, fats: 49, fiber: 12.5, protein: 21, carbs: 22 },
-            { name: 'Oats', calories: 389, fats: 6.9, fiber: 10.6, protein: 16.9, carbs: 66 },
-            { name: 'Sweet Potato', calories: 86, fats: 0.1, fiber: 3, protein: 1.6, carbs: 20 },
-            { name: 'Avocado', calories: 160, fats: 15, fiber: 6.7, protein: 2, carbs: 9 },
-            { name: 'Tofu', calories: 76, fats: 4.8, fiber: 0.3, protein: 8, carbs: 1.9 },
-            { name: 'Brown Rice', calories: 111, fats: 0.9, fiber: 1.8, protein: 2.6, carbs: 23 },
-            { name: 'Lentils', calories: 116, fats: 0.4, fiber: 7.9, protein: 9, carbs: 20 },
-            { name: 'Spinach', calories: 23, fats: 0.4, fiber: 2.2, protein: 2.9, carbs: 3.6 },
-            { name: 'Strawberry', calories: 32, fats: 0.3, fiber: 2, protein: 0.7, carbs: 7.7 },
-            { name: 'Peanut Butter', calories: 588, fats: 50, fiber: 6, protein: 25, carbs: 20 },
-            { name: 'Greek Yogurt', calories: 59, fats: 0.4, fiber: 0, protein: 10, carbs: 3.6 },
-            { name: 'Mushroom', calories: 22, fats: 0.3, fiber: 1, protein: 3.1, carbs: 3.3 },
-            { name: 'Cottage Cheese', calories: 98, fats: 4.3, fiber: 0, protein: 11, carbs: 3.4 },
-            { name: 'Oranges', calories: 47, fats: 0.1, fiber: 2.4, protein: 0.9, carbs: 12 },
-            { name: 'Tomato', calories: 18, fats: 0.2, fiber: 1.2, protein: 0.9, carbs: 3.9 },
-            { name: 'Chia Seeds', calories: 486, fats: 31, fiber: 34, protein: 16, carbs: 42 },
-            { name: 'Walnuts', calories: 654, fats: 65, fiber: 6.7, protein: 15, carbs: 14 },
-            { name: 'Milk', calories: 42, fats: 1, fiber: 0, protein: 3.4, carbs: 5 }
-        ];
 
         let weightData = JSON.parse(localStorage.getItem('weightData')) || [];
         let weightChart = null;
@@ -1438,17 +1421,7 @@
             hamburger.classList.toggle('active');
         }
 
-        function openCard(meal) {
-            const modalCard = document.querySelector('.modal-card');
-            const blurBackground = document.querySelector('.blur-background');
-            const searchResults = document.getElementById('searchResults');
 
-            document.getElementById('modal-title').textContent = meal;
-            modalCard.classList.add('active');
-            blurBackground.classList.add('active');
-
-            showSearchView();
-        }
 
         const dailyTargets = {
             protein: 56,  // grams for average adult
@@ -1505,6 +1478,17 @@
                 });
             }
         }
+        function openCard(meal) {
+            const modalCard = document.querySelector('.modal-card');
+            const blurBackground = document.querySelector('.blur-background');
+            const searchResults = document.getElementById('searchResults');
+
+            document.getElementById('modal-title').textContent = meal;
+            modalCard.classList.add('active');
+            blurBackground.classList.add('active');
+
+            showSearchView();
+        }
 
         function showSearchView() {
             const modalContent = document.querySelector('.modal-card');
@@ -1518,47 +1502,79 @@
             modalContent.innerHTML = searchHTML;
             searchItems();
         }
+        function searchItems() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '';
 
-        function addToMeal(foodName) {
+            if (!searchInput) return;
+
+            // Fetch data from the backend API
+            fetch(`/api/search_food?q=${encodeURIComponent(searchInput)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        searchResults.innerHTML = '<p>No results found.</p>';
+                        return;
+                    }
+
+                    // Display search results
+                    data.forEach(item => {
+                        const searchItem = document.createElement('div');
+                        searchItem.classList.add('search-item');
+                        searchItem.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong> (${item.unit}) - ${item.calories} cal
+                    </div>
+                    <button class="add-btn" onclick="addToMeal('${item.name}', '${item.unit}', ${item.calories}, ${item.protein}, ${item.fats}, ${item.carbs}, ${item.fiber})">Add</button>
+                `;
+                        searchResults.appendChild(searchItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching food data:', error);
+                    searchResults.innerHTML = '<p>Error fetching data.</p>';
+                });
+        }
+        function addToMeal(name, unit, calories, protein, fats, carbs, fiber) {
             const modalCard = document.querySelector('.modal-card');
-            const selectedFood = foodItems.find(item => item.name === foodName);
             let quantity = 1;
 
             const detailsHTML = `
-                <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
-                <button class="close-btn" onclick="closeCard()">Close</button>
-                <button class="back-button" onclick="showSearchView()">← Back to Search</button>
-                <div class="food-details">
-                    <h3>${foodName}</h3>
-                    <div class="calories-display" id="calories-display">
-                        ${selectedFood.calories} calories
-                    </div>
-                    <div class="quantity-selector">
-                        <button onclick="updateQuantity(-1)">-</button>
-                        <span id="quantity">1</span>
-                        <button onclick="updateQuantity(1)">+</button>
-                    </div>
-                    <div class="nutrition-info">
-                        <div>
-                            <strong>Protein</strong>
-                            <div id="protein">${selectedFood.protein}g</div>
-                        </div>
-                        <div>
-                            <strong>Carbs</strong>
-                            <div id="carbs">${selectedFood.carbs}g</div>
-                        </div>
-                        <div>
-                            <strong>Fats</strong>
-                            <div id="fats">${selectedFood.fats}g</div>
-                        </div>
-                        <div>
-                            <strong>Fiber</strong>
-                            <div id="fiber">${selectedFood.fiber}g</div>
-                        </div>
-                    </div>
-                    <button class="done-btn" onclick="addToMealBox('${foodName}')">Done</button>
+        <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
+        <button class="close-btn" onclick="closeCard()">Close</button>
+        <button class="back-button" onclick="showSearchView()">← Back to Search</button>
+        <div class="food-details">
+            <h3>${name}</h3>
+            <div class="calories-display" id="calories-display">
+                ${calories} calories per ${unit}
+            </div>
+            <div class="quantity-selector">
+                <button onclick="updateQuantity(-1)">-</button>
+                <span id="quantity">1</span>
+                <button onclick="updateQuantity(1)">+</button>
+            </div>
+            <div class="nutrition-info">
+                <div>
+                    <strong>Protein</strong>
+                    <div id="protein">${protein}g</div>
                 </div>
-            `;
+                <div>
+                    <strong>Carbs</strong>
+                    <div id="carbs">${carbs}g</div>
+                </div>
+                <div>
+                    <strong>Fats</strong>
+                    <div id="fats">${fats}g</div>
+                </div>
+                <div>
+                    <strong>Fiber</strong>
+                    <div id="fiber">${fiber}g</div>
+                </div>
+            </div>
+            <button class="done-btn" onclick="addToMealBox('${name}', ${calories}, ${protein}, ${fats}, ${carbs}, ${fiber}, ${quantity})">Done</button>
+        </div>
+    `;
 
             modalCard.innerHTML = detailsHTML;
         }
@@ -1622,25 +1638,7 @@
             blurBackground.classList.remove('active');
         }
 
-        function searchItems() {
-            const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            const searchResults = document.getElementById('searchResults');
-            searchResults.innerHTML = '';
 
-            const filteredItems = foodItems.filter(item =>
-                item.name.toLowerCase().includes(searchInput)
-            );
-
-            filteredItems.forEach(item => {
-                const searchItem = document.createElement('div');
-                searchItem.classList.add('search-item');
-                searchItem.innerHTML = `
-                    ${item.name}
-                    <button class="add-btn" onclick="addToMeal('${item.name}')">Add</button>
-                `;
-                searchResults.appendChild(searchItem);
-            });
-        }
 
         function initializeChart() {
             const ctx = document.getElementById('weightChart').getContext('2d');
