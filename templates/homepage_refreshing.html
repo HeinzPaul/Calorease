@@ -1493,14 +1493,37 @@
         function showSearchView() {
             const modalContent = document.querySelector('.modal-card');
             const searchHTML = `
-                <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
-                <button class="close-btn" onclick="closeCard()">Close</button>
-                <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
-                <div id="searchResults" class="search-results"></div>
-                <div id="nutritionInfo" class="nutrition-info"></div>
-            `;
+        <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
+        <button class="close-btn" onclick="closeCard()">Close</button>
+        <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
+        <div id="searchResults" class="search-results"></div>
+        <div id="nutritionInfo" class="nutrition-info"></div>
+    `;
             modalContent.innerHTML = searchHTML;
-            searchItems();
+
+            // Fetch and display random items
+            fetch('/api/random_food')
+                .then(response => response.json())
+                .then(data => {
+                    const searchResults = document.getElementById('searchResults');
+                    searchResults.innerHTML = ''; // Clear previous results
+
+                    data.forEach(item => {
+                        const searchItem = document.createElement('div');
+                        searchItem.classList.add('search-item');
+                        searchItem.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong> (${item.unit}) - ${item.calories} cal
+                    </div>
+                    <button class="add-btn" onclick="addToMeal('${item.name}', '${item.unit}', ${item.calories}, ${item.protein}, ${item.fats}, ${item.carbs}, ${item.fiber})">Add</button>
+                `;
+                        searchResults.appendChild(searchItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching random food data:', error);
+                    document.getElementById('searchResults').innerHTML = '<p>Error loading random items.</p>';
+                });
         }
         function searchItems() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();

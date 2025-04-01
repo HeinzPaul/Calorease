@@ -215,7 +215,25 @@ def search_food():
     ]
 
     return jsonify(food_items)
+import random
 
+@app.route('/api/random_food', methods=['GET'])
+def random_food():
+    # Fetch all food items and randomly select 8
+    food_items = list(food_details.aggregate([{"$sample": {"size": 8}}]))
+    random_items = [
+        {
+            "name": item["name"],
+            "calories": item["calories_per_unit"],
+            "protein": item["protein_per_unit"],
+            "fats": item["fats_per_unit"],
+            "carbs": item["carbs_per_unit"],
+            "fiber": item["fibre_per_unit"],
+            "unit": item["unit"]
+        }
+        for item in food_items
+    ]
+    return jsonify(random_items)
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
