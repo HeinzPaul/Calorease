@@ -252,8 +252,26 @@ def search_food():
     if not query:
         return jsonify([])
 
+     # Use aggregation pipeline to ensure unique results
+    pipeline = [
+        {"$match": {"name": {"$regex": query, "$options": "i"}}},
+        {"$group": {
+            "_id": "$name",
+            "name": {"$first": "$name"},
+            "calories": {"$first": "$calories_per_unit"},
+            "protein": {"$first": "$protein_per_unit"},
+            "fats": {"$first": "$fats_per_unit"},
+            "carbs": {"$first": "$carbs_per_unit"},
+            "fiber": {"$first": "$fibre_per_unit"},
+            "unit": {"$first": "$unit"}
+        }},
+        {"$limit": 5}
+    ]
+
+    results = list(food_details.aggregate(pipeline))
+
     # Search for food items in MongoDB and limit to 5 results
-    results = food_details.find({"name": {"$regex": query, "$options": "i"}}).limit(5)
+    #results = food_details.find({"name": {"$regex": query, "$options": "i"}}).limit(5)
     food_items = [
         {
             "name": item["name"],
