@@ -456,6 +456,8 @@
             display: block;
         }
 
+
+
         .blur-background.active {
             display: block;
         }
@@ -558,6 +560,17 @@
             padding: 10px;
             border-radius: 5px;
             text-align: center;
+        }
+
+        .nutrition-info button {
+            background-color: #57b837;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            width: 200%;
         }
 
         .add-btn {
@@ -1351,7 +1364,7 @@
         <button class="close-btn" onclick="closeCard()">Close</button>
         <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
         <div id="searchResults" class="search-results"></div>
-        <div id="nutritionInfo" class="nutrition-info"></div>
+        <div id="nutritionInfo" class="nutrition-info"><button onclick="window.location.href='{{ url_for('suggest') }}';">Add new food</button></div>
     </div>
 
     <script>
@@ -1552,7 +1565,7 @@
         <button class="close-btn" onclick="closeCard()">Close</button>
         <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
         <div id="searchResults" class="search-results"></div>
-        <div id="nutritionInfo" class="nutrition-info"></div>
+        <div id="nutritionInfo" class="nutrition-info"><button onclick="window.location.href='{{ url_for('suggest') }}';">Add new food</button></div>
     `;
             modalContent.innerHTML = searchHTML;
 

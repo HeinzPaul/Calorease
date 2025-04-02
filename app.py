@@ -230,6 +230,11 @@ def guide():
 def settings():
     return render_template("settings.html")
 
+@app.route('/suggest')
+def suggest():
+    return render_template("suggest.html")
+
+
 @app.route('/homepage')
 def home():
     if "user_id" not in session:
@@ -289,7 +294,7 @@ def search_food():
         for item in results
     ]'''
 
-    
+
 
     return jsonify(food_items)
 import random

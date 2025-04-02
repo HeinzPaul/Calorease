@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background-color: #57b837;
+
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        align-items: center; /* Centers vertically */
+        height: 100vh;
+    }
+
+    .main{
+        margin: 0 auto;
+        background-color:#fff;
+        width: 600px;
+        padding: 2%;
+        border-radius: 5%;
+    }
+
+    .heading {
+        margin: 30px;
+        text-align: center;
+        font-size: 50px;
+        font-family: Bahnschrift;
+    }
+
+    .container {
+        display: flex;
+        align-items: center;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    input[type='text'],
+    input[type='email']{
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    .form-group-macro{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    input[type='number']{
+        width:10%;
+        padding: 3px;
+        margin: 5px
+    }
+
+    input[type='submit'] {
+        margin-top: 25px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    input[type='submit']:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<body>
+    <div class="main">
+        <div class="heading">Food Suggestions</div>
+        <div class="container">
+            <form action="https://formspree.io/f/xovekdae" method="post">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required />
+                </div>
+                <div class="form-group">
+                    <label for="foodname">Food Name</label>
+                    <input type="text" id="foodname" name="foodname" required />
+                </div>
+                <div class="form-group-macro">
+                    <label for="email">Calories</label>
+                    <input type="number" id="cals" name="cals" required />
+                
+                    <label for="email">Protein</label>
+                    <input type="number" id="Protein" name="Protein" required />
+                
+                    <label for="email">Fats</label>
+                    <input type="number" id="Fats" name="Fats" required />
+                
+                    <label for="email">Fiber</label>
+                    <input type="number" id="Fiber" name="Fiber" required />
+                </div>
+                <input type="submit" value="Submit" />
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
