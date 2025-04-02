@@ -1356,33 +1356,37 @@
             percentageElement.textContent = `${progressValue}%`;
 
             //carb progress
-            const carb_progressElement = document.querySelector('.carbs-circle-progress');
-            const carb_percentageElement = document.querySelector('.carbs-percentage');
-            let carb_progressValue = parseInt(carb_percentageElement.textContent);
+            const carbsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
+            const carbsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
+            
+            let carb_progressValue = (carbsEaten/carbsToEat) * 100;
             const carb_strokeDashoffset = 100 - carb_progressValue;
             carb_progressElement.style.strokeDashoffset = carb_strokeDashoffset;
             carb_percentageElement.textContent = `${carb_progressValue}%`;
 
             //protein progress
-            const protein_progressElement = document.querySelector('.proteins-circle-progress');
-            const protein_percentageElement = document.querySelector('.protein-percentage');
-            let protein_progressValue = parseInt(protein_percentageElement.textContent);
+            const proteinsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
+            const proteinsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
+            
+            let protein_progressValue = (proteinsEaten/proteinsToEat) * 100;
             const protein_strokeDashoffset = 100 - protein_progressValue;
             protein_progressElement.style.strokeDashoffset = protein_strokeDashoffset;
             protein_percentageElement.textContent = `${protein_progressValue}%`;
 
             //fat progress
-            const fat_progressElement = document.querySelector('.fats-circle-progress');
-            const fat_percentageElement = document.querySelector('.fat-percentage');
-            let fat_progressValue = parseInt(fat_percentageElement.textContent);
+            const fatsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
+            const fatsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
+            
+            let fat_progressValue = (fatsEaten/fatsToEat) * 100;
             const fat_strokeDashoffset = 100 - fat_progressValue;
             fat_progressElement.style.strokeDashoffset = fat_strokeDashoffset;
             fat_percentageElement.textContent = `${fat_progressValue}%`;
 
             //fibre progress
-            const fibre_progressElement = document.querySelector('.fibre-circle-progress');
-            const fibre_percentageElement = document.querySelector('.fibre-percentage');
-            let fibre_progressValue = parseInt(fibre_percentageElement.textContent);
+            const fiberEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
+            const fiberToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
+            
+            let fibre_progressValue = (fiberEaten/fiberToEat) * 100;
             const fibre_strokeDashoffset = 100 - fibre_progressValue;
             fibre_progressElement.style.strokeDashoffset = fibre_strokeDashoffset;
 
