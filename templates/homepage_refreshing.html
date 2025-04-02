@@ -1699,6 +1699,51 @@
         }
 
         function addToMealBox(foodName, fooddetails) {
+    const mealTitle = document.getElementById('modal-title').textContent.trim();
+    const quantity = parseInt(document.getElementById('quantity').textContent);
+
+    const foodItem = {
+        name: foodName,
+        calories: fooddetails.calories * quantity,
+        protein: fooddetails.protein * quantity,
+        fats: fooddetails.fats * quantity,
+        carbs: fooddetails.carbs * quantity,
+        fiber: fooddetails.fiber * quantity
+    };
+
+    fetch('/api/add_food', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: '67ed7c73f3f37955aa6c4879', // Replace with the actual user ID
+            meal_name: mealTitle.toLowerCase().replace(' ', '_'), // Convert meal title to match MongoDB field
+            food_item: foodItem
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error adding food:', data.error);
+                alert('Failed to add food item.');
+            } else {
+                console.log('Food item added successfully:', data);
+                alert('Food item added successfully!');
+                refresh_rings(); // Refresh progress rings
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding the food item.');
+        });
+
+    closeCard(); // Close the modal
+}
+
+        /*
+        heinz addtoMealBox
+        function addToMealBox(foodName, fooddetails) {
             const mealTitle = document.getElementById('modal-title').textContent.trim();
             const quantity = parseInt(document.getElementById('quantity').textContent);
             const foodItem = fooddetails
@@ -1744,7 +1789,7 @@
             }
 
             closeCard();
-        }
+        }*/
 
         function closeCard() {
             const modalCard = document.querySelector('.modal-card');

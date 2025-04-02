@@ -348,6 +348,38 @@ def get_daily_targets():
         "fiber": user.get("fiber_to_eat", 0)
     })
 
+
+@app.route('/api/add_food', methods=['POST'])
+def add_food():
+    try:
+        # Get the user ID, meal name, and food details from the request
+        user_id = request.json.get('user_id')
+        meal_name = request.json.get('meal_name')  # e.g., 'breakfast', 'lunch'
+        food_item = request.json.get('food_item')  # e.g., {'name': 'Apple', 'calories': 95}
+
+        if not user_id or not meal_name or not food_item:
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        # Convert user_id to ObjectId
+        user_id = ObjectId(user_id)
+
+        # Update the user's daily data in MongoDB
+        result = user_daily.update_one(
+            {"_id": user_id},
+            {
+                "$push": {f"meals.{meal_name}": food_item},  # Add the food item to the meal array
+                "$inc": {"calories_currently_eaten": food_item['calories']}  # Increment calories_currently_eaten
+            }
+        )
+
+        if result.modified_count == 0:
+            return jsonify({'error': 'Failed to update user data'}), 500
+
+        return jsonify({'message': 'Food item added successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
