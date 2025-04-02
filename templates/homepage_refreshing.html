@@ -1033,7 +1033,7 @@
                 </div>
             </div>
         </div>
-        <button class="refreshbutton" onclick="refresh_temp()">
+        <button class="refreshbutton" onclick="refresh_rings()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="bi bi-arrow-repeat" viewBox="0 0 16 16">
                 <path
@@ -1388,6 +1388,7 @@
         fetchDailyTargets();
         let debounceTimeout; // Declare a global variable for the debounce timeout
         let foodItems = []; // Global array to store food items
+
         function progressload() {
             // Select the main progress elements
             const progressElement = document.querySelector('.circle-progress');
@@ -1458,7 +1459,9 @@
 
         progressload();
 
-
+        function refresh_rings(){
+            progressload();
+        }
 
         function togglePopup() {
             var popup = document.getElementById("myPopup");
@@ -1513,6 +1516,7 @@
                     // Calculate percentage
                     let percentage = (accumulatedValue / dailyTargets[nutrient]) * 100;
                     progressFill.style.width = `${Math.min(percentage, 100)}%`;
+                    progressload();
 
                     // Update progress bar color
                     progressFill.classList.remove('red', 'yellow', 'green');

@@ -285,6 +285,8 @@ def search_food():
         for item in results
     ]'''
 
+    
+
     return jsonify(food_items)
 import random
 
