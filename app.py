@@ -234,11 +234,11 @@ def home():
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('hello'))  # Redirect to login if not logged in
-    print(user_id)
+    
     # Fetch the user's data from MongoDB
     user_data = user_collection.find_one({"_id": user_id})
     user_daily_data = user_collection.find_one({"_id": user_id})
-    print(user_data)
+
     # Get the total calories to eat (cals_to_eat)
     cals_to_eat = user_data.get('cals_to_eat', 0)
     calories_currently_eaten = user_daily_data.get('calories_currently_eaten', 0)
@@ -305,34 +305,38 @@ def random_food():
         for item in food_items
     ]
     return jsonify(random_items)
+
+
+
+@app.route('/api/daily_targets', methods=['GET'])
+def get_daily_targets():
+    # Get the user ID from the session
+    user_id = session.get('user_id')
+    print(user_id)
+    if not user_id:
+        return jsonify({"error": "User not logged in"}), 401
+
+    # Query the database for the user's daily targets
+    user = user_collection.find_one({"_id": user_id}, {
+        "_id": 0,  # Exclude the _id field
+        "proteins_to_eat": 1,
+        "fats_to_eat": 1,
+        "carbs_to_eat": 1,
+        "fiber_to_eat": 1
+    })
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    print("hi I am heinz",user)
+    # Return the daily targets as JSON
+    return jsonify({
+        "protein": user.get("proteins_to_eat", 0),
+        "fats": user.get("fats_to_eat", 0),
+        "carbs": user.get("carbs_to_eat", 0),
+        "fiber": user.get("fiber_to_eat", 0)
+    })
+
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
-
-'''{
-    "name": "John Doe",
-    "password": "hashedpassword",
-    "bmr": 1800,
-    "tdee": 2200,
-    "calories_to_burn_daily": 500, 
-    "start_date": "2025-03-14",
-    "current_day": 1,
-    "calories_to_eat": 2000,
-    "calories_currently_eaten": 500,
-    "calories_currently_burned": 200,
-    "meals": {
-        "breakfast": [],
-        "lunch": [],
-        "dinner": [],
-        "snacks": []
-    },
-    "weight": 75,
-    "target_weight": 70,
-    "target_weight_loss_end_date": "2025-06-14",
-    "weight_log": [
-        {"date": "2025-03-14", "weight": 75},
-        {"date": "2025-03-15", "weight": 74.8}
-    ]
-}
-'''
-

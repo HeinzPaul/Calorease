@@ -1355,68 +1355,110 @@
     </div>
 
     <script>
+
+        let john = []
+
+        let dailyTargets = {}; // Initialize an empty object for daily targets
+
+        // Function to fetch daily targets from the backend
+        async function fetchDailyTargets() {
+            try {
+                const response = await fetch('/api/daily_targets');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch daily targets');
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+
+                dailyTargets = data; // Update the global dailyTargets object
+                console.log('Daily Targets:', dailyTargets);
+
+                // Call any function that depends on dailyTargets (e.g., progressload)
+
+            } catch (error) {
+                console.error('Error fetching daily targets:', error);
+            }
+        }
+
+        // Call the function to fetch daily targets when the page loads
+        fetchDailyTargets();
         let debounceTimeout; // Declare a global variable for the debounce timeout
         let foodItems = []; // Global array to store food items
         function progressload() {
-            //main progress
+            // Select the main progress elements
+            const progressElement = document.querySelector('.circle-progress');
+            const percentageElement = document.querySelector('.percentage');
+
+            if (!progressElement || !percentageElement) {
+                console.error('Progress elements not found in the DOM.');
+                return;
+            }
+
+            // Main progress
             const caloriesEaten = parseFloat(document.getElementById('calories-eaten').textContent);
             const caloriesToEat = parseFloat(document.getElementById('calories-to-eat').textContent);
 
-            // Calculate the percentage
             const progressValue = (caloriesEaten / caloriesToEat) * 100;
             const strokeDashoffset = 100 - progressValue;
             progressElement.style.strokeDashoffset = strokeDashoffset;
-            percentageElement.textContent = `${progressValue}%`;
+            percentageElement.textContent = `${progressValue.toFixed(1)}%`;
 
-            //carb progress
+            // Select carb progress elements
+            const carb_progressElement = document.querySelector('.carbs-circle-progress');
+            const carb_percentageElement = document.querySelector('.carbs-percentage');
+
             const carbsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
             const carbsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
 
-            let carb_progressValue = (carbsEaten / carbsToEat) * 100;
+            const carb_progressValue = (carbsEaten / carbsToEat) * 100;
             const carb_strokeDashoffset = 100 - carb_progressValue;
             carb_progressElement.style.strokeDashoffset = carb_strokeDashoffset;
-            carb_percentageElement.textContent = `${carb_progressValue}%`;
+            carb_percentageElement.textContent = `${carb_progressValue.toFixed(1)}%`;
 
-            //protein progress
+            // Select protein progress elements
+            const protein_progressElement = document.querySelector('.proteins-circle-progress');
+            const protein_percentageElement = document.querySelector('.protein-percentage');
+
             const proteinsEaten = parseFloat(document.getElementById('proteins-eaten').textContent);
             const proteinsToEat = parseFloat(document.getElementById('proteins-to-eat').textContent);
 
-            let protein_progressValue = (proteinsEaten / proteinsToEat) * 100;
+            const protein_progressValue = (proteinsEaten / proteinsToEat) * 100;
             const protein_strokeDashoffset = 100 - protein_progressValue;
             protein_progressElement.style.strokeDashoffset = protein_strokeDashoffset;
-            protein_percentageElement.textContent = `${protein_progressValue}%`;
+            protein_percentageElement.textContent = `${protein_progressValue.toFixed(1)}%`;
 
-            //fat progress
+            // Select fat progress elements
+            const fat_progressElement = document.querySelector('.fats-circle-progress');
+            const fat_percentageElement = document.querySelector('.fat-percentage');
+
             const fatsEaten = parseFloat(document.getElementById('fats-eaten').textContent);
             const fatsToEat = parseFloat(document.getElementById('fats-to-eat').textContent);
 
-            let fat_progressValue = (fatsEaten / fatsToEat) * 100;
+            const fat_progressValue = (fatsEaten / fatsToEat) * 100;
             const fat_strokeDashoffset = 100 - fat_progressValue;
             fat_progressElement.style.strokeDashoffset = fat_strokeDashoffset;
-            fat_percentageElement.textContent = `${fat_progressValue}%`;
+            fat_percentageElement.textContent = `${fat_progressValue.toFixed(1)}%`;
 
-            //fibre progress
+            // Select fiber progress elements
+            const fibre_progressElement = document.querySelector('.fibre-circle-progress');
+            const fibre_percentageElement = document.querySelector('.fibre-percentage');
+
             const fiberEaten = parseFloat(document.getElementById('fiber-eaten').textContent);
             const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
 
-            let fibre_progressValue = (fiberEaten / fiberToEat) * 100;
+            const fibre_progressValue = (fiberEaten / fiberToEat) * 100;
             const fibre_strokeDashoffset = 100 - fibre_progressValue;
             fibre_progressElement.style.strokeDashoffset = fibre_strokeDashoffset;
-
-            fibre_percentageElement.textContent = `${fibre_progressValue}%`;
+            fibre_percentageElement.textContent = `${fibre_progressValue.toFixed(1)}%`;
         }
 
         progressload();
 
-        function refresh_temp() {
-            document.querySelector('.percentage').textContent = 75;
-            document.querySelector('.carbs-percentage').textContent = 35;;
-            document.querySelector('.protein-percentage').textContent = 6;;
-            document.querySelector('.fat-percentage').textContent = 50;;
-            document.querySelector('.fibre-percentage').textContent = 86;;
 
-            progressload();
-        }
 
         function togglePopup() {
             var popup = document.getElementById("myPopup");
@@ -1439,15 +1481,7 @@
         }
 
 
-
-        const dailyTargets = {
-            protein: 56,  // grams for average adult
-            carbs: 300,   // grams
-            fats: 65,     // grams
-            fiber: 30     // grams
-        };
-
-        function updateProgressBars(progressContainer, mealdata) {
+        function updateProgressBars(progressContainer, mealdata, totalNutrients) {
             if (!progressContainer || !mealdata) return;
 
             const mealItems = mealdata.querySelectorAll('.meal-item');
@@ -1455,33 +1489,32 @@
             if (mealItems.length > 0) {
                 progressContainer.style.display = 'block';
 
-                let totalNutrients = {
-                    protein: 0,
-                    carbs: 0,
-                    fats: 0,
-                    fiber: 0
-                };
+                // Get existing values first
+                const currentNutrients = {};
+                Object.keys(totalNutrients).forEach(nutrient => {
+                    const progressValue = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`)
+                        .parentElement.previousElementSibling.querySelector('.progress-value');
 
-                mealItems.forEach(item => {
-                    const foodName = item.querySelector('span').textContent.split(' (x')[0];
-                    const quantity = parseInt(item.querySelector('span').textContent.split('x')[1]);
-                    const foodItem = foodItems.find(f => f.name === foodName);
-
-                    if (foodItem) {
-                        totalNutrients.protein += foodItem.protein * quantity;
-                        totalNutrients.carbs += foodItem.carbs * quantity;
-                        totalNutrients.fats += foodItem.fats * quantity;
-                        totalNutrients.fiber += foodItem.fiber * quantity;
-                    }
+                    // Parse existing value from the display
+                    const currentText = progressValue.textContent;
+                    const currentMatch = currentText.match(/(\d+(\.\d+)?)g/);
+                    currentNutrients[nutrient] = currentMatch ? parseFloat(currentMatch[1]) : 0;
                 });
 
+                // Now update with accumulated values
                 Object.keys(totalNutrients).forEach(nutrient => {
                     const progressFill = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`);
                     const progressValue = progressFill.parentElement.previousElementSibling.querySelector('.progress-value');
 
-                    const percentage = (totalNutrients[nutrient] / (dailyTargets[nutrient] / 5)) * 100;
+                    // Add new values to existing ones
+                    console.log(currentNutrients[nutrient], totalNutrients[nutrient]); // Debugging log
+                    const accumulatedValue = parseFloat(currentNutrients[nutrient]) + parseFloat(totalNutrients[nutrient]);
+
+                    // Calculate percentage
+                    let percentage = (accumulatedValue / dailyTargets[nutrient]) * 100;
                     progressFill.style.width = `${Math.min(percentage, 100)}%`;
 
+                    // Update progress bar color
                     progressFill.classList.remove('red', 'yellow', 'green');
                     if (percentage <= 35) {
                         progressFill.classList.add('red');
@@ -1491,11 +1524,11 @@
                         progressFill.classList.add('green');
                     }
 
-                    progressValue.textContent = `${totalNutrients[nutrient].toFixed(1)}g / ${(dailyTargets[nutrient] / 5).toFixed(1)}g`;
+                    // Update numerical value next to the progress bar
+                    progressValue.textContent = `${accumulatedValue}g / ${dailyTargets[nutrient]}g`;
                 });
             }
         }
-
         function openCard(meal) {
             const modalCard = document.querySelector('.modal-card');
             const blurBackground = document.querySelector('.blur-background');
@@ -1523,7 +1556,8 @@
             fetch('/api/random_food')
                 .then(response => response.json())
                 .then(data => {
-                    foodItems = data; // Populate the global foodItems array
+                    data; // Populate the global foodItems array
+                    console.log('Food Items:', foodItems); // Debugging log
                     const searchResults = document.getElementById('searchResults');
                     searchResults.innerHTML = ''; // Clear previous results
 
@@ -1544,7 +1578,6 @@
                     document.getElementById('searchResults').innerHTML = '<p>Error loading random items.</p>';
                 });
         }
-
 
         function searchItems() {
             clearTimeout(debounceTimeout); // Clear the previous timeout if it exists
@@ -1573,7 +1606,7 @@
                         <div>
                             <strong>${item.name}</strong> (${item.unit}) - ${item.calories} cal
                         </div>
-                        <button class="add-btn" onclick="addToMeal('${item.name}', '${item.unit}', ${item.calories}, ${item.protein}, ${item.fats}, ${item.carbs}, ${item.fiber}')">Add</button>
+                        <button class="add-btn" onclick="addToMeal('${item.name}', '${item.unit}', '${item.calories}', '${item.protein}', '${item.fats}', '${item.carbs}', '${item.fiber}')">Add</button>
                     `;
                             searchResults.appendChild(searchItem);
                         });
@@ -1586,9 +1619,11 @@
         }
 
         function addToMeal(name, unit, calories, protein, fats, carbs, fiber) {
+            console.log('addToMeal called with:', { name, unit, calories, protein, fats, carbs, fiber });
             const modalCard = document.querySelector('.modal-card');
             let quantity = 1;
-
+            let john = { name, unit, calories, protein, fats, carbs, fiber }; // Use an object for better readability
+            console.log('Generated john object:', john);
             const detailsHTML = `
         <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
         <button class="close-btn" onclick="closeCard()">Close</button>
@@ -1599,9 +1634,9 @@
                 ${calories} calories per ${unit}
             </div>
             <div class="quantity-selector">
-                <button onclick="updateNutrientLevels(-1)">-</button>
+                <button onclick='updateNutrientLevels(-1, ${JSON.stringify(john)})'>-</button>
                 <span id="quantity">1</span>
-                <button onclick="updateNutrientLevels(1)">+</button>
+                <button onclick='updateNutrientLevels(1, ${JSON.stringify(john)})'>+</button>
             </div>
             <div class="nutrition-info">
                 <div>
@@ -1621,44 +1656,50 @@
                     <div id="fiber">${fiber}g</div>
                 </div>
             </div>
-            <button class="done-btn" onclick="addToMealBox('${name}', ${calories}, ${protein}, ${fats}, ${carbs}, ${fiber}, ${quantity})">Done</button>
+            <button class="done-btn" onclick='addToMealBox("${name}",${JSON.stringify(john)})'>Add</button>
         </div>
     `;
 
             modalCard.innerHTML = detailsHTML;
         }
-        function updateNutrientLevels(change) {
+
+        function updateNutrientLevels(change, fooddetails) {
             const quantityElement = document.getElementById('quantity');
             let currentQuantity = parseInt(quantityElement.textContent);
             const newQuantity = Math.max(1, currentQuantity + change);
             quantityElement.textContent = newQuantity;
 
-            const foodName = document.querySelector('.food-details h3').textContent.trim();
-            console.log('Food Name:', foodName); // Debug: Check the extracted food name
-
-            const foodItem = foodItems.find(item => item.name === foodName);
-            console.log('Food Item:', foodItem); // Debug: Check if the correct food item is found
-
-            if (!foodItem) {
-                console.error('Food item not found in foodItems array');
-                return;
-            }
+            console.log('Food Item:', fooddetails); // Debug: Check if the correct food item is passed
 
             // Update calories and nutrient values
             const caloriesDisplay = document.getElementById('calories-display');
-            caloriesDisplay.textContent = `${(foodItem.calories * newQuantity).toFixed(1)} calories`;
+            caloriesDisplay.textContent = `${(fooddetails.calories * newQuantity).toFixed(1)} calories`;
 
-            document.getElementById('protein').textContent = (foodItem.protein * newQuantity).toFixed(1) + 'g';
-            document.getElementById('carbs').textContent = (foodItem.carbs * newQuantity).toFixed(1) + 'g';
-            document.getElementById('fats').textContent = (foodItem.fats * newQuantity).toFixed(1) + 'g';
-            document.getElementById('fiber').textContent = (foodItem.fiber * newQuantity).toFixed(1) + 'g';
+            document.getElementById('protein').textContent = (fooddetails.protein * newQuantity).toFixed(1) + 'g';
+            document.getElementById('carbs').textContent = (fooddetails.carbs * newQuantity).toFixed(1) + 'g';
+            document.getElementById('fats').textContent = (fooddetails.fats * newQuantity).toFixed(1) + 'g';
+            document.getElementById('fiber').textContent = (fooddetails.fiber * newQuantity).toFixed(1) + 'g';
         }
-        function addToMealBox(foodName) {
-            const mealTitle = document.getElementById('modal-title').textContent;
-            const quantity = parseInt(document.getElementById('quantity').textContent);
-            const foodItem = foodItems.find(item => item.name === foodName);
-            const totalCalories = (foodItem.calories * quantity).toFixed(1);
 
+        function addToMealBox(foodName, fooddetails) {
+            const mealTitle = document.getElementById('modal-title').textContent.trim();
+            const quantity = parseInt(document.getElementById('quantity').textContent);
+            const foodItem = fooddetails
+            if (!foodItem) {
+                console.error(`Food item not found for name: ${foodName}`);
+                return;
+            }
+            const totalCalories = (foodItem.calories * quantity).toFixed(1);
+            const totalProtein = (foodItem.protein * quantity).toFixed(1);
+            const totalCarbs = (foodItem.carbs * quantity).toFixed(1);
+            const totalFats = (foodItem.fats * quantity).toFixed(1);
+            const totalFiber = (foodItem.fiber * quantity).toFixed(1);
+            const totalNutrients = {
+                protein: totalProtein,
+                carbs: totalCarbs,
+                fats: totalFats,
+                fiber: totalFiber
+            };
             const mealboxes = document.querySelectorAll('.mealbox');
             let targetMealbox = null;
 
@@ -1678,10 +1719,11 @@
 
                 const mealItem = document.createElement('div');
                 mealItem.className = 'meal-item';
-                mealItem.innerHTML = `<span>${foodName} (x${quantity})</span><span>${totalCalories} cal</span>`;
+                mealItem.innerHTML = `<span><span style="font-weight:bold">${foodName}</span> (${quantity} ${foodItem.unit})</span><span>${totalCalories} cal</span>`;
                 targetMealdata.appendChild(mealItem);
+                console.log("Here that target", targetMealdata)
 
-                updateProgressBars(progressContainer, targetMealdata);
+                updateProgressBars(progressContainer, targetMealdata, totalNutrients);
             }
 
             closeCard();
