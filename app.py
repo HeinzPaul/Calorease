@@ -54,7 +54,54 @@ def calc_cals_to_eat(weight_loss_rate,tdee,gender):
         cals_to_eat = max(cals_to_eat, min_calories)
         return round(cals_to_eat,0)
 
-    
+def calc_macros_to_eat(cals_to_eat, weight, goal="balanced"):
+    """
+    Calculate daily macronutrient targets (proteins, fats, fiber, and carbs).
+
+    Args:
+        cals_to_eat (float): Daily calorie intake.
+        weight (float): Weight in kilograms.
+        goal (str): Dietary goal - "balanced", "high_protein", or "low_carb".
+
+    Returns:
+        dict: Macronutrient targets in grams.
+    """
+    weight = float(weight)  # Ensure weight is a float
+
+    # Macronutrient calorie values per gram
+    CALS_PER_GRAM_PROTEIN = 4
+    CALS_PER_GRAM_CARB = 4
+    CALS_PER_GRAM_FAT = 9
+
+    # Macronutrient distribution based on dietary goal
+    if goal == "high_protein":
+        protein_ratio = 0.35
+        fat_ratio = 0.25
+        carb_ratio = 0.40
+    elif goal == "low_carb":
+        protein_ratio = 0.30
+        fat_ratio = 0.40
+        carb_ratio = 0.30
+    else:  # Default to "balanced"
+        protein_ratio = 0.30
+        fat_ratio = 0.30
+        carb_ratio = 0.40
+
+    # Calculate grams of each macronutrient
+    protein_grams = (cals_to_eat * protein_ratio) / CALS_PER_GRAM_PROTEIN
+    fat_grams = (cals_to_eat * fat_ratio) / CALS_PER_GRAM_FAT
+    carb_grams = (cals_to_eat * carb_ratio) / CALS_PER_GRAM_CARB
+
+    # Fiber recommendation (general guideline: 14g per 1000 calories)
+    fiber_grams = (cals_to_eat / 1000) * 14
+
+    return {
+        "protein_grams": round(protein_grams, 2),
+        "fat_grams": round(fat_grams, 2),
+        "carb_grams": round(carb_grams, 2),
+        "fiber_grams": round(fiber_grams, 2)
+    }
+
 # Define a route
 @app.route('/trial', methods=['GET', 'POST'])
 def hello1():
@@ -101,7 +148,7 @@ def firsttime():
         password = request.form.get("password")
         confirm_password = request.form.get("confirmpassword")
         user_id = str(ObjectId())
-        
+        goal = request.form.get("diet")
         weight = request.form.get("weight")
         height = request.form.get("height")
         age = request.form.get("age")
@@ -124,6 +171,7 @@ def firsttime():
         #Calculate Calories to eat in a day in order to lose weight
         cals_to_eat = calc_cals_to_eat(weight_loss_rate=weight_loss_rate,tdee=tdee,gender=gender)
         # Create a new user document to insert into MongoDB
+        macros_to_eat = calc_macros_to_eat(cals_to_eat=cals_to_eat, weight=weight, goal=goal)
         user_data = {
             "_id":user_id,
             "name": name,
@@ -135,7 +183,12 @@ def firsttime():
             "gender": gender,
             "activity_level": activity_level,
             "tdee": tdee,
-            "cals_to_eat":cals_to_eat
+            "cals_to_eat":cals_to_eat,
+            "proteins_to_eat": macros_to_eat["protein_grams"],
+            "fats_to_eat": macros_to_eat["fat_grams"],
+            "carbs_to_eat": macros_to_eat["carb_grams"],
+            "fiber_to_eat": macros_to_eat["fiber_grams"],
+            "target_weight": target_weight
         }
  # Insert the new user into MongoDB
         user_collection.insert_one(user_data)
