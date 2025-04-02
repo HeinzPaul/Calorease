@@ -254,7 +254,7 @@ def search_food():
 
     # Search for food items in MongoDB and limit to 5 results
     results = food_details.find({"name": {"$regex": query, "$options": "i"}}).limit(5)
-     unique_food_items = {}
+    unique_food_items = {}
     for item in results:
         name = item["name"]
         if name not in unique_food_items:

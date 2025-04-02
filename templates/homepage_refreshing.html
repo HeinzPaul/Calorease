@@ -973,8 +973,9 @@
 
                     <b>Carbs</b>
                     <div class="carbs-percentage">0</div>
-                     <span id="carbs-eaten" style="display:none;">/ {{ carbs_currently_eaten }}</span><span id="carbs-to-eat" style="display:none;">{{ carbs_to_eat
-                }}</span><br>
+                    <span id="carbs-eaten" style="display:none;">/ {{ carbs_currently_eaten }}</span><span
+                        id="carbs-to-eat" style="display:none;">{{ carbs_to_eat
+                        }}</span><br>
                 </div>
             </div>
 
@@ -990,8 +991,9 @@
                     </svg>
                     <b>Proteins</b>
                     <div class="protein-percentage">0</div>
-                    <span id="proteins-eaten" style="display:none;">/ {{ proteins_currently_eaten }}</span><span id="proteins-to-eat" style="display:none;">{{ proteins_to_eat
-                }}</span><br>
+                    <span id="proteins-eaten" style="display:none;">/ {{ proteins_currently_eaten }}</span><span
+                        id="proteins-to-eat" style="display:none;">{{ proteins_to_eat
+                        }}</span><br>
                 </div>
             </div>
 
@@ -1007,8 +1009,9 @@
                     </svg>
                     <b>Fibre</b>
                     <div class="fibre-percentage">0</div>
-                    <span id="fiber-eaten" style="display:none;">/ {{ fiber_currently_eaten }}</span><span id="fiber-to-eat" style="display:none;">{{fiber_to_eat
-                }}</span><br>
+                    <span id="fiber-eaten" style="display:none;">/ {{ fiber_currently_eaten }}</span><span
+                        id="fiber-to-eat" style="display:none;">{{fiber_to_eat
+                        }}</span><br>
                 </div>
             </div>
 
@@ -1024,8 +1027,9 @@
                     </svg>
                     <b>Fats</b>
                     <div class="fat-percentage">0</div>
-                    <span id="fats-eaten" style="display:none;">/ {{ fats_currently_eaten }}</span><span id="fats-to-eat" style="display:none;">{{ fats_to_eat
-                }}</span><br>
+                    <span id="fats-eaten" style="display:none;">/ {{ fats_currently_eaten }}</span><span
+                        id="fats-to-eat" style="display:none;">{{ fats_to_eat
+                        }}</span><br>
                 </div>
             </div>
         </div>
@@ -1351,6 +1355,7 @@
     </div>
 
     <script>
+        let debounceTimeout; // Declare a global variable for the debounce timeout
         let foodItems = []; // Global array to store food items
         function progressload() {
             //main progress
@@ -1366,8 +1371,8 @@
             //carb progress
             const carbsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
             const carbsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
-            
-            let carb_progressValue = (carbsEaten/carbsToEat) * 100;
+
+            let carb_progressValue = (carbsEaten / carbsToEat) * 100;
             const carb_strokeDashoffset = 100 - carb_progressValue;
             carb_progressElement.style.strokeDashoffset = carb_strokeDashoffset;
             carb_percentageElement.textContent = `${carb_progressValue}%`;
@@ -1375,8 +1380,8 @@
             //protein progress
             const proteinsEaten = parseFloat(document.getElementById('proteins-eaten').textContent);
             const proteinsToEat = parseFloat(document.getElementById('proteins-to-eat').textContent);
-            
-            let protein_progressValue = (proteinsEaten/proteinsToEat) * 100;
+
+            let protein_progressValue = (proteinsEaten / proteinsToEat) * 100;
             const protein_strokeDashoffset = 100 - protein_progressValue;
             protein_progressElement.style.strokeDashoffset = protein_strokeDashoffset;
             protein_percentageElement.textContent = `${protein_progressValue}%`;
@@ -1384,8 +1389,8 @@
             //fat progress
             const fatsEaten = parseFloat(document.getElementById('fats-eaten').textContent);
             const fatsToEat = parseFloat(document.getElementById('fats-to-eat').textContent);
-            
-            let fat_progressValue = (fatsEaten/fatsToEat) * 100;
+
+            let fat_progressValue = (fatsEaten / fatsToEat) * 100;
             const fat_strokeDashoffset = 100 - fat_progressValue;
             fat_progressElement.style.strokeDashoffset = fat_strokeDashoffset;
             fat_percentageElement.textContent = `${fat_progressValue}%`;
@@ -1393,8 +1398,8 @@
             //fibre progress
             const fiberEaten = parseFloat(document.getElementById('fiber-eaten').textContent);
             const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
-            
-            let fibre_progressValue = (fiberEaten/fiberToEat) * 100;
+
+            let fibre_progressValue = (fiberEaten / fiberToEat) * 100;
             const fibre_strokeDashoffset = 100 - fibre_progressValue;
             fibre_progressElement.style.strokeDashoffset = fibre_strokeDashoffset;
 
@@ -1539,40 +1544,45 @@
                     document.getElementById('searchResults').innerHTML = '<p>Error loading random items.</p>';
                 });
         }
+
+
         function searchItems() {
-            const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            const searchResults = document.getElementById('searchResults');
-            searchResults.innerHTML = '';
+            clearTimeout(debounceTimeout); // Clear the previous timeout if it exists
 
-            if (!searchInput) return;
+            debounceTimeout = setTimeout(() => {
+                const searchInput = document.getElementById('searchInput').value.toLowerCase();
+                const searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = ''; // Clear previous results
 
-            // Fetch data from the backend API
-            fetch(`/api/search_food?q=${encodeURIComponent(searchInput)}`)
-                .then(response => response.json())
-                .then(data => {
-                    foodItems = data; // Populate the global foodItems array
-                    if (data.length === 0) {
-                        searchResults.innerHTML = '<p>No results found.</p>';
-                        return;
-                    }
+                if (!searchInput) return;
 
-                    // Display search results
-                    data.forEach(item => {
-                        const searchItem = document.createElement('div');
-                        searchItem.classList.add('search-item');
-                        searchItem.innerHTML = `
-                    <div>
-                        <strong>${item.name}</strong> (${item.unit}) - ${item.calories} cal
-                    </div>
-                    <button class="add-btn" onclick="addToMeal('${item.name}', '${item.unit}', ${item.calories}, ${item.protein}, ${item.fats}, ${item.carbs}, ${item.fiber})">Add</button>
-                `;
-                        searchResults.appendChild(searchItem);
+                // Fetch data from the backend API
+                fetch(`/api/search_food?q=${encodeURIComponent(searchInput)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            searchResults.innerHTML = '<p>No results found.</p>';
+                            return;
+                        }
+
+                        // Display search results
+                        data.forEach(item => {
+                            const searchItem = document.createElement('div');
+                            searchItem.classList.add('search-item');
+                            searchItem.innerHTML = `
+                        <div>
+                            <strong>${item.name}</strong> (${item.unit}) - ${item.calories} cal
+                        </div>
+                        <button class="add-btn" onclick="addToMeal('${item.name}', '${item.unit}', ${item.calories}, ${item.protein}, ${item.fats}, ${item.carbs}, ${item.fiber}')">Add</button>
+                    `;
+                            searchResults.appendChild(searchItem);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching food data:', error);
+                        searchResults.innerHTML = '<p>Error fetching data.</p>';
                     });
-                })
-                .catch(error => {
-                    console.error('Error fetching food data:', error);
-                    searchResults.innerHTML = '<p>Error fetching data.</p>';
-                });
+            }, 500); // Wait for 500 milliseconds before executing the search
         }
 
         function addToMeal(name, unit, calories, protein, fats, carbs, fiber) {
