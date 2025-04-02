@@ -252,27 +252,27 @@ def search_food():
     if not query:
         return jsonify([])
 
-     # Use aggregation pipeline to ensure unique results
-    pipeline = [
-        {"$match": {"name": {"$regex": query, "$options": "i"}}},
-        {"$group": {
-            "_id": "$name",
-            "name": {"$first": "$name"},
-            "calories": {"$first": "$calories_per_unit"},
-            "protein": {"$first": "$protein_per_unit"},
-            "fats": {"$first": "$fats_per_unit"},
-            "carbs": {"$first": "$carbs_per_unit"},
-            "fiber": {"$first": "$fibre_per_unit"},
-            "unit": {"$first": "$unit"}
-        }},
-        {"$limit": 5}
-    ]
-
-    results = list(food_details.aggregate(pipeline))
-
     # Search for food items in MongoDB and limit to 5 results
-    #results = food_details.find({"name": {"$regex": query, "$options": "i"}}).limit(5)
-    food_items = [
+    results = food_details.find({"name": {"$regex": query, "$options": "i"}}).limit(5)
+     unique_food_items = {}
+    for item in results:
+        name = item["name"]
+        if name not in unique_food_items:
+            unique_food_items[name] = {
+                "name": item["name"],
+                "calories": item["calories_per_unit"],
+                "protein": item["protein_per_unit"],
+                "fats": item["fats_per_unit"],
+                "carbs": item["carbs_per_unit"],
+                "fiber": item["fibre_per_unit"],
+                "unit": item["unit"]
+            }
+
+    # Convert the dictionary values to a list to return as JSON
+    food_items = list(unique_food_items.values())
+
+    #OG
+    '''food_items = [
         {
             "name": item["name"],
             "calories": item["calories_per_unit"],
@@ -283,7 +283,7 @@ def search_food():
             "unit": item["unit"]
         }
         for item in results
-    ]
+    ]'''
 
     return jsonify(food_items)
 import random
