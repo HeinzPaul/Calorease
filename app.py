@@ -200,6 +200,10 @@ def firsttime():
     "cals_to_eat":cals_to_eat,
     "calories_currently_eaten": 0,
     "calories_currently_burned": 0,
+    "proteins_currently_eaten": 0,
+    "fats_currently_eaten": 0,
+    "carbs_currently_eaten": 0,
+    "fiber_currently_eaten": 0,
     "meals": {
         "breakfast": [],
         "morning_snack":[],
