@@ -973,6 +973,8 @@
 
                     <b>Carbs</b>
                     <div class="carbs-percentage">0</div>
+                     <span id="carbs-eaten" style="display:none;">/ {{ carbs_currently_eaten }}</span><span id="carbs-to-eat" style="display:none;">{{ carbs_to_eat
+                }}</span><br>
                 </div>
             </div>
 
@@ -988,6 +990,8 @@
                     </svg>
                     <b>Proteins</b>
                     <div class="protein-percentage">0</div>
+                    <span id="proteins-eaten" style="display:none;">/ {{ proteins_currently_eaten }}</span><span id="proteins-to-eat" style="display:none;">{{ proteins_to_eat
+                }}</span><br>
                 </div>
             </div>
 
@@ -1003,6 +1007,8 @@
                     </svg>
                     <b>Fibre</b>
                     <div class="fibre-percentage">0</div>
+                    <span id="fiber-eaten" style="display:none;">/ {{ fiber_currently_eaten }}</span><span id="fiber-to-eat" style="display:none;">{{fiber_to_eat
+                }}</span><br>
                 </div>
             </div>
 
@@ -1018,6 +1024,8 @@
                     </svg>
                     <b>Fats</b>
                     <div class="fat-percentage">0</div>
+                    <span id="fats-eaten" style="display:none;">/ {{ fats_currently_eaten }}</span><span id="fats-to-eat" style="display:none;">{{ fats_to_eat
+                }}</span><br>
                 </div>
             </div>
         </div>
@@ -1365,8 +1373,8 @@
             carb_percentageElement.textContent = `${carb_progressValue}%`;
 
             //protein progress
-            const proteinsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
-            const proteinsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
+            const proteinsEaten = parseFloat(document.getElementById('proteins-eaten').textContent);
+            const proteinsToEat = parseFloat(document.getElementById('proteins-to-eat').textContent);
             
             let protein_progressValue = (proteinsEaten/proteinsToEat) * 100;
             const protein_strokeDashoffset = 100 - protein_progressValue;
@@ -1374,8 +1382,8 @@
             protein_percentageElement.textContent = `${protein_progressValue}%`;
 
             //fat progress
-            const fatsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
-            const fatsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
+            const fatsEaten = parseFloat(document.getElementById('fats-eaten').textContent);
+            const fatsToEat = parseFloat(document.getElementById('fats-to-eat').textContent);
             
             let fat_progressValue = (fatsEaten/fatsToEat) * 100;
             const fat_strokeDashoffset = 100 - fat_progressValue;
@@ -1383,8 +1391,8 @@
             fat_percentageElement.textContent = `${fat_progressValue}%`;
 
             //fibre progress
-            const fiberEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
-            const fiberToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
+            const fiberEaten = parseFloat(document.getElementById('fiber-eaten').textContent);
+            const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
             
             let fibre_progressValue = (fiberEaten/fiberToEat) * 100;
             const fibre_strokeDashoffset = 100 - fibre_progressValue;
