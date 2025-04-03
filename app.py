@@ -149,16 +149,15 @@ def firsttime():
         confirm_password = request.form.get("confirmpassword")
         user_id = str(ObjectId())
         goal = request.form.get("diet")
-        weight = request.form.get("weight")
-        height = request.form.get("height")
-        age = request.form.get("age")
+        weight = float(request.form.get("weight"))  # Convert to float
+        height = float(request.form.get("height"))  # Convert to float
+        age = int(request.form.get("age"))          # Convert to int
         gender = request.form.get("gender")
         activity_level = request.form.get("activity")
-        target_weight = request.form.get("goal")
-        weight_loss_rate = float(request.form.get("lossperweek"))
+        target_weight = float(request.form.get("goal"))  # Convert to float
+        weight_loss_rate = float(request.form.get("lossperweek"))  # Convert to float
         
         today_date = datetime.today().strftime('%Y-%m-%d')
-
 
         # Hash the password before saving
         if password != confirm_password:
@@ -168,12 +167,13 @@ def firsttime():
 
         # Calculate TDEE
         tdee = calc_tdee(weight=weight, height=height, age=age, gender=gender, activity_level=activity_level)
-        #Calculate Calories to eat in a day in order to lose weight
-        cals_to_eat = calc_cals_to_eat(weight_loss_rate=weight_loss_rate,tdee=tdee,gender=gender)
+        
+        # Calculate Calories to eat in a day in order to lose weight
+        cals_to_eat = calc_cals_to_eat(weight_loss_rate=weight_loss_rate, tdee=tdee, gender=gender)
        
         # Calculate the number of days to reach the target weight
         daily_deficit = tdee - cals_to_eat
-        total_deficit = (weight - target_weight) * 7700
+        total_deficit = (weight - target_weight) * 7700  # Now both are floats
         days_to_target = total_deficit / daily_deficit if daily_deficit > 0 else float('inf')  # Avoid division by zero
         
         # Round the days to an integer
@@ -182,7 +182,7 @@ def firsttime():
         # Create a new user document to insert into MongoDB
         macros_to_eat = calc_macros_to_eat(cals_to_eat=cals_to_eat, weight=weight, goal=goal)
         user_data = {
-            "_id":user_id,
+            "_id": user_id,
             "name": name,
             "email": email,
             "password": hashed_password,
@@ -192,7 +192,7 @@ def firsttime():
             "gender": gender,
             "activity_level": activity_level,
             "tdee": tdee,
-            "cals_to_eat":cals_to_eat,
+            "cals_to_eat": cals_to_eat,
             "proteins_to_eat": macros_to_eat["protein_grams"],
             "fats_to_eat": macros_to_eat["fat_grams"],
             "carbs_to_eat": macros_to_eat["carb_grams"],
@@ -200,14 +200,16 @@ def firsttime():
             "target_weight": target_weight,
             "days_to_target": days_to_target
         }
- # Insert the new user into MongoDB
+
+        # Insert the new user into MongoDB
         user_collection.insert_one(user_data)
         
-        user_daily_data = {"_id":user_id,
-             "name": name,
+        user_daily_data = {
+            "_id": user_id,
+            "name": name,
             "start_date": today_date,  # Assign today's date
             "current_day": 1,
-            "cals_to_eat":cals_to_eat,
+            "cals_to_eat": cals_to_eat,
             "calories_currently_eaten": 0,
             "calories_currently_burned": 0,
             "proteins_currently_eaten": 0,
@@ -216,17 +218,18 @@ def firsttime():
             "fiber_currently_eaten": 0,
             "meals": {
                 "breakfast": [],
-                "morning_snack":[],
+                "morning_snack": [],
                 "lunch": [],
-                "evening_snack":[],
+                "evening_snack": [],
                 "dinner": [],
             },
             "starting_weight": weight,
-            "water_glasses":0,
+            "water_glasses": 0,
             "weight_log": [],
-            "workouts":[]
+            "workouts": []
         }
         user_daily.insert_one(user_daily_data)
+        
         # Redirect or render a success page
         session["user_id"] = str(user_id)
         return redirect(url_for('home'))
@@ -278,6 +281,7 @@ def home():
     protiens_currently_eaten = user_daily_data.get('proteins_currently_eaten', 0)
     fats_currently_eaten = user_daily_data.get('fats_currently_eaten', 0)
     fiber_currently_eaten = user_daily_data.get('fiber_currently_eaten', 0)
+    days_to_target = user_data.get("days_to_target", 0) 
 
 
     # Pass the data to the template
@@ -291,7 +295,61 @@ def home():
                            carbs_currently_eaten=carbs_currently_eaten, 
                            protiens_currently_eaten=protiens_currently_eaten, 
                            fats_currently_eaten=fats_currently_eaten,
-                           fiber_currently_eaten=fiber_currently_eaten)
+                           fiber_currently_eaten=fiber_currently_eaten,
+                           
+                           days_to_target=days_to_target
+                           )
+
+@app.route('/api/create_daily_data', methods=['POST'])
+def create_daily_data():
+    try:
+        # Get the user ID from the session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'User not logged in'}), 401
+
+        # Get the current_day value from the request
+        data = request.json
+        current_day = data.get('current_day')
+
+        if not current_day:
+            return jsonify({'error': 'Missing current_day value'}), 400
+
+        # Check if a document for this day already exists
+        existing_data = user_daily.find_one({"_id": user_id, "current_day": current_day})
+        if existing_data:
+            return jsonify({'message': f'Data for Day {current_day} already exists'}), 200
+
+        # Create a new daily data document
+        today_date = datetime.today().strftime('%Y-%m-%d')
+        daily_data = {
+            "_id": user_id,
+            "current_day": current_day,
+            "date": today_date,
+            "calories_currently_eaten": 0,
+            "calories_currently_burned": 0,
+            "proteins_currently_eaten": 0,
+            "fats_currently_eaten": 0,
+            "carbs_currently_eaten": 0,
+            "fiber_currently_eaten": 0,
+            "meals": {
+                "breakfast": [],
+                "morning_snack": [],
+                "lunch": [],
+                "evening_snack": [],
+                "dinner": []
+            },
+            "water_glasses": 0,
+            "workouts": []
+        }
+
+        # Insert the document into the database
+        user_daily.insert_one(daily_data)
+
+        return jsonify({'message': f'Daily data for Day {current_day} created successfully'}), 201
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
    
 @app.route('/api/search_food', methods=['GET'])

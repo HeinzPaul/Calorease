@@ -227,14 +227,14 @@
             font-size: 1rem;
         }
 
-        .msg-button{
+        .msg-button {
             display: flex;
             justify-content: space-between;
             align-content: center;
             margin: 0 auto;
         }
 
-        .progress-msg{
+        .progress-msg {
             margin: auto;
             width: 40%;
         }
@@ -922,6 +922,8 @@
             text-align: center;
             cursor: pointer;
             transition: background 0.3s;
+            margin: 5px;
+            border: 1px solid #ddd;
         }
 
         .calendar-day.today {
@@ -930,6 +932,11 @@
         }
 
         .calendar-day:hover {
+            background: #57b837;
+            color: white;
+        }
+
+        .calendar-day.selected {
             background: #57b837;
             color: white;
         }
@@ -990,9 +997,7 @@
     </div>
 
     <div class="horizontal-calendar">
-        <button class="calendar-nav" onclick="prevDays()">&#9665;</button>
         <div class="calendar-days" id="calendarDays"></div>
-        <button class="calendar-nav" onclick="nextDays()">&#9655;</button>
     </div>
 
     <div class="container" style="background-color: rgb(204, 210, 81);">
@@ -1085,22 +1090,22 @@
                         }}</span><br>
                 </div>
             </div>
-    </div>
-    <div class="msg-button">
-        <span class="progress-msg"></span>
-        <button class="refreshbutton" onclick="refresh_rings()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-                <path
-                    d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z">
-                </path>
-                <path fill-rule="evenodd"
-                    d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z">
-                </path>
-            </svg>
-            Refresh
-        </button>
-    </div>
+        </div>
+        <div class="msg-button">
+            <span class="progress-msg"></span>
+            <button class="refreshbutton" onclick="refresh_rings()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                    <path
+                        d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z">
+                    </path>
+                    <path fill-rule="evenodd"
+                        d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z">
+                    </path>
+                </svg>
+                Refresh
+            </button>
+        </div>
     </div>
 
     <div class="container">
@@ -1434,9 +1439,6 @@
             }
         });
 
-        let john = []
-
-
         async function fetchDailyTargets() {
             try {
                 const response = await fetch('/api/daily_targets');
@@ -1579,7 +1581,7 @@
             calpercent = (caloriesEaten / caloriesToEat) * 100;
             if (calpercent === 0) {
                 cal_msg[0].textContent = "Uh Oh! You haven't entered any food data";
-            } 
+            }
             else if (calpercent > 0 && calpercent <= 30) {
                 cal_msg[0].textContent = "Remember to eat healthy!";
             }
@@ -1592,13 +1594,13 @@
             else if (calpercent > 60 && calpercent <= 90) {
                 cal_msg[0].textContent = "Don't give up!";
             }
-            else if (calpercent > 90 && calpercent <=99) {
+            else if (calpercent > 90 && calpercent <= 99) {
                 cal_msg[0].textContent = "Almost there!";
             }
-            else if(calpercent > 99 && calpercent <=102){
-                cal_msg[0].textContent="You've reached today's calorie goal!"
+            else if (calpercent > 99 && calpercent <= 102) {
+                cal_msg[0].textContent = "You've reached today's calorie goal!"
             }
-            else{
+            else {
                 cal_msg[0].textContent = "Oh no! You've eaten too many calories"
             }
         }
@@ -1838,7 +1840,9 @@
             const caloriesDisplay = document.getElementById('calories-display');
             caloriesDisplay.textContent = `${(fooddetails.calories * newQuantity).toFixed(1)} calories`;
 
-            document.getElementById('protein').textContent = (fooddetails.protein * newQuantity).toFixed(1) + 'g';
+            if (document.getElementById('protein')) {
+                document.getElementById('protein').textContent = (fooddetails.protein * newQuantity).toFixed(1) + 'g';
+            }
             document.getElementById('carbs').textContent = (fooddetails.carbs * newQuantity).toFixed(1) + 'g';
             document.getElementById('fats').textContent = (fooddetails.fats * newQuantity).toFixed(1) + 'g';
             document.getElementById('fiber').textContent = (fooddetails.fiber * newQuantity).toFixed(1) + 'g';
@@ -2336,11 +2340,6 @@
             totalCaloriesElement.textContent = totalCaloriesBurned;
         }
 
-
-
-
-
-
         async function resetWater() {
             waterIntake = 0;
             updateWaterProgress();
@@ -2364,39 +2363,55 @@
             }
         }
 
-
-
-        function generateCalendar(daysBefore = 6) {
+        function generateCalendar(daysToTarget) {
             const calendarContainer = document.getElementById("calendarDays");
-            calendarContainer.innerHTML = "";
-            const today = new Date();
+            calendarContainer.innerHTML = ""; // Clear existing calendar
 
-            for (let i = daysBefore; i >= 0; i--) {
-                let date = new Date();
-                date.setDate(today.getDate() - i);
+            for (let i = 1; i <= daysToTarget; i++) {
+                let dayButton = document.createElement("button");
+                dayButton.classList.add("calendar-day");
+                dayButton.textContent = `Day ${i}`;
 
-                let dayElement = document.createElement("div");
-                dayElement.classList.add("calendar-day");
-                if (i === 0) {
-                    dayElement.classList.add("today");
+                // Highlight the current day
+                if (i === 1) {
+                    dayButton.classList.add("today");
                 }
-                dayElement.textContent = date.getDate();
-                calendarContainer.appendChild(dayElement);
+                dayButton.onclick = () => {
+                    createDailyData(i);
+
+                    // Highlight the selected day
+                    document.querySelectorAll('.calendar-day').forEach(button => button.classList.remove('selected'));
+                    dayButton.classList.add('selected');
+                };
+                calendarContainer.appendChild(dayButton);
             }
         }
 
-        function prevDays() {
-            generateCalendar(10); // Show older dates
+        const daysToTarget = parseInt('{{ days_to_target }}');
+        generateCalendar(daysToTarget);
+
+        async function createDailyData(currentDay) {
+            try {
+                const response = await fetch('/api/create_daily_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ current_day: currentDay })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create daily data');
+                }
+
+                const result = await response.json();
+                console.log('Daily data created:', result);
+                alert(`Daily data for Day ${currentDay} created successfully!`);
+            } catch (error) {
+                console.error('Error creating daily data:', error);
+                alert('An error occurred while creating daily data.');
+            }
         }
-
-        function nextDays() {
-            generateCalendar(6); // Go back to recent dates
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            generateCalendar();
-        });
-
 
     </script>
 </body>
