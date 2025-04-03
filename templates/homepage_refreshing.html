@@ -227,6 +227,18 @@
             font-size: 1rem;
         }
 
+        .msg-button{
+            display: flex;
+            justify-content: space-between;
+            align-content: center;
+            margin: 0 auto;
+        }
+
+        .progress-msg{
+            margin: auto;
+            width: 40%;
+        }
+
         .refresh {
             display: flex;
             justify-content: right;
@@ -235,8 +247,7 @@
         .refreshbutton {
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             color: white;
-            margin-top: 2%;
-            margin-left: 85%;
+            margin-left: 40%;
             background-color: #57b837;
             font-weight: 500;
             border-radius: 0.5rem;
@@ -252,6 +263,7 @@
             display: inline-flex;
             align-items: center;
             border: none;
+            float: right;
         }
 
         .refreshbutton:hover {
@@ -1070,7 +1082,9 @@
                         }}</span><br>
                 </div>
             </div>
-        </div>
+    </div>
+    <div class="msg-button">
+        <span class="progress-msg"></span>
         <button class="refreshbutton" onclick="refresh_rings()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="bi bi-arrow-repeat" viewBox="0 0 16 16">
@@ -1545,8 +1559,36 @@
             const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
 
             setProgress(fibre_progressElement, fibre_percentageElement, fiberEaten, fiberToEat, fibre_progressElement);
+            
+            cal_msg = document.getElementsByClassName('progress-msg');
+            calpercent = (caloriesEaten / caloriesToEat) * 100;
+            if (calpercent === 0) {
+                cal_msg[0].textContent = "Uh Oh! You haven't entered any food data";
+            } 
+            else if (calpercent > 0 && calpercent <= 30) {
+                cal_msg[0].textContent = "Remember to eat healthy!";
+            }
+            else if (calpercent > 30 && calpercent <= 50) {
+                cal_msg[0].textContent = "Good start!";
+            }
+            else if (calpercent > 50 && calpercent <= 60) {
+                cal_msg[0].textContent = "Great! You're halfway there";
+            }
+            else if (calpercent > 60 && calpercent <= 90) {
+                cal_msg[0].textContent = "Don't give up!";
+            }
+            else if (calpercent > 90 && calpercent <=99) {
+                cal_msg[0].textContent = "Almost there!";
+            }
+            else if(calpercent > 99 && calpercent <=102){
+                cal_msg[0].textContent="You've reached today's calorie goal!"
+            }
+            else{
+                cal_msg[0].textContent="Oh no! You've eaten too many calories"
+            }
         }
-
+    
+        
         progressload();
 
         function refresh_rings() {
@@ -1559,7 +1601,6 @@
             popup.style.display = popup.style.display === "none" ? "block" : "none";
             overlay.style.display = popup.style.display;
         }
-
 
 
         let weightData = JSON.parse(localStorage.getItem('weightData')) || [];
