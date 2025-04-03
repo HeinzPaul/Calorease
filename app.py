@@ -246,7 +246,7 @@ def home():
     
     # Fetch the user's data from MongoDB
     user_data = user_collection.find_one({"_id": user_id})
-    user_daily_data = user_collection.find_one({"_id": user_id})
+    user_daily_data = user_daily.find_one({"_id": user_id})
 
     # Get the total calories to eat (cals_to_eat)
     cals_to_eat = user_data.get('cals_to_eat', 0)
@@ -353,29 +353,53 @@ def get_daily_targets():
 def add_food():
     try:
         # Get the user ID, meal name, and food details from the request
-        user_id = request.json.get('user_id')
+        user_id = session.get('user_id')
         meal_name = request.json.get('meal_name')  # e.g., 'breakfast', 'lunch'
+        print("innada meal name",meal_name)
         food_item = request.json.get('food_item')  # e.g., {'name': 'Apple', 'calories': 95}
+        print("innada user id",user_id)
+
 
         if not user_id or not meal_name or not food_item:
             return jsonify({'error': 'Missing required fields'}), 400
 
-        # Convert user_id to ObjectId
-        user_id = ObjectId(user_id)
-
-        # Update the user's daily data in MongoDB
+        food_item['calories'] = round(food_item['calories'], 2)
+        food_item['protein'] = round(food_item['protein'], 2)
+        food_item['fats'] = round(food_item['fats'], 2)
+        food_item['carbs'] = round(food_item['carbs'], 2)
+        food_item['fiber'] = round(food_item['fiber'], 2)
         result = user_daily.update_one(
-            {"_id": user_id},
-            {
-                "$push": {f"meals.{meal_name}": food_item},  # Add the food item to the meal array
-                "$inc": {"calories_currently_eaten": food_item['calories']}  # Increment calories_currently_eaten
-            }
-        )
+    {"_id": user_id},
+    {
+        "$push": {f"meals.{meal_name}": food_item},  # Add the food item to the meal array
+        "$inc": {
+            "calories_currently_eaten": food_item['calories'],  # Increment calories
+            "proteins_currently_eaten": food_item['protein'],   # Increment proteins
+            "fats_currently_eaten": food_item['fats'],          # Increment fats
+            "carbs_currently_eaten": food_item['carbs'],        # Increment carbs
+            "fiber_currently_eaten": food_item['fiber']         # Increment fiber
+        }
+    }
+)
 
-        if result.modified_count == 0:
-            return jsonify({'error': 'Failed to update user data'}), 500
+        # Check if the update was successful
+    
+        updated_data = user_daily.find_one({"_id": user_id}, {
+            "_id": 0,
+            "meals": 1,
+            "calories_currently_eaten": 1,
+            "proteins_currently_eaten": 1,
+            "fats_currently_eaten": 1,
+            "carbs_currently_eaten": 1,
+            "fiber_currently_eaten": 1,
+            "cals_to_eat": 1,
+            "proteins_to_eat": 1,
+            "fats_to_eat": 1,
+            "carbs_to_eat": 1,
+            "fiber_to_eat": 1
+        })
 
-        return jsonify({'message': 'Food item added successfully'}), 200
+        return jsonify(updated_data), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

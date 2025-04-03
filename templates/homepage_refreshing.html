@@ -970,7 +970,7 @@
             </div>
             <span id="calories-eaten">{{ calories_currently_eaten }}</span> / <span id="calories-to-eat">{{ cals_to_eat
                 }}</span><br>
-            Total calories eaten
+
 
             <div class="small-progress">
                 <div class="small-main-progress-container">
@@ -1364,7 +1364,8 @@
         <button class="close-btn" onclick="closeCard()">Close</button>
         <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
         <div id="searchResults" class="search-results"></div>
-        <div id="nutritionInfo" class="nutrition-info"><button onclick="window.location.href='{{ url_for('suggest') }}';">Add new food</button></div>
+        <div id="nutritionInfo" class="nutrition-info"><button
+                onclick="window.location.href='{{ url_for('suggest') }}';">Add new food</button></div>
     </div>
 
     <script>
@@ -1472,7 +1473,7 @@
 
         progressload();
 
-        function refresh_rings(){
+        function refresh_rings() {
             progressload();
         }
 
@@ -1497,55 +1498,7 @@
         }
 
 
-        function updateProgressBars(progressContainer, mealdata, totalNutrients) {
-            if (!progressContainer || !mealdata) return;
 
-            const mealItems = mealdata.querySelectorAll('.meal-item');
-
-            if (mealItems.length > 0) {
-                progressContainer.style.display = 'block';
-
-                // Get existing values first
-                const currentNutrients = {};
-                Object.keys(totalNutrients).forEach(nutrient => {
-                    const progressValue = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`)
-                        .parentElement.previousElementSibling.querySelector('.progress-value');
-
-                    // Parse existing value from the display
-                    const currentText = progressValue.textContent;
-                    const currentMatch = currentText.match(/(\d+(\.\d+)?)g/);
-                    currentNutrients[nutrient] = currentMatch ? parseFloat(currentMatch[1]) : 0;
-                });
-
-                // Now update with accumulated values
-                Object.keys(totalNutrients).forEach(nutrient => {
-                    const progressFill = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`);
-                    const progressValue = progressFill.parentElement.previousElementSibling.querySelector('.progress-value');
-
-                    // Add new values to existing ones
-                    console.log(currentNutrients[nutrient], totalNutrients[nutrient]); // Debugging log
-                    const accumulatedValue = parseFloat(currentNutrients[nutrient]) + parseFloat(totalNutrients[nutrient]);
-
-                    // Calculate percentage
-                    let percentage = (accumulatedValue / dailyTargets[nutrient]) * 100;
-                    progressFill.style.width = `${Math.min(percentage, 100)}%`;
-                    progressload();
-
-                    // Update progress bar color
-                    progressFill.classList.remove('red', 'yellow', 'green');
-                    if (percentage <= 35) {
-                        progressFill.classList.add('red');
-                    } else if (percentage <= 70) {
-                        progressFill.classList.add('yellow');
-                    } else {
-                        progressFill.classList.add('green');
-                    }
-
-                    // Update numerical value next to the progress bar
-                    progressValue.textContent = `${accumulatedValue}g / ${dailyTargets[nutrient]}g`;
-                });
-            }
-        }
         function openCard(meal) {
             const modalCard = document.querySelector('.modal-card');
             const blurBackground = document.querySelector('.blur-background');
@@ -1698,70 +1651,123 @@
             document.getElementById('fiber').textContent = (fooddetails.fiber * newQuantity).toFixed(1) + 'g';
         }
 
-        function addToMealBox(foodName, fooddetails) {
-    const mealTitle = document.getElementById('modal-title').textContent.trim();
-    const quantity = parseInt(document.getElementById('quantity').textContent);
-
-    const foodItem = {
-        name: foodName,
-        calories: fooddetails.calories * quantity,
-        protein: fooddetails.protein * quantity,
-        fats: fooddetails.fats * quantity,
-        carbs: fooddetails.carbs * quantity,
-        fiber: fooddetails.fiber * quantity
-    };
-
-    fetch('/api/add_food', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            user_id: '67ed7c73f3f37955aa6c4879', // Replace with the actual user ID
-            meal_name: mealTitle.toLowerCase().replace(' ', '_'), // Convert meal title to match MongoDB field
-            food_item: foodItem
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error('Error adding food:', data.error);
-                alert('Failed to add food item.');
-            } else {
-                console.log('Food item added successfully:', data);
-                alert('Food item added successfully!');
-                refresh_rings(); // Refresh progress rings
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while adding the food item.');
-        });
-
-    closeCard(); // Close the modal
-}
-
-        /*
-        heinz addtoMealBox
-        function addToMealBox(foodName, fooddetails) {
+        async function addToMealBox(foodName, fooddetails) {
             const mealTitle = document.getElementById('modal-title').textContent.trim();
             const quantity = parseInt(document.getElementById('quantity').textContent);
-            const foodItem = fooddetails
-            if (!foodItem) {
-                console.error(`Food item not found for name: ${foodName}`);
+
+            const foodItem = {
+                name: foodName,
+                quantity: quantity,
+                unit: fooddetails.unit,
+                calories: fooddetails.calories * quantity,
+                protein: fooddetails.protein * quantity,
+                fats: fooddetails.fats * quantity,
+                carbs: fooddetails.carbs * quantity,
+                fiber: fooddetails.fiber * quantity
+            };
+
+            try {
+                // Send the meal data to the backend
+                const response = await fetch('/api/add_food', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        meal_name: mealTitle.toLowerCase().replace(' ', '_'), // Convert meal title to match MongoDB field
+                        food_item: foodItem
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to add food item');
+                }
+
+                const updatedData = await response.json();
+                console.log('Updated data from backend:', updatedData);
+
+                // Update the mealbox and progress bars with the updated data
+                populateMealBox(mealTitle, updatedData.meals[mealTitle.toLowerCase().replace(' ', '_')]);
+                updateProgressBarsFromDB(mealTitle, updatedData.meals[mealTitle.toLowerCase().replace(' ', '_')]);
+
+                alert('Food item added successfully!');
+            } catch (error) {
+                console.error('Error adding food item:', error);
+                alert('An error occurred while adding the food item.');
+            }
+
+            closeCard(); // Close the modal
+        }
+
+        function updateProgressBarsFromDB(mealTitle, mealData) {
+            // Find the specific progress container for the given meal title
+            const mealboxes = document.querySelectorAll('.mealbox');
+            let targetMealbox = null;
+
+            mealboxes.forEach(box => {
+                if (box.querySelector('span').textContent === mealTitle) {
+                    targetMealbox = box;
+                }
+            });
+
+            if (!targetMealbox) {
+                console.error(`Mealbox for "${mealTitle}" not found.`);
                 return;
             }
-            const totalCalories = (foodItem.calories * quantity).toFixed(1);
-            const totalProtein = (foodItem.protein * quantity).toFixed(1);
-            const totalCarbs = (foodItem.carbs * quantity).toFixed(1);
-            const totalFats = (foodItem.fats * quantity).toFixed(1);
-            const totalFiber = (foodItem.fiber * quantity).toFixed(1);
-            const totalNutrients = {
-                protein: totalProtein,
-                carbs: totalCarbs,
-                fats: totalFats,
-                fiber: totalFiber
+
+            const progressContainer = targetMealbox.nextElementSibling.nextElementSibling; // Progress container is after mealdata
+            if (!progressContainer || !progressContainer.classList.contains('progress-bars-container')) {
+                console.error(`Progress container for "${mealTitle}" not found.`);
+                return;
+            }
+            else {
+                progressContainer.style.display = 'block';
+            }
+
+            // Calculate total macros for the meal
+            const totalMacros = {
+                protein: 0,
+                carbs: 0,
+                fats: 0,
+                fiber: 0
             };
+
+            mealData.forEach(item => {
+                totalMacros.protein += item.protein;
+                totalMacros.carbs += item.carbs;
+                totalMacros.fats += item.fats;
+                totalMacros.fiber += item.fiber;
+            });
+
+            // Update progress bars for each nutrient
+            const nutrients = ['protein', 'carbs', 'fats', 'fiber'];
+            nutrients.forEach(nutrient => {
+                const progressFill = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`);
+                const progressValue = progressFill.parentElement.previousElementSibling.querySelector('.progress-value');
+
+                const currentlyEaten = totalMacros[nutrient];
+                const toEat = dailyTargets[nutrient]; // Use daily targets for the nutrient
+
+                // Calculate percentage
+                const percentage = (currentlyEaten / toEat) * 100;
+                progressFill.style.width = `${Math.min(percentage, 100)}%`;
+
+                // Update progress bar color
+                progressFill.classList.remove('red', 'yellow', 'green');
+                if (percentage <= 35) {
+                    progressFill.classList.add('red');
+                } else if (percentage <= 70) {
+                    progressFill.classList.add('yellow');
+                } else {
+                    progressFill.classList.add('green');
+                }
+
+                // Update numerical value next to the progress bar
+                progressValue.textContent = `${currentlyEaten.toFixed(1)}g / ${toEat.toFixed(1)}g`;
+            });
+        }
+        function populateMealBox(mealTitle, mealData) {
+
             const mealboxes = document.querySelectorAll('.mealbox');
             let targetMealbox = null;
 
@@ -1773,23 +1779,20 @@
 
             if (targetMealbox) {
                 const targetMealdata = targetMealbox.nextElementSibling;
-                const progressContainer = targetMealdata.nextElementSibling;
 
-                if (targetMealdata.textContent === 'No data added yet.') {
-                    targetMealdata.innerHTML = '';
+                if (mealData.length === 0) {
+                    targetMealdata.innerHTML = 'No data added yet.';
+                } else {
+                    targetMealdata.innerHTML = ''; // Clear existing data
+                    mealData.forEach(item => {
+                        const mealItem = document.createElement('div');
+                        mealItem.className = 'meal-item';
+                        mealItem.innerHTML = `<span><span style="font-weight:bold">${item.name}</span> (${item.quantity} ${item.unit})</span><span>${item.calories} cal</span>`;
+                        targetMealdata.appendChild(mealItem);
+                    });
                 }
-
-                const mealItem = document.createElement('div');
-                mealItem.className = 'meal-item';
-                mealItem.innerHTML = `<span><span style="font-weight:bold">${foodName}</span> (${quantity} ${foodItem.unit})</span><span>${totalCalories} cal</span>`;
-                targetMealdata.appendChild(mealItem);
-                console.log("Here that target", targetMealdata)
-
-                updateProgressBars(progressContainer, targetMealdata, totalNutrients);
             }
-
-            closeCard();
-        }*/
+        }
 
         function closeCard() {
             const modalCard = document.querySelector('.modal-card');
