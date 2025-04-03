@@ -1574,7 +1574,7 @@
             const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
 
             setProgress(fibre_progressElement, fibre_percentageElement, fiberEaten, fiberToEat, fibre_progressElement);
-            
+
             cal_msg = document.getElementsByClassName('progress-msg');
             calpercent = (caloriesEaten / caloriesToEat) * 100;
             if (calpercent === 0) {
@@ -1599,11 +1599,10 @@
                 cal_msg[0].textContent="You've reached today's calorie goal!"
             }
             else{
-                cal_msg[0].textContent="Oh no! You've eaten too many calories"
+                cal_msg[0].textContent = "Oh no! You've eaten too many calories"
             }
         }
-    
-        
+
         progressload();
 
         function refresh_rings() {
