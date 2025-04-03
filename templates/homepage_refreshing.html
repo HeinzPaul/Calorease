@@ -1560,6 +1560,33 @@
             const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
 
             setProgress(fibre_progressElement, fibre_percentageElement, fiberEaten, fiberToEat, fibre_progressElement);
+
+            cal_msg = document.getElementsByClassName('progress-msg');
+            calpercent = (caloriesEaten / caloriesToEat) * 100;
+            if (calpercent === 0) {
+                cal_msg[0].textContent = "Uh Oh! You haven't entered any food data";
+            } 
+            else if (calpercent > 0 && calpercent <= 30) {
+                cal_msg[0].textContent = "Remember to eat healthy!";
+            }
+            else if (calpercent > 30 && calpercent <= 50) {
+                cal_msg[0].textContent = "Good start!";
+            }
+            else if (calpercent > 50 && calpercent <= 60) {
+                cal_msg[0].textContent = "Great! You're halfway there";
+            }
+            else if (calpercent > 60 && calpercent <= 90) {
+                cal_msg[0].textContent = "Don't give up!";
+            }
+            else if (calpercent > 90 && calpercent <=99) {
+                cal_msg[0].textContent = "Almost there!";
+            }
+            else if(calpercent > 99 && calpercent <=102){
+                cal_msg[0].textContent="You've reached today's calorie goal!"
+            }
+            else{
+                cal_msg[0].textContent = "Oh no! You've eaten too many calories"
+            }
         }
 
         progressload();
