@@ -465,6 +465,42 @@ def get_meals_and_progress():
     user_daily_data['carbs_currently_eaten'] = round(user_daily_data.get('carbs_currently_eaten', 0), 0)
     user_daily_data['fiber_currently_eaten'] = round(user_daily_data.get('fiber_currently_eaten', 0), 0)
     return jsonify(user_daily_data)
+
+@app.route('/api/update_calories_burned', methods=['POST'])
+def update_calories_burned():
+    try:
+        # Get the user ID from the session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'User not logged in'}), 401
+
+        # Get the total calories burned from the request
+        data = request.json
+        total_calories_burned = data.get('total_calories_burned')
+
+        if total_calories_burned is None:
+            return jsonify({'error': 'Missing total_calories_burned field'}), 400
+
+        # Update the user's daily data in MongoDB
+        result = user_daily.update_one(
+            {"_id": user_id},
+            {"$set": {"calories_currently_burned": total_calories_burned}}
+        )
+
+        if result.modified_count == 0:
+            return jsonify({'error': 'Failed to update calories burned'}), 500
+
+        # Fetch the updated data to return to the frontend
+        updated_data = user_daily.find_one({"_id": user_id}, {
+            "_id": 0,
+            "calories_currently_burned": 1
+        })
+
+        return jsonify(updated_data), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)

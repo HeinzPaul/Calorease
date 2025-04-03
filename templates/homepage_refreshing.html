@@ -2150,6 +2150,61 @@
 
             totalCaloriesElement.textContent = totalCalories;
         }
+
+        async function saveWorkout() {
+            const workoutType = document.getElementById('workout-type').value;
+            const duration = parseInt(document.getElementById('workout-duration').value);
+
+            if (!workoutType || !duration) {
+                alert('Please select a workout and enter duration');
+                return;
+            }
+
+            const caloriesBurned = Math.round(workouts[workoutType].caloriesPerMinute * duration);
+
+            // Add the workout to the local log
+            const workout = {
+                type: workoutType,
+                duration: duration,
+                calories: caloriesBurned,
+                date: new Date().toISOString()
+            };
+
+            workoutLog.push(workout);
+            localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+
+            // Calculate the total calories burned
+            const totalCaloriesBurned = workoutLog.reduce((sum, workout) => sum + workout.calories, 0);
+
+            try {
+                // Send the total calories burned to the backend
+                const response = await fetch('/api/update_calories_burned', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ total_calories_burned: totalCaloriesBurned })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.error}`);
+                    return;
+                }
+
+                const updatedData = await response.json();
+                console.log('Updated data from backend:', updatedData);
+
+                // Update the frontend display
+                updateWorkoutDisplay();
+                alert('Workout added successfully!');
+            } catch (error) {
+                console.error('Error updating calories burned:', error);
+                alert('An error occurred while updating calories burned.');
+            }
+
+            closeWorkoutModal(); // Close the modal
+        }
         function removeWorkout(index) {
             workoutLog.splice(index, 1);
             localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
