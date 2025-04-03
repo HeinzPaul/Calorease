@@ -170,6 +170,15 @@ def firsttime():
         tdee = calc_tdee(weight=weight, height=height, age=age, gender=gender, activity_level=activity_level)
         #Calculate Calories to eat in a day in order to lose weight
         cals_to_eat = calc_cals_to_eat(weight_loss_rate=weight_loss_rate,tdee=tdee,gender=gender)
+       
+        # Calculate the number of days to reach the target weight
+        daily_deficit = tdee - cals_to_eat
+        total_deficit = (weight - target_weight) * 7700
+        days_to_target = total_deficit / daily_deficit if daily_deficit > 0 else float('inf')  # Avoid division by zero
+        
+        # Round the days to an integer
+        days_to_target = round(days_to_target)
+        
         # Create a new user document to insert into MongoDB
         macros_to_eat = calc_macros_to_eat(cals_to_eat=cals_to_eat, weight=weight, goal=goal)
         user_data = {
@@ -188,33 +197,34 @@ def firsttime():
             "fats_to_eat": macros_to_eat["fat_grams"],
             "carbs_to_eat": macros_to_eat["carb_grams"],
             "fiber_to_eat": macros_to_eat["fiber_grams"],
-            "target_weight": target_weight
+            "target_weight": target_weight,
+            "days_to_target": days_to_target
         }
  # Insert the new user into MongoDB
         user_collection.insert_one(user_data)
         
         user_daily_data = {"_id":user_id,
              "name": name,
-    "start_date": today_date,  # Assign today's date
-    "current_day": 1,
-    "cals_to_eat":cals_to_eat,
-    "calories_currently_eaten": 0,
-    "calories_currently_burned": 0,
-    "proteins_currently_eaten": 0,
-    "fats_currently_eaten": 0,
-    "carbs_currently_eaten": 0,
-    "fiber_currently_eaten": 0,
-    "meals": {
-        "breakfast": [],
-        "morning_snack":[],
-        "lunch": [],
-        "evening_snack":[],
-        "dinner": [],
-    },
-    "starting_weight": weight,
-    "water_glasses":0,
-    "weight_log": [
-    ],"workouts":[]
+            "start_date": today_date,  # Assign today's date
+            "current_day": 1,
+            "cals_to_eat":cals_to_eat,
+            "calories_currently_eaten": 0,
+            "calories_currently_burned": 0,
+            "proteins_currently_eaten": 0,
+            "fats_currently_eaten": 0,
+            "carbs_currently_eaten": 0,
+            "fiber_currently_eaten": 0,
+            "meals": {
+                "breakfast": [],
+                "morning_snack":[],
+                "lunch": [],
+                "evening_snack":[],
+                "dinner": [],
+            },
+            "starting_weight": weight,
+            "water_glasses":0,
+            "weight_log": [],
+            "workouts":[]
         }
         user_daily.insert_one(user_daily_data)
         # Redirect or render a success page
