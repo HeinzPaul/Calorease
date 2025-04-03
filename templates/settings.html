@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Your existing styles */
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f6ffed, #d4f7c5, #a2e3a5);
@@ -17,87 +18,6 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-        }
-
-        .menu-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 1;
-            cursor: pointer;
-            padding: 10px;
-        }
-
-        .hamburger {
-            width: 30px;
-            height: 3px;
-            background-color: #000;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .hamburger::before,
-        .hamburger::after {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 3px;
-            background-color: #000;
-            transition: all 0.3s ease;
-        }
-
-        .hamburger::before {
-            top: -10px;
-        }
-
-        .hamburger::after {
-            top: 10px;
-        }
-
-        .menu-container:hover .hamburger {
-            transform: scale(1.1);
-        }
-
-        .nav-menu {
-            display: none;
-            background: #ffffff;
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 200px;
-            height: 100%;
-            padding: 50px 20px;
-            text-align: right;
-        }
-
-        .nav-menu a {
-            display: block;
-            color: #000000;
-            text-decoration: none;
-            font-size: 1.2rem;
-            margin: 20px 0;
-        }
-
-        .nav-menu a:hover {
-            color: #57b837;
-        }
-
-        .hamburger.active {
-            transform: rotate(45deg);
-        }
-
-        .hamburger.active::before {
-            transform: rotate(90deg);
-            top: 0;
-        }
-
-        .hamburger.active::after {
-            transform: rotate(90deg);
-            top: 0;
-        }
-
-        .nav-menu.active {
-            display: block;
         }
 
         .settings-container {
@@ -164,112 +84,108 @@
             border-radius: 50px;
             cursor: pointer;
             transition: 0.3s ease;
-            background: #000;
-            color: white;
+            color: rgb(13, 171, 53);
             min-width: 250px;
-            /* Increased minimum width */
             width: auto;
             margin: 30px auto;
-            /* Increased margin top and bottom */
             display: block;
         }
 
         button:hover {
-            background: #1e4520;
+            background: #2bb932;
             transform: translateY(-2px);
-        }
-
-        .danger {
-            background: #dc3545;
         }
     </style>
 </head>
 
 <body>
-    <div class="menu-container" onclick="toggleMenu()">
-        <div class="hamburger"></div>
-    </div>
-    <!-- Navigation Menu -->
-    <div class="nav-menu">
-        <a href="{{ url_for('home')}}">Homepage</a>
-        <a href="{{ url_for('guide')}}">Guide</a>
-        <a href="{{ url_for('hello')}}">Logout</a>
-    </div>
-
     <div class="settings-container">
         <h2>Settings</h2>
 
-        <section class="profile-settings">
-            <h3>Profile Settings</h3>
-            <label for="username">Username:</label>
-            <input type="text" id="username" placeholder="Your username">
-            <label for="currentPassword">Password:</label>
-            <input type="password" id="currentPassword" placeholder="Current password">
-            <label for="newPassword">New Password:</label>
-            <input type="password" id="newPassword" placeholder="New password">
-            <label for="confirmPassword">Confirm New Password:</label>
-            <input type="password" id="confirmPassword" placeholder="Confirm new password">
-            <button>Save Changes</button>
-        </section>
-
-        <section class="preferences">
-            <h3>Preferences</h3>
-            <label for="darkMode"><input type="checkbox" id="darkMode"> Enable Dark Mode</label>
-            <label for="emailNotifications"><input type="checkbox" id="emailNotifications"> Email Notifications</label>
-            <button>Update Preferences</button>
-        </section>
-
-        <section class="health-settings">
-            <h3>Health & Goals</h3>
-            <label for="weight">Weight (kg):</label>
-            <input type="number" id="weight" placeholder="Your weight">
-            <label for="height">Height (cm):</label>
-            <input type="number" id="height" placeholder="Your height">
-            <label for="age">Age:</label>
-            <input type="number" id="age" placeholder="Your age">
-            <label>Gender:</label>
-            <div>
-                <input type="radio" name="gender" value="male" id="male"> <label for="male">Male</label>
-                <input type="radio" name="gender" value="female" id="female"> <label for="female">Female</label>
-                <input type="radio" name="gender" value="other" id="other"> <label for="other">Other</label>
-            </div>
-            <label for="targetWeight">Target Weight (kg):</label>
-            <input type="number" id="targetWeight" placeholder="Your target weight">
-            <label for="timeframe">Timeframe (weeks):</label>
-            <input type="number" id="timeframe" placeholder="Weeks">
-            <label for="activityLevel">Activity Level:</label>
-            <select id="activityLevel">
-                <option value="sedentary">Sedentary</option>
-                <option value="light">Lightly Active</option>
-                <option value="moderate">Moderately Active</option>
-                <option value="very">Very Active</option>
-            </select>
-            <label for="dietaryPreferences">Dietary Preferences:</label>
-            <select id="dietaryPreferences">
-                <option value="none">No Preference</option>
-                <option value="vegetarian">Vegetarian</option>
-                <option value="vegan">Vegan</option>
-                <option value="keto">Keto</option>
-                <option value="paleo">Paleo</option>
-            </select>
-            <button style="margin-top: 10px; text-align: center; margin-left: auto; margin-right: auto;">Update Health
-                Goals</button>
-        </section>
-
-        <section class="account-management">
-            <h3>Account Management</h3>
-            <button class="danger">Delete Account</button>
-        </section>
+        <!-- Health & Goals Form -->
+        <form id="health-goals-form">
+            <section class="health-settings">
+                <h3>Health & Goals</h3>
+                <label for="weight">Weight (kg):</label>
+                <input type="number" id="weight" name="weight" placeholder="Your weight">
+                <label for="height">Height (cm):</label>
+                <input type="number" id="height" name="height" placeholder="Your height">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" placeholder="Your age">
+                <label>Gender:</label>
+                <div>
+                    <input type="radio" name="gender" value="male" id="male"> <label for="male">Male</label>
+                    <input type="radio" name="gender" value="female" id="female"> <label for="female">Female</label>
+                </div>
+                <label for="targetWeight">Target Weight (kg):</label>
+                <input type="number" id="targetWeight" name="targetWeight" placeholder="Your target weight">
+                <label for="timeframe">Timeframe (weeks):</label>
+                <input type="number" id="timeframe" name="timeframe" placeholder="Weeks">
+                <label for="activityLevel">Activity Level:</label>
+                <select id="activityLevel" name="activityLevel">
+                    <option value="sedentary">Sedentary</option>
+                    <option value="light">Lightly Active</option>
+                    <option value="moderate">Moderately Active</option>
+                    <option value="very">Very Active</option>
+                </select>
+                <label for="dietaryPreferences">Dietary Preferences:</label>
+                <select id="dietaryPreferences" name="dietaryPreferences">
+                    <option value="none">Choose your preference</option>
+                    <option value="high_protein">High Protein</option>
+                    <option value="low_carb">Low Carb</option>
+                    <option value="balanced">Balanced</option>
+                </select>
+                <script>
+                    function updateValue(val) {
+                        document.getElementById("sliderValue").innerText = val;
+                    }
+                </script>
+                <label for="slider">Value: <span id="sliderValue">0.25</span> kg</label>
+                <input name="lossperweek" type="range" id="lossperweek" min="0" max="1" step="0.25" value="0.25"
+                    oninput="updateValue(this.value)" />
+                <br></br>
+                <button style=" margin-left:auto;margin-right:auto;text-align: center;" type="submit">Update Health
+                    Goals</button>
+            </section>
+        </form>
     </div>
 </body>
 
 <script>
-     function toggleMenu() {
-            const menu = document.querySelector('.nav-menu');
-            const hamburger = document.querySelector('.hamburger');
-            menu.classList.toggle('active');
-            hamburger.classList.toggle('active');
+    document.getElementById('health-goals-form').addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+
+        const data = {
+            weight: document.getElementById('weight').value,
+            height: document.getElementById('height').value,
+            age: document.getElementById('age').value,
+            gender: document.querySelector('input[name="gender"]:checked')?.value,
+            activityLevel: document.getElementById('activityLevel').value,
+            targetWeight: document.getElementById('targetWeight').value,
+            dietaryPreferences: document.getElementById('dietaryPreferences').value,
+            lossperweek: document.getElementById('lossperweek').value
+        };
+
+        try {
+            const response = await fetch('/api/update_health_goals', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (result.error) {
+                alert(result.error);
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while updating health goals.');
         }
+    });
 </script>
 
 </html>

@@ -212,8 +212,9 @@ def firsttime():
         "dinner": [],
     },
     "starting_weight": weight,
+    "water_glasses":0,
     "weight_log": [
-    ]
+    ],"workouts":[]
         }
         user_daily.insert_one(user_daily_data)
         # Redirect or render a success page
@@ -441,19 +442,22 @@ def get_meals_and_progress():
 
     # Fetch the user's daily data
     user_daily_data = user_daily.find_one({"_id": user_id}, {
-        "_id": 0,
-        "meals": 1,
-        "calories_currently_eaten": 1,
-        "proteins_currently_eaten": 1,
-        "fats_currently_eaten": 1,
-        "carbs_currently_eaten": 1,
-        "fiber_currently_eaten": 1,
-        "cals_to_eat": 1,
-        "proteins_to_eat": 1,
-        "fats_to_eat": 1,
-        "carbs_to_eat": 1,
-        "fiber_to_eat": 1
-    })
+            "_id": 0,
+            "meals": 1,
+            "calories_currently_eaten": 1,
+            "proteins_currently_eaten": 1,
+            "fats_currently_eaten": 1,
+            "carbs_currently_eaten": 1,
+            "fiber_currently_eaten": 1,
+            "cals_to_eat": 1,
+            "proteins_to_eat": 1,
+            "fats_to_eat": 1,
+            "carbs_to_eat": 1,
+            "fiber_to_eat": 1,
+            "workouts": 1,  # Include workouts
+            "calories_currently_burned": 1,  # Include total calories burned
+            "weight_log":1
+        })
 
     if not user_daily_data:
         return jsonify({"error": "User daily data not found"}), 404
@@ -466,41 +470,216 @@ def get_meals_and_progress():
     user_daily_data['fiber_currently_eaten'] = round(user_daily_data.get('fiber_currently_eaten', 0), 0)
     return jsonify(user_daily_data)
 
-@app.route('/api/update_calories_burned', methods=['POST'])
-def update_calories_burned():
+
+
+
+@app.route('/api/update_health_goals', methods=['POST'])
+def update_health_goals():
     try:
         # Get the user ID from the session
         user_id = session.get('user_id')
         if not user_id:
-            return jsonify({'error': 'User not logged in'}), 401
+            return jsonify({"error": "User not logged in"}), 401
 
-        # Get the total calories burned from the request
+        # Get the updated health goals from the request
+        data = request.json  # Use request.json to parse JSON data
+        if not data:
+            return jsonify({"error": "Invalid or missing JSON data"}), 400
+
+        weight = float(data.get('weight'))
+        height = float(data.get('height'))
+        age = int(data.get('age'))
+        gender = data.get('gender')
+        activity_level = data.get('activityLevel')
+        target_weight = float(data.get('targetWeight'))
+        dietary_preferences = data.get('dietaryPreferences')
+        weight_loss_rate = float(data.get('lossperweek', 0.5))  # Default to 0.5 kg/week if not provided
+
+        # Recalculate TDEE and daily calorie intake
+        tdee = calc_tdee(weight=weight, height=height, age=age, gender=gender, activity_level=activity_level)
+        cals_to_eat = calc_cals_to_eat(weight_loss_rate=weight_loss_rate, tdee=tdee, gender=gender)
+
+        # Recalculate macronutrient targets
+        macros_to_eat = calc_macros_to_eat(cals_to_eat=cals_to_eat, weight=weight, goal=dietary_preferences)
+
+        # Prepare the updated data
+        update_data = {
+            "weight": weight,
+            "height": height,
+            "age": age,
+            "gender": gender,
+            "activity_level": activity_level,
+            "target_weight": target_weight,
+            "dietary_preferences": dietary_preferences,
+            "tdee": tdee,
+            "cals_to_eat": cals_to_eat,
+            "proteins_to_eat": macros_to_eat["protein_grams"],
+            "fats_to_eat": macros_to_eat["fat_grams"],
+            "carbs_to_eat": macros_to_eat["carb_grams"],
+            "fiber_to_eat": macros_to_eat["fiber_grams"]
+        }
+
+        # Update the user's health goals in the database
+        result = user_collection.update_one({"_id": user_id}, {"$set": update_data})
+
+        if result.modified_count == 0:
+            return jsonify({"error": "No changes made to user data"}), 400
+
+        return jsonify({"message": "Health goals updated successfully!"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@app.route('/api/get_weight_log', methods=['GET'])
+def get_weight_log():
+    try:
+        # Get the user ID from the session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        # Fetch the weight log from the database
+        user_data = user_daily.find_one({"_id": user_id}, {"_id": 0, "weight_log": 1})
+
+        if not user_data or "weight_log" not in user_data:
+            return jsonify({"weight_log": []}), 200  # Return an empty array if no weight log is found
+
+        return jsonify(user_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@app.route('/api/add_workout', methods=['POST'])
+def add_workout():
+        try:
+        # Get the user ID from the session
+            user_id = session.get('user_id')
+            if not user_id:
+                return jsonify({"error": "User not logged in"}), 401
+
+
+        # Get workout details from the request
+            data = request.json
+            exercise = data.get('exercise')
+            minutes = data.get('duration')
+            calories_burned = data.get('calories_burned')
+
+            if not exercise or not minutes or not calories_burned:
+                return jsonify({"error": "Missing required fields"}), 400
+
+            # Add the workout to the database
+            result = user_daily.update_one(
+                {"_id": user_id},
+                {
+                    "$push": {
+                        "workouts": {
+                            "exercise": exercise,
+                            "minutes": minutes,
+                            "calories_burned": calories_burned
+                        }
+                    },
+                    "$inc": {
+                        "calories_currently_burned": calories_burned  # Increment calories burned
+                    }
+                }
+            )
+
+            if result.modified_count == 0:
+                return jsonify({"error": "Failed to add workout"}), 500
+
+            # Fetch the updated data to return to the frontend
+            updated_data = user_daily.find_one({"_id": user_id}, {
+                "_id": 0,
+                "workouts": 1,
+                "calories_currently_burned": 1
+            })
+
+            return jsonify(updated_data), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+@app.route('/api/add_weight', methods=['POST'])
+def add_weight():
+    try:
+        # Get the user ID from the session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        # Get weight details from the request
         data = request.json
-        total_calories_burned = data.get('total_calories_burned')
+        weight = data.get('weight')
+        date = data.get('date')
 
-        if total_calories_burned is None:
-            return jsonify({'error': 'Missing total_calories_burned field'}), 400
+        if not weight or not date:
+            return jsonify({"error": "Missing required fields"}), 400
 
-        # Update the user's daily data in MongoDB
+        # Add the weight entry to the database
         result = user_daily.update_one(
             {"_id": user_id},
-            {"$set": {"calories_currently_burned": total_calories_burned}}
+            {
+                "$push": {
+                    "weight_log": {
+                        "date": date,
+                        "weight": weight
+                    }
+                }
+            }
         )
 
         if result.modified_count == 0:
-            return jsonify({'error': 'Failed to update calories burned'}), 500
+            return jsonify({"error": "Failed to add weight entry"}), 500
 
-        # Fetch the updated data to return to the frontend
-        updated_data = user_daily.find_one({"_id": user_id}, {
-            "_id": 0,
-            "calories_currently_burned": 1
-        })
+        # Fetch the updated weight log to return to the frontend
+        updated_data = user_daily.find_one({"_id": user_id}, {"_id": 0, "weight_log": 1})
 
         return jsonify(updated_data), 200
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
+    
 
+@app.route('/api/update_water', methods=['POST'])
+def update_water():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        data = request.json
+        glasses = data.get('glasses')
+
+        if glasses is None:
+            return jsonify({"error": "Missing required field: glasses"}), 400
+
+        # Update the water_glasses field in the database
+        result = user_daily.update_one(
+            {"_id": user_id},
+            {"$set": {"water_glasses": glasses}}
+        )
+
+        if result.modified_count == 0:
+            return jsonify({"error": "Failed to update water glasses"}), 500
+
+        return jsonify({"message": "Water glasses updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/get_water', methods=['GET'])
+def get_water():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        user_data = user_daily.find_one({"_id": user_id}, {"_id": 0, "water_glasses": 1})
+        if not user_data or "water_glasses" not in user_data:
+            return jsonify({"water_glasses": 0}), 200  # Default to 0 if no data is found
+
+        return jsonify(user_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
