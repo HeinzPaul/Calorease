@@ -212,6 +212,7 @@ def firsttime():
         "dinner": [],
     },
     "starting_weight": weight,
+    "water_glasses":0,
     "weight_log": [
     ]
         }
@@ -466,19 +467,12 @@ def get_meals_and_progress():
     user_daily_data['fiber_currently_eaten'] = round(user_daily_data.get('fiber_currently_eaten', 0), 0)
     return jsonify(user_daily_data)
 
-<<<<<<< HEAD
 @app.route('/api/update_calories_burned', methods=['POST'])
 def update_calories_burned():
-=======
-
-@app.route('/api/update_health_goals', methods=['POST'])
-def update_health_goals():
->>>>>>> 0cae4d3 (tried working on settings page)
     try:
         # Get the user ID from the session
         user_id = session.get('user_id')
         if not user_id:
-<<<<<<< HEAD
             return jsonify({'error': 'User not logged in'}), 401
 
         # Get the total calories burned from the request
@@ -508,7 +502,14 @@ def update_health_goals():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-=======
+
+
+@app.route('/api/update_health_goals', methods=['POST'])
+def update_health_goals():
+    try:
+        # Get the user ID from the session
+        user_id = session.get('user_id')
+        if not user_id:
             return jsonify({"error": "User not logged in"}), 401
 
         # Get the updated health goals from the request
@@ -559,7 +560,6 @@ def update_health_goals():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
->>>>>>> 0cae4d3 (tried working on settings page)
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
