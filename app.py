@@ -250,10 +250,29 @@ def home():
 
     # Get the total calories to eat (cals_to_eat)
     cals_to_eat = user_data.get('cals_to_eat', 0)
+    carbs_to_eat = user_data.get('carbs_to_eat', 0)
+    fats_to_eat = user_data.get('fats_to_eat', 0)
+    proteins_to_eat = user_data.get('proteins_to_eat', 0)
+    fiber_to_eat = user_data.get('fiber_to_eat', 0)
     calories_currently_eaten = user_daily_data.get('calories_currently_eaten', 0)
+    carbs_currently_eaten = user_daily_data.get('carbs_currently_eaten', 0)
+    protiens_currently_eaten = user_daily_data.get('proteins_currently_eaten', 0)
+    fats_currently_eaten = user_daily_data.get('fats_currently_eaten', 0)
+    fiber_currently_eaten = user_daily_data.get('fiber_currently_eaten', 0)
+
 
     # Pass the data to the template
-    return render_template("homepage_refreshing.html", cals_to_eat=cals_to_eat, calories_currently_eaten=calories_currently_eaten)
+    return render_template("homepage_refreshing.html", cals_to_eat=cals_to_eat,
+                           carbs_to_eat=carbs_to_eat,
+                           fats_to_eat=fats_to_eat,
+                           proteins_to_eat=proteins_to_eat,
+                           fiber_to_eat=fiber_to_eat,
+
+                           calories_currently_eaten=calories_currently_eaten, 
+                           carbs_currently_eaten=carbs_currently_eaten, 
+                           protiens_currently_eaten=protiens_currently_eaten, 
+                           fats_currently_eaten=fats_currently_eaten,
+                           fiber_currently_eaten=fiber_currently_eaten)
 
 @app.route('/api/search_food', methods=['GET'])
 def search_food():
