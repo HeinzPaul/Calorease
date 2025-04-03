@@ -214,7 +214,7 @@ def firsttime():
     "starting_weight": weight,
     "water_glasses":0,
     "weight_log": [
-    ]
+    ],"workouts":[]
         }
         user_daily.insert_one(user_daily_data)
         # Redirect or render a success page
@@ -442,19 +442,22 @@ def get_meals_and_progress():
 
     # Fetch the user's daily data
     user_daily_data = user_daily.find_one({"_id": user_id}, {
-        "_id": 0,
-        "meals": 1,
-        "calories_currently_eaten": 1,
-        "proteins_currently_eaten": 1,
-        "fats_currently_eaten": 1,
-        "carbs_currently_eaten": 1,
-        "fiber_currently_eaten": 1,
-        "cals_to_eat": 1,
-        "proteins_to_eat": 1,
-        "fats_to_eat": 1,
-        "carbs_to_eat": 1,
-        "fiber_to_eat": 1
-    })
+            "_id": 0,
+            "meals": 1,
+            "calories_currently_eaten": 1,
+            "proteins_currently_eaten": 1,
+            "fats_currently_eaten": 1,
+            "carbs_currently_eaten": 1,
+            "fiber_currently_eaten": 1,
+            "cals_to_eat": 1,
+            "proteins_to_eat": 1,
+            "fats_to_eat": 1,
+            "carbs_to_eat": 1,
+            "fiber_to_eat": 1,
+            "workouts": 1,  # Include workouts
+            "calories_currently_burned": 1,  # Include total calories burned
+            "weight_log":1
+        })
 
     if not user_daily_data:
         return jsonify({"error": "User daily data not found"}), 404
@@ -467,40 +470,6 @@ def get_meals_and_progress():
     user_daily_data['fiber_currently_eaten'] = round(user_daily_data.get('fiber_currently_eaten', 0), 0)
     return jsonify(user_daily_data)
 
-@app.route('/api/update_calories_burned', methods=['POST'])
-def update_calories_burned():
-    try:
-        # Get the user ID from the session
-        user_id = session.get('user_id')
-        if not user_id:
-            return jsonify({'error': 'User not logged in'}), 401
-
-        # Get the total calories burned from the request
-        data = request.json
-        total_calories_burned = data.get('total_calories_burned')
-
-        if total_calories_burned is None:
-            return jsonify({'error': 'Missing total_calories_burned field'}), 400
-
-        # Update the user's daily data in MongoDB
-        result = user_daily.update_one(
-            {"_id": user_id},
-            {"$set": {"calories_currently_burned": total_calories_burned}}
-        )
-
-        if result.modified_count == 0:
-            return jsonify({'error': 'Failed to update calories burned'}), 500
-
-        # Fetch the updated data to return to the frontend
-        updated_data = user_daily.find_one({"_id": user_id}, {
-            "_id": 0,
-            "calories_currently_burned": 1
-        })
-
-        return jsonify(updated_data), 200
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 
 
@@ -557,6 +526,157 @@ def update_health_goals():
             return jsonify({"error": "No changes made to user data"}), 400
 
         return jsonify({"message": "Health goals updated successfully!"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@app.route('/api/get_weight_log', methods=['GET'])
+def get_weight_log():
+    try:
+        # Get the user ID from the session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        # Fetch the weight log from the database
+        user_data = user_daily.find_one({"_id": user_id}, {"_id": 0, "weight_log": 1})
+
+        if not user_data or "weight_log" not in user_data:
+            return jsonify({"weight_log": []}), 200  # Return an empty array if no weight log is found
+
+        return jsonify(user_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@app.route('/api/add_workout', methods=['POST'])
+def add_workout():
+        try:
+        # Get the user ID from the session
+            user_id = session.get('user_id')
+            if not user_id:
+                return jsonify({"error": "User not logged in"}), 401
+
+
+        # Get workout details from the request
+            data = request.json
+            exercise = data.get('exercise')
+            minutes = data.get('duration')
+            calories_burned = data.get('calories_burned')
+
+            if not exercise or not minutes or not calories_burned:
+                return jsonify({"error": "Missing required fields"}), 400
+
+            # Add the workout to the database
+            result = user_daily.update_one(
+                {"_id": user_id},
+                {
+                    "$push": {
+                        "workouts": {
+                            "exercise": exercise,
+                            "minutes": minutes,
+                            "calories_burned": calories_burned
+                        }
+                    },
+                    "$inc": {
+                        "calories_currently_burned": calories_burned  # Increment calories burned
+                    }
+                }
+            )
+
+            if result.modified_count == 0:
+                return jsonify({"error": "Failed to add workout"}), 500
+
+            # Fetch the updated data to return to the frontend
+            updated_data = user_daily.find_one({"_id": user_id}, {
+                "_id": 0,
+                "workouts": 1,
+                "calories_currently_burned": 1
+            })
+
+            return jsonify(updated_data), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+@app.route('/api/add_weight', methods=['POST'])
+def add_weight():
+    try:
+        # Get the user ID from the session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        # Get weight details from the request
+        data = request.json
+        weight = data.get('weight')
+        date = data.get('date')
+
+        if not weight or not date:
+            return jsonify({"error": "Missing required fields"}), 400
+
+        # Add the weight entry to the database
+        result = user_daily.update_one(
+            {"_id": user_id},
+            {
+                "$push": {
+                    "weight_log": {
+                        "date": date,
+                        "weight": weight
+                    }
+                }
+            }
+        )
+
+        if result.modified_count == 0:
+            return jsonify({"error": "Failed to add weight entry"}), 500
+
+        # Fetch the updated weight log to return to the frontend
+        updated_data = user_daily.find_one({"_id": user_id}, {"_id": 0, "weight_log": 1})
+
+        return jsonify(updated_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/update_water', methods=['POST'])
+def update_water():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        data = request.json
+        glasses = data.get('glasses')
+
+        if glasses is None:
+            return jsonify({"error": "Missing required field: glasses"}), 400
+
+        # Update the water_glasses field in the database
+        result = user_daily.update_one(
+            {"_id": user_id},
+            {"$set": {"water_glasses": glasses}}
+        )
+
+        if result.modified_count == 0:
+            return jsonify({"error": "Failed to update water glasses"}), 500
+
+        return jsonify({"message": "Water glasses updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/get_water', methods=['GET'])
+def get_water():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User not logged in"}), 401
+
+        user_data = user_daily.find_one({"_id": user_id}, {"_id": 0, "water_glasses": 1})
+        if not user_data or "water_glasses" not in user_data:
+            return jsonify({"water_glasses": 0}), 200  # Default to 0 if no data is found
+
+        return jsonify(user_data), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -983,7 +983,7 @@
         <button class="calendar-nav" onclick="nextDays()">&#9655;</button>
     </div>
 
-    <div class="container">
+    <div class="container" style="background-color: rgb(204, 210, 81);">
         <div class="kur-progress-box">
             <div class="main-progress-container">
                 <svg class="kur-progress-bar" viewBox="0 0 36 36" width="180" height="180">
@@ -1358,7 +1358,7 @@
                 <span id="water-count">0/8 glasses</span>
             </div>
         </div>
-        <div style="background-color: rgb(213, 200, 82)" class="container weight-tracker">
+        <div style="background-color: rgb(194, 110, 213)" class="container weight-tracker">
             <div class="mealbox">
                 <span>Workouts</span>
                 <button onclick="openWorkoutModal()">+</button>
@@ -1381,6 +1381,14 @@
             <option value="Running">Running</option>
             <option value="Dancing">Dancing</option>
             <option value="WeightTraining">Weight Training</option>
+            <option value="Aerobics">Aerobics</option>
+            <option value="Football">Football</option>
+            <option value="Cricket">Cricket</option>
+            <option value="Swimming">Swimming</option>
+            <option value="WeightLifting">Weight Lifting</option>
+            <option value="Cycling">Cycling</option>
+            <option value="Yoga">Yoga</option>
+
         </select>
         <input type="number" id="workout-duration" placeholder="Duration (minutes)">
         <button class="done-btn" onclick="saveWorkout()">Save Workout</button>
@@ -1398,11 +1406,15 @@
 
     <script>
         let dailyTargets = {};
-
+        let waterIntake = 0; // Declare waterIntake globally
+        let weightChart = null; // Declare weightChart globally
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+
                 await fetchDailyTargets(); // Wait for daily targets to be fetched
+                fetchWaterData(); // Fetch water data
                 initializePage(); // Initialize the page after daily targets are ready
+
             } catch (error) {
                 console.error('Error during initialization:', error);
             }
@@ -1565,8 +1577,6 @@
 
 
 
-        let weightData = JSON.parse(localStorage.getItem('weightData')) || [];
-        let weightChart = null;
 
         // for the hamburger menu
         function toggleMenu() {
@@ -1575,9 +1585,10 @@
             menu.classList.toggle('active');
             hamburger.classList.toggle('active');
         }
-
+        let weightLog = [];
         async function initializePage() {
             try {
+                // Fetch meals, progress, workouts, and weight tracking data from the backend
                 const response = await fetch('/api/get_meals_and_progress');
                 if (!response.ok) {
                     throw new Error('Failed to fetch meals and progress data');
@@ -1590,8 +1601,6 @@
                 }
 
                 console.log('Fetched data:', data);
-
-
 
                 // Populate meal boxes
                 const mealSections = ['breakfast', 'morning_Snack', 'lunch', 'evening_Snack', 'dinner'];
@@ -1620,6 +1629,22 @@
                 // Update main progress bars
                 document.getElementById('calories-eaten').textContent = data.calories_currently_eaten;
                 document.getElementById('calories-to-eat').textContent = data.cals_to_eat;
+
+                // Update workout section
+                if (data.workouts && data.workouts.length > 0) {
+                    updateWorkoutDisplayFromBackend(data.workouts, data.calories_currently_burned);
+                } else {
+                    console.log('No workout data found.');
+                }
+
+                // Update weight tracking section
+                if (data.weight_log && data.weight_log.length > 0) {
+                    weightLog = data.weight_log; // Store weight log data in the global variable
+                    updateWeightHistory(weightLog);
+                    updateWeightStats(weightLog);
+                } else {
+                    console.log('No weight log data found.');
+                }
 
                 progressload(); // Update the main progress rings
             } catch (error) {
@@ -1953,20 +1978,32 @@
 
 
 
-        function initializeChart() {
+        function initializeChart(weightData) {
+            console.log("Initializing chart with weight data:", weightData);
             const ctx = document.getElementById('weightChart').getContext('2d');
 
+            // Handle empty or undefined weightData
+            if (!weightData || weightData.length === 0) {
+                console.log('No weight data available to render the chart.');
+                ctx.font = '16px Arial';
+                ctx.fillText('No weight data available', 50, 50);
+                return;
+            }
+
+            // Destroy the existing chart if it exists
             if (weightChart) {
+                console.log('Destroying existing chart instance.');
                 weightChart.destroy();
             }
 
+            // Create a new chart
             weightChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: weightData.map(entry => new Date(entry.date).toLocaleDateString()),
+                    labels: weightData.map(entry => new Date(entry.date).toLocaleDateString()), // Dates as labels
                     datasets: [{
                         label: 'Weight Progress',
-                        data: weightData.map(entry => entry.weight),
+                        data: weightData.map(entry => entry.weight), // Weights as data points
                         borderColor: '#57b837',
                         backgroundColor: 'rgba(87, 184, 55, 0.1)',
                         tension: 0.4,
@@ -1998,24 +2035,22 @@
                 }
             });
         }
-
-        function updateWeightHistory() {
+        function updateWeightHistory(weightLog) {
             const historyContainer = document.getElementById('weightHistory');
             historyContainer.innerHTML = '';
 
-            weightData.slice().reverse().forEach(entry => {
+            weightLog.slice().reverse().forEach(entry => {
                 const weightEntry = document.createElement('div');
                 weightEntry.className = 'weight-entry';
                 weightEntry.innerHTML = `
-                    <span class="entry-weight">${entry.weight.toFixed(1)} kg</span>
-                    <span class="entry-date">${new Date(entry.date).toLocaleDateString()}</span>
-                    <button class="delete-weight" onclick="deleteWeight(${entry.id})">×</button>
-                `;
+            <span class="entry-weight">${entry.weight.toFixed(1)} kg</span>
+            <span class="entry-date">${new Date(entry.date).toLocaleDateString()}</span>
+        `;
                 historyContainer.appendChild(weightEntry);
             });
         }
 
-        function addWeight() {
+        async function addWeight() {
             const weightInput = document.getElementById('weightInput');
             const weight = parseFloat(weightInput.value);
 
@@ -2025,42 +2060,51 @@
             }
 
             const newEntry = {
-                id: Date.now(),
                 weight: weight,
-                date: new Date().toISOString()
+                date: new Date().toISOString().split('T')[0] // Format date as YYYY-MM-DD
             };
 
-            weightData.push(newEntry);
-            weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            try {
+                const response = await fetch('/api/add_weight', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newEntry)
+                });
 
-            localStorage.setItem('weightData', JSON.stringify(weightData));
+                if (!response.ok) {
+                    throw new Error('Failed to add weight entry');
+                }
 
-            updateWeightStats();
-            updateWeightHistory();
-            initializeChart();
+                const updatedData = await response.json();
+                console.log('Updated weight log:', updatedData);
 
-            weightInput.value = '';
+                // Update the frontend with the new weight log
+                updateWeightHistory(updatedData.weight_log);
+                updateWeightStats(updatedData.weight_log);
+
+                initializeChart(updatedData.weight_log); // Reinitialize the chart with updated data    
+
+                weightInput.value = ''; // Clear the input field
+            } catch (error) {
+                console.error('Error adding weight entry:', error);
+                alert('An error occurred while adding the weight entry.');
+            }
         }
 
-        function deleteWeight(id) {
-            weightData = weightData.filter(entry => entry.id !== id);
-            localStorage.setItem('weightData', JSON.stringify(weightData));
 
-            updateWeightStats();
-            updateWeightHistory();
-            initializeChart();
-        }
 
-        function updateWeightStats() {
-            if (weightData.length === 0) {
+        function updateWeightStats(weightLog) {
+            if (weightLog.length === 0) {
                 document.getElementById('startWeight').textContent = '0.0 kg';
                 document.getElementById('currentWeight').textContent = '0.0 kg';
                 document.getElementById('weightChange').textContent = '0.0 kg';
                 return;
             }
 
-            const startWeight = weightData[0].weight;
-            const currentWeight = weightData[weightData.length - 1].weight;
+            const startWeight = weightLog[0].weight;
+            const currentWeight = weightLog[weightLog.length - 1].weight;
             const change = currentWeight - startWeight;
 
             document.getElementById('startWeight').textContent = `${startWeight.toFixed(1)} kg`;
@@ -2070,35 +2114,97 @@
             const weightChangeElement = document.getElementById('weightChange');
             weightChangeElement.style.color = change > 0 ? '#e63946' : change < 0 ? '#2b9e44' : '#666';
         }
+        async function toggleWeightSection() {
+            console.log('toggleWeightSection called'); // Debugging log
+            const weightDataContainer = document.querySelector('.weightdata'); // DOM element for the weight section
 
-        function toggleWeightSection() {
-            const weightdata = document.querySelector('.weightdata');
-            if (weightdata.style.display === 'none' || weightdata.style.display === '') {
-                weightdata.style.display = 'block';
-                initializeChart();
+            if (weightDataContainer.style.display === 'none' || weightDataContainer.style.display === '') {
+                weightDataContainer.style.display = 'block';
+
+                try {
+                    // Make an API call to fetch weight log data
+                    const response = await fetch('/api/get_weight_log');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch weight log data');
+                    }
+
+                    const data = await response.json();
+                    console.log('Fetched weight log data:', data);
+
+                    // Check if weight log data exists
+                    if (data.weight_log && data.weight_log.length > 0) {
+                        initializeChart(data.weight_log); // Pass the weight log data to the chart
+                    } else {
+                        console.log('No weight data available to render the chart.');
+                    }
+                } catch (error) {
+                    console.error('Error fetching weight log data:', error);
+                }
             } else {
-                weightdata.style.display = 'none';
+                weightDataContainer.style.display = 'none';
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateWeightStats();
-            updateWeightHistory();
-        });
+
         const workouts = {
             Walking: { caloriesPerMinute: 3.5 },
             Running: { caloriesPerMinute: 11.4 },
             Dancing: { caloriesPerMinute: 7.2 },
-            WeightTraining: { caloriesPerMinute: 6.0 }
+            Aerobics: { caloriesPerMinute: 7.5 },
+            Football: { caloriesPerMinute: 9.5 },
+            Cricket: { caloriesPerMinute: 7.0 },
+            Swimming: { caloriesPerMinute: 9.8 },
+            WeightLifting: { caloriesPerMinute: 6.0 },
+            Cycling: { caloriesPerMinute: 8.5 },
+            Yoga: { caloriesPerMinute: 3.0 }
         };
 
-        let waterIntake = parseInt(localStorage.getItem('waterIntake') || '0');
-        let workoutLog = JSON.parse(localStorage.getItem('workoutLog') || '[]');
 
-        function addWater() {
+
+        async function addWater() {
             if (waterIntake < 8) {
                 waterIntake++;
+                console.log('Water intake incremented:', waterIntake); // Debugging log
                 updateWaterProgress();
+                console.log('Water intake incremented:', waterIntake); // Debugging log
+                try {
+                    console.log('Water intake incremented:', waterIntake);
+                    const response = await fetch('/api/update_water', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ glasses: waterIntake })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to update water glasses');
+                    }
+
+                    console.log('Water glasses updated successfully');
+                } catch (error) {
+                    console.error('Error updating water glasses:', error);
+                }
+            } else {
+                alert('You have reached the daily limit of 8 glasses.');
+            }
+        }
+
+        async function fetchWaterData() {
+            try {
+                const response = await fetch('/api/get_water');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch water data');
+                }
+
+                const data = await response.json();
+                console.log('Fetched water data:', data);
+
+                // Update the frontend with the fetched water glasses count
+                waterIntake = data.water_glasses || 0;
+                updateWaterProgress();
+            } catch (error) {
+                console.error('Error fetching water data:', error);
             }
         }
 
@@ -2106,10 +2212,9 @@
             const waterProgressFill = document.querySelector('.water-progress-fill');
             const waterCountDisplay = document.getElementById('water-count');
 
+            // Update the progress bar and display
             waterProgressFill.style.width = `${(waterIntake / 8) * 100}%`;
             waterCountDisplay.textContent = `${waterIntake}/8 glasses`;
-
-            localStorage.setItem('waterIntake', waterIntake);
         }
 
         function openWorkoutModal() {
@@ -2124,54 +2229,6 @@
             document.querySelector('.blur-background').classList.remove('active');
         }
 
-        function saveWorkout() {
-            const workoutType = document.getElementById('workout-type').value;
-            const duration = parseInt(document.getElementById('workout-duration').value);
-
-            if (!workoutType || !duration) {
-                alert('Please select a workout and enter duration');
-                return;
-            }
-
-            const caloriesBurned = Math.round(workouts[workoutType].caloriesPerMinute * duration);
-
-            const workout = {
-                type: workoutType,
-                duration: duration,
-                calories: caloriesBurned,
-                date: new Date().toISOString()
-            };
-
-            workoutLog.push(workout);
-            localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
-
-            updateWorkoutDisplay();
-            closeWorkoutModal();
-        }
-
-        function updateWorkoutDisplay() {
-            const workoutList = document.getElementById('workout-list');
-            const totalCaloriesElement = document.getElementById('total-workout-calories');
-
-            workoutList.innerHTML = '';
-            const totalCalories = workoutLog.reduce((sum, workout) => sum + workout.calories, 0);
-
-            workoutLog.slice().reverse().forEach((workout, index) => {
-                const workoutItem = document.createElement('div');
-                workoutItem.className = 'workout-item';
-                workoutItem.innerHTML = `
-            <div>
-                <span>${workout.type} (${workout.duration} mins)</span>
-                <span>${workout.calories} cal</span>
-            </div>
-            <button class="delete-workout" onclick="removeWorkout(${workoutLog.length - 1 - index})">×</button>
-        `;
-                workoutList.appendChild(workoutItem);
-            });
-
-            totalCaloriesElement.textContent = totalCalories;
-        }
-
         async function saveWorkout() {
             const workoutType = document.getElementById('workout-type').value;
             const duration = parseInt(document.getElementById('workout-duration').value);
@@ -2183,28 +2240,20 @@
 
             const caloriesBurned = Math.round(workouts[workoutType].caloriesPerMinute * duration);
 
-            // Add the workout to the local log
             const workout = {
-                type: workoutType,
+                exercise: workoutType,
                 duration: duration,
-                calories: caloriesBurned,
-                date: new Date().toISOString()
+                calories_burned: caloriesBurned
             };
 
-            workoutLog.push(workout);
-            localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
-
-            // Calculate the total calories burned
-            const totalCaloriesBurned = workoutLog.reduce((sum, workout) => sum + workout.calories, 0);
-
             try {
-                // Send the total calories burned to the backend
-                const response = await fetch('/api/update_calories_burned', {
+                // Send the workout data to the backend
+                const response = await fetch('/api/add_workout', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ total_calories_burned: totalCaloriesBurned })
+                    body: JSON.stringify(workout)
                 });
 
                 if (!response.ok) {
@@ -2216,47 +2265,66 @@
                 const updatedData = await response.json();
                 console.log('Updated data from backend:', updatedData);
 
-                // Update the frontend display
-                updateWorkoutDisplay();
+                // Update the frontend display with the updated data
+                updateWorkoutDisplayFromBackend(updatedData.workouts, updatedData.calories_currently_burned);
                 alert('Workout added successfully!');
             } catch (error) {
-                console.error('Error updating calories burned:', error);
-                alert('An error occurred while updating calories burned.');
+                console.error('Error adding workout:', error);
+                alert('An error occurred while adding the workout.');
             }
 
             closeWorkoutModal(); // Close the modal
         }
-        function removeWorkout(index) {
-            workoutLog.splice(index, 1);
-            localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
-            updateWorkoutDisplay();
+
+        function updateWorkoutDisplayFromBackend(workouts, totalCaloriesBurned) {
+            const workoutList = document.getElementById('workout-list');
+            const totalCaloriesElement = document.getElementById('total-workout-calories');
+
+            workoutList.innerHTML = '';
+            workouts.forEach((workout) => {
+                const workoutItem = document.createElement('div');
+                workoutItem.className = 'workout-item';
+                workoutItem.innerHTML = `
+            <div>
+                <span>${workout.exercise} (${workout.minutes} mins)</span>
+                <span>${workout.calories_burned} cal</span>
+            </div>
+        `;
+                workoutList.appendChild(workoutItem);
+            });
+
+            totalCaloriesElement.textContent = totalCaloriesBurned;
         }
-        function addWater() {
-            if (waterIntake < 8) {
-                waterIntake++;
-                updateWaterProgress();
+
+
+
+
+
+
+        async function resetWater() {
+            waterIntake = 0;
+            updateWaterProgress();
+
+            try {
+                const response = await fetch('/api/update_water', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ glasses: waterIntake })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to reset water glasses');
+                }
+
+                console.log('Water glasses reset successfully');
+            } catch (error) {
+                console.error('Error resetting water glasses:', error);
             }
         }
 
-        function resetWater() {
-            waterIntake = 0;
-            updateWaterProgress();
-        }
 
-        // Modify water tracking initialization
-        function initializeWaterTracking() {
-            // Always start at 0 when page is refreshed
-            waterIntake = 0;
-            updateWaterProgress();
-        }
-
-        // Replace existing DOMContentLoaded listener
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeWaterTracking();
-            updateWeightStats();
-            updateWeightHistory();
-            updateWorkoutDisplay();
-        });
 
         function generateCalendar(daysBefore = 6) {
             const calendarContainer = document.getElementById("calendarDays");
