@@ -466,12 +466,19 @@ def get_meals_and_progress():
     user_daily_data['fiber_currently_eaten'] = round(user_daily_data.get('fiber_currently_eaten', 0), 0)
     return jsonify(user_daily_data)
 
+<<<<<<< HEAD
 @app.route('/api/update_calories_burned', methods=['POST'])
 def update_calories_burned():
+=======
+
+@app.route('/api/update_health_goals', methods=['POST'])
+def update_health_goals():
+>>>>>>> 0cae4d3 (tried working on settings page)
     try:
         # Get the user ID from the session
         user_id = session.get('user_id')
         if not user_id:
+<<<<<<< HEAD
             return jsonify({'error': 'User not logged in'}), 401
 
         # Get the total calories burned from the request
@@ -501,6 +508,58 @@ def update_calories_burned():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+=======
+            return jsonify({"error": "User not logged in"}), 401
+
+        # Get the updated health goals from the request
+        data = request.json  # Use request.json to parse JSON data
+        if not data:
+            return jsonify({"error": "Invalid or missing JSON data"}), 400
+
+        weight = float(data.get('weight'))
+        height = float(data.get('height'))
+        age = int(data.get('age'))
+        gender = data.get('gender')
+        activity_level = data.get('activityLevel')
+        target_weight = float(data.get('targetWeight'))
+        dietary_preferences = data.get('dietaryPreferences')
+        weight_loss_rate = float(data.get('lossperweek', 0.5))  # Default to 0.5 kg/week if not provided
+
+        # Recalculate TDEE and daily calorie intake
+        tdee = calc_tdee(weight=weight, height=height, age=age, gender=gender, activity_level=activity_level)
+        cals_to_eat = calc_cals_to_eat(weight_loss_rate=weight_loss_rate, tdee=tdee, gender=gender)
+
+        # Recalculate macronutrient targets
+        macros_to_eat = calc_macros_to_eat(cals_to_eat=cals_to_eat, weight=weight, goal=dietary_preferences)
+
+        # Prepare the updated data
+        update_data = {
+            "weight": weight,
+            "height": height,
+            "age": age,
+            "gender": gender,
+            "activity_level": activity_level,
+            "target_weight": target_weight,
+            "dietary_preferences": dietary_preferences,
+            "tdee": tdee,
+            "cals_to_eat": cals_to_eat,
+            "proteins_to_eat": macros_to_eat["protein_grams"],
+            "fats_to_eat": macros_to_eat["fat_grams"],
+            "carbs_to_eat": macros_to_eat["carb_grams"],
+            "fiber_to_eat": macros_to_eat["fiber_grams"]
+        }
+
+        # Update the user's health goals in the database
+        result = user_collection.update_one({"_id": user_id}, {"$set": update_data})
+
+        if result.modified_count == 0:
+            return jsonify({"error": "No changes made to user data"}), 400
+
+        return jsonify({"message": "Health goals updated successfully!"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+>>>>>>> 0cae4d3 (tried working on settings page)
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)
