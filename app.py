@@ -239,14 +239,22 @@ def suggest():
 def home():
     if "user_id" not in session:
         return redirect(url_for("hello"))
-    # Assuming the user is logged in and their ID is stored in the session
+    
     user_id = session.get('user_id')
+    print(f"User ID from session: {user_id}")  # Debugging log
+
     if not user_id:
         return redirect(url_for('hello'))  # Redirect to login if not logged in
     
     # Fetch the user's data from MongoDB
     user_data = user_collection.find_one({"_id": user_id})
+    print(f"User data: {user_data}")  # Debugging log
+
     user_daily_data = user_daily.find_one({"_id": user_id})
+    print(f"User daily data: {user_daily_data}")  # Debugging log
+
+    if not user_daily_data:
+        return redirect(url_for('firsttime'))  # Redirect to first-time setup or show an error page
 
     # Get the total calories to eat (cals_to_eat)
     cals_to_eat = user_data.get('cals_to_eat', 0)
@@ -274,6 +282,7 @@ def home():
                            fats_currently_eaten=fats_currently_eaten,
                            fiber_currently_eaten=fiber_currently_eaten)
 
+   
 @app.route('/api/search_food', methods=['GET'])
 def search_food():
     query = request.args.get('q', '').lower()
@@ -423,6 +432,39 @@ def add_food():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+@app.route('/api/get_meals_and_progress', methods=['GET'])
+def get_meals_and_progress():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"error": "User not logged in"}), 401
+
+    # Fetch the user's daily data
+    user_daily_data = user_daily.find_one({"_id": user_id}, {
+        "_id": 0,
+        "meals": 1,
+        "calories_currently_eaten": 1,
+        "proteins_currently_eaten": 1,
+        "fats_currently_eaten": 1,
+        "carbs_currently_eaten": 1,
+        "fiber_currently_eaten": 1,
+        "cals_to_eat": 1,
+        "proteins_to_eat": 1,
+        "fats_to_eat": 1,
+        "carbs_to_eat": 1,
+        "fiber_to_eat": 1
+    })
+
+    if not user_daily_data:
+        return jsonify({"error": "User daily data not found"}), 404
+
+     # Round the values to 2 decimal places
+    user_daily_data['calories_currently_eaten'] = round(user_daily_data.get('calories_currently_eaten', 0), 0)
+    user_daily_data['proteins_currently_eaten'] = round(user_daily_data.get('proteins_currently_eaten', 0), 2)
+    user_daily_data['fats_currently_eaten'] = round(user_daily_data.get('fats_currently_eaten', 0), 0)
+    user_daily_data['carbs_currently_eaten'] = round(user_daily_data.get('carbs_currently_eaten', 0), 0)
+    user_daily_data['fiber_currently_eaten'] = round(user_daily_data.get('fiber_currently_eaten', 0), 0)
+    return jsonify(user_daily_data)
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)

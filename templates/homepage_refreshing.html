@@ -929,6 +929,33 @@
             cursor: pointer;
             padding: 5px;
         }
+
+        .circle-progress.red,
+        .carbs-circle-progress.red,
+        .proteins-circle-progress.red,
+        .fats-circle-progress.red,
+        .fibre-circle-progress.red {
+            stroke: #e63946;
+            /* Red */
+        }
+
+        .circle-progress.yellow,
+        .carbs-circle-progress.yellow,
+        .proteins-circle-progress.yellow,
+        .fats-circle-progress.yellow,
+        .fibre-circle-progress.yellow {
+            stroke: #ffb703;
+            /* Yellow */
+        }
+
+        .circle-progress.green,
+        .carbs-circle-progress.green,
+        .proteins-circle-progress.green,
+        .fats-circle-progress.green,
+        .fibre-circle-progress.green {
+            stroke: #2a9d8f;
+            /* Green */
+        }
     </style>
 </head>
 
@@ -986,7 +1013,8 @@
 
                     <b>Carbs</b>
                     <div class="carbs-percentage">0</div>
-                    <span id="carbs-eaten" style="display:none;">{{ carbs_currently_eaten }}</span><span id="carbs-to-eat" style="display:none;">{{ carbs_to_eat }}</span><br>
+                    <span id="carbs-eaten" style="display:none;">{{ carbs_currently_eaten }}</span><span
+                        id="carbs-to-eat" style="display:none;">{{ carbs_to_eat }}</span><br>
                 </div>
             </div>
 
@@ -1002,7 +1030,8 @@
                     </svg>
                     <b>Proteins</b>
                     <div class="protein-percentage">0</div>
-                    <span id="proteins-eaten" style="display:none;">{{ protiens_currently_eaten }}</span><span id="proteins-to-eat" style="display:none;">{{ proteins_to_eat }}</span><br>
+                    <span id="proteins-eaten" style="display:none;">{{ protiens_currently_eaten }}</span><span
+                        id="proteins-to-eat" style="display:none;">{{ proteins_to_eat }}</span><br>
                 </div>
             </div>
 
@@ -1018,7 +1047,8 @@
                     </svg>
                     <b>Fibre</b>
                     <div class="fibre-percentage">0</div>
-                    <span id="fiber-eaten" style="display:none;">{{ fiber_currently_eaten }}</span><span id="fiber-to-eat" style="display:none;">{{fiber_to_eat
+                    <span id="fiber-eaten" style="display:none;">{{ fiber_currently_eaten }}</span><span
+                        id="fiber-to-eat" style="display:none;">{{fiber_to_eat
                         }}</span><br>
                 </div>
             </div>
@@ -1035,7 +1065,8 @@
                     </svg>
                     <b>Fats</b>
                     <div class="fat-percentage">0</div>
-                    <span id="fats-eaten" style="display:none;">{{ fats_currently_eaten }}</span><span id="fats-to-eat" style="display:none;">{{ fats_to_eat
+                    <span id="fats-eaten" style="display:none;">{{ fats_currently_eaten }}</span><span id="fats-to-eat"
+                        style="display:none;">{{ fats_to_eat
                         }}</span><br>
                 </div>
             </div>
@@ -1363,12 +1394,20 @@
     </div>
 
     <script>
+        let dailyTargets = {};
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await fetchDailyTargets(); // Wait for daily targets to be fetched
+                initializePage(); // Initialize the page after daily targets are ready
+            } catch (error) {
+                console.error('Error during initialization:', error);
+            }
+        });
 
         let john = []
 
-        let dailyTargets = {}; // Initialize an empty object for daily targets
 
-        // Function to fetch daily targets from the backend
         async function fetchDailyTargets() {
             try {
                 const response = await fetch('/api/daily_targets');
@@ -1382,23 +1421,82 @@
                     return;
                 }
 
-                dailyTargets = data; // Update the global dailyTargets object
-                console.log('Daily Targets:', dailyTargets);
+                // Total daily targets
+                const totalTargets = {
+                    protein: data.protein,
+                    carbs: data.carbs,
+                    fats: data.fats,
+                    fiber: data.fiber
+                };
 
-                // Call any function that depends on dailyTargets (e.g., progressload)
+                console.log('Total Daily Targets:', totalTargets);
+
+                // Allocate percentages for each meal section
+                const mealAllocation = {
+                    breakfast: 0.3, // 30%
+                    lunch: 0.3,     // 30%
+                    dinner: 0.3,    // 30%
+                    morning_snack: 0.05, // 5%
+                    evening_snack: 0.05  // 5%
+                };
+
+                // Calculate macros for each meal section
+                const mealTargets = {};
+                for (const meal in mealAllocation) {
+                    mealTargets[meal] = {
+                        protein: (totalTargets.protein * mealAllocation[meal]).toFixed(1),
+                        carbs: (totalTargets.carbs * mealAllocation[meal]).toFixed(1),
+                        fats: (totalTargets.fats * mealAllocation[meal]).toFixed(1),
+                        fiber: (totalTargets.fiber * mealAllocation[meal]).toFixed(1)
+                    };
+                }
+
+                console.log('Meal Targets:', mealTargets);
+
+                // Update the global dailyTargets object
+                dailyTargets = {
+                    total: totalTargets,
+                    meals: mealTargets
+                };
+
+                console.log('Updated Daily Targets:', dailyTargets);
 
             } catch (error) {
                 console.error('Error fetching daily targets:', error);
             }
         }
 
-        // Call the function to fetch daily targets when the page loads
-        fetchDailyTargets();
         let debounceTimeout; // Declare a global variable for the debounce timeout
         let foodItems = []; // Global array to store food items
 
         function progressload() {
-            // Select the main progress elements
+            // Helper function to set the color based on percentage
+            function setRingColor(element, percentage) {
+                element.classList.remove('red', 'yellow', 'green'); // Remove existing color classes
+                if (percentage > 100) {
+                    element.classList.add('red'); // Above 100% is red
+                } else if (percentage <= 40) {
+                    element.classList.add('red'); // Below or equal to 40% is red
+                } else if (percentage <= 70) {
+                    element.classList.add('yellow'); // Between 41% and 70% is yellow
+                } else {
+                    element.classList.add('green'); // Between 71% and 100% is green
+                }
+            }
+
+            // Helper function to calculate and set progress
+            function setProgress(element, percentageElement, eaten, toEat, progressElement) {
+                const progressValue = (eaten / toEat) * 100;
+                const cappedProgressValue = Math.min(progressValue, 100); // Cap the progress at 100%
+                const strokeDashoffset = 100 - cappedProgressValue;
+
+                progressElement.style.strokeDashoffset = strokeDashoffset; // Set the visual progress
+                percentageElement.textContent = `${progressValue.toFixed(1)}%`; // Show the actual percentage (even if > 100%)
+
+                setRingColor(progressElement, progressValue); // Set the color based on the actual percentage
+            }
+
+            // Main progress
             const progressElement = document.querySelector('.circle-progress');
             const percentageElement = document.querySelector('.percentage');
 
@@ -1407,62 +1505,46 @@
                 return;
             }
 
-            // Main progress
             const caloriesEaten = parseFloat(document.getElementById('calories-eaten').textContent);
             const caloriesToEat = parseFloat(document.getElementById('calories-to-eat').textContent);
 
-            const progressValue = (caloriesEaten / caloriesToEat) * 100;
-            const strokeDashoffset = 100 - progressValue;
-            progressElement.style.strokeDashoffset = strokeDashoffset;
-            percentageElement.textContent = `${progressValue.toFixed(1)}%`;
+            setProgress(progressElement, percentageElement, caloriesEaten, caloriesToEat, progressElement);
 
-            // Select carb progress elements
+            // Carbs progress
             const carb_progressElement = document.querySelector('.carbs-circle-progress');
             const carb_percentageElement = document.querySelector('.carbs-percentage');
 
             const carbsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
             const carbsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
 
-            const carb_progressValue = (carbsEaten / carbsToEat) * 100;
-            const carb_strokeDashoffset = 100 - carb_progressValue;
-            carb_progressElement.style.strokeDashoffset = carb_strokeDashoffset;
-            carb_percentageElement.textContent = `${carb_progressValue.toFixed(1)}%`;
+            setProgress(carb_progressElement, carb_percentageElement, carbsEaten, carbsToEat, carb_progressElement);
 
-            // Select protein progress elements
+            // Protein progress
             const protein_progressElement = document.querySelector('.proteins-circle-progress');
             const protein_percentageElement = document.querySelector('.protein-percentage');
 
             const proteinsEaten = parseFloat(document.getElementById('proteins-eaten').textContent);
             const proteinsToEat = parseFloat(document.getElementById('proteins-to-eat').textContent);
 
-            const protein_progressValue = (proteinsEaten / proteinsToEat) * 100;
-            const protein_strokeDashoffset = 100 - protein_progressValue;
-            protein_progressElement.style.strokeDashoffset = protein_strokeDashoffset;
-            protein_percentageElement.textContent = `${protein_progressValue.toFixed(1)}%`;
+            setProgress(protein_progressElement, protein_percentageElement, proteinsEaten, proteinsToEat, protein_progressElement);
 
-            // Select fat progress elements
+            // Fat progress
             const fat_progressElement = document.querySelector('.fats-circle-progress');
             const fat_percentageElement = document.querySelector('.fat-percentage');
 
             const fatsEaten = parseFloat(document.getElementById('fats-eaten').textContent);
             const fatsToEat = parseFloat(document.getElementById('fats-to-eat').textContent);
 
-            const fat_progressValue = (fatsEaten / fatsToEat) * 100;
-            const fat_strokeDashoffset = 100 - fat_progressValue;
-            fat_progressElement.style.strokeDashoffset = fat_strokeDashoffset;
-            fat_percentageElement.textContent = `${fat_progressValue.toFixed(1)}%`;
+            setProgress(fat_progressElement, fat_percentageElement, fatsEaten, fatsToEat, fat_progressElement);
 
-            // Select fiber progress elements
+            // Fiber progress
             const fibre_progressElement = document.querySelector('.fibre-circle-progress');
             const fibre_percentageElement = document.querySelector('.fibre-percentage');
 
             const fiberEaten = parseFloat(document.getElementById('fiber-eaten').textContent);
             const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
 
-            const fibre_progressValue = (fiberEaten / fiberToEat) * 100;
-            const fibre_strokeDashoffset = 100 - fibre_progressValue;
-            fibre_progressElement.style.strokeDashoffset = fibre_strokeDashoffset;
-            fibre_percentageElement.textContent = `${fibre_progressValue.toFixed(1)}%`;
+            setProgress(fibre_progressElement, fibre_percentageElement, fiberEaten, fiberToEat, fibre_progressElement);
         }
 
         progressload();
@@ -1491,7 +1573,56 @@
             hamburger.classList.toggle('active');
         }
 
+        async function initializePage() {
+            try {
+                const response = await fetch('/api/get_meals_and_progress');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch meals and progress data');
+                }
 
+                const data = await response.json();
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+
+                console.log('Fetched data:', data);
+
+
+
+                // Populate meal boxes
+                const mealSections = ['breakfast', 'morning_Snack', 'lunch', 'evening_Snack', 'dinner'];
+                mealSections.forEach(meal => {
+                    const mealKey = meal.toLowerCase(); // Normalize to lowercase
+                    const mealData = data.meals[mealKey]; // Get meal data from the backend
+
+                    // Skip if the mealData is undefined or empty
+                    if (!mealData || mealData.length === 0) {
+                        console.log(`Skipping ${meal} as it has no data.`);
+                        return;
+                    }
+
+                    populateMealBox(meal.charAt(0).toUpperCase() + meal.slice(1).replace('_', ' '), mealData);
+                    updateProgressBarsFromDB(meal.charAt(0).toUpperCase() + meal.slice(1).replace('_', ' '), mealData);
+                });
+
+                // Update daily targets for progress bars
+                dailyTargets = {
+                    protein: data.proteins_to_eat,
+                    carbs: data.carbs_to_eat,
+                    fats: data.fats_to_eat,
+                    fiber: data.fiber_to_eat
+                };
+
+                // Update main progress bars
+                document.getElementById('calories-eaten').textContent = data.calories_currently_eaten;
+                document.getElementById('calories-to-eat').textContent = data.cals_to_eat;
+
+                progressload(); // Update the main progress rings
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            }
+        }
 
         function openCard(meal) {
             const modalCard = document.querySelector('.modal-card');
@@ -1680,6 +1811,9 @@
                 const updatedData = await response.json();
                 console.log('Updated data from backend:', updatedData);
 
+                // Wait for daily targets to be updated
+                await fetchDailyTargets();
+
                 // Update the mealbox and progress bars with the updated data
                 populateMealBox(mealTitle, updatedData.meals[mealTitle.toLowerCase().replace(' ', '_')]);
                 updateProgressBarsFromDB(mealTitle, updatedData.meals[mealTitle.toLowerCase().replace(' ', '_')]);
@@ -1692,7 +1826,6 @@
 
             closeCard(); // Close the modal
         }
-
         function updateProgressBarsFromDB(mealTitle, mealData) {
             // Find the specific progress container for the given meal title
             const mealboxes = document.querySelectorAll('.mealbox');
@@ -1714,9 +1847,8 @@
                 console.error(`Progress container for "${mealTitle}" not found.`);
                 return;
             }
-            else {
-                progressContainer.style.display = 'block';
-            }
+
+            progressContainer.style.display = 'block'; // Ensure the container is visible
 
             // Calculate total macros for the meal
             const totalMacros = {
@@ -1739,11 +1871,14 @@
                 const progressFill = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`);
                 const progressValue = progressFill.parentElement.previousElementSibling.querySelector('.progress-value');
 
+                // Fetch the `toEat` value for the specific meal and nutrient
+                const mealKey = mealTitle.toLowerCase().replace(' ', '_'); // Convert meal title to match the key format in dailyTargets
+                const toEat = dailyTargets.meals[mealKey]?.[nutrient] || 0; // Use meal-specific targets
+
                 const currentlyEaten = totalMacros[nutrient];
-                const toEat = dailyTargets[nutrient]; // Use daily targets for the nutrient
 
                 // Calculate percentage
-                const percentage = (currentlyEaten / toEat) * 100;
+                const percentage = toEat > 0 ? (currentlyEaten / toEat) * 100 : 0;
                 progressFill.style.width = `${Math.min(percentage, 100)}%`;
 
                 // Update progress bar color
@@ -1757,7 +1892,7 @@
                 }
 
                 // Update numerical value next to the progress bar
-                progressValue.textContent = `${currentlyEaten.toFixed(1)}g / ${toEat.toFixed(1)}g`;
+                progressValue.textContent = `${currentlyEaten}g / ${toEat}g`;
             });
         }
         function populateMealBox(mealTitle, mealData) {
