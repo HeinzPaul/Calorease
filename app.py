@@ -291,7 +291,7 @@ def search_food():
         return jsonify([])
 
     # Search for food items in MongoDB and limit to 5 results
-    results = food_details.find({"name": {"$regex": query, "$options": "i"}}).limit(5)
+    results = food_details.find({"name": {"$regex": query, "$options": "i"}}).limit(8)
     unique_food_items = {}
     for item in results:
         name = item["name"]

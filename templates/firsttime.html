@@ -1,455 +1,494 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calorie Tracker Onboarding</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calorie Tracker Onboarding</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f6ffed, #d4f7c5, #a2e3a5);
+      color: #000;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 800px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0;
+      background: #000;
+      transition: width 0.4s ease;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: #000;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-box {
+      border-left: 4px solid #000;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 50px;
+      font-size: 1rem;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #000;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 15px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      background: #000;
+      color: white;
+      display: flex;
+      align-items: center;
+      min-width: 150px;
+      justify-content: center;
+    }
+
+    .btn:hover {
+      background: #1e4520;
+      transform: translateY(-2px);
+    }
+
+    a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
       }
 
-      body {
-        background: linear-gradient(135deg, #f6ffed, #d4f7c5, #a2e3a5);
-        color: #000;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
+    }
 
-      .container {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 40px;
-        width: 100%;
-        max-width: 800px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      }
+    .triangle {
+      width: 0;
+      height: 0;
+      border-style: solid;
+      margin: 0 8px;
+    }
 
-      .progress-bar {
-        width: 100%;
-        height: 8px;
-        background: #e0e0e0;
-        border-radius: 10px;
-        margin-bottom: 30px;
-        overflow: hidden;
-      }
+    .btn.prev .triangle {
+      border-width: 8px 12px 8px 0;
+      border-color: transparent #fff transparent transparent;
+    }
 
-      .progress {
-        height: 100%;
-        width: 0;
-        background: #000;
-        transition: width 0.4s ease;
-      }
+    .btn.next .triangle {
+      border-width: 8px 0 8px 12px;
+      border-color: transparent transparent transparent #fff;
+    }
+  </style>
+</head>
 
-      h2 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 25px;
-        color: #000;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      .info-box {
-        border-left: 4px solid #000;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 20px 0;
-        font-size: 1rem;
-        line-height: 1.6;
-      }
-
-      input,
-      select {
-        width: 100%;
-        padding: 15px;
-        margin: 10px 0;
-        border: 2px solid #e0e0e0;
-        border-radius: 50px;
-        font-size: 1rem;
-        background: white;
-        transition: all 0.3s ease;
-      }
-
-      input:focus,
-      select:focus {
-        outline: none;
-        border-color: #000;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-
-      label {
-        display: block;
-        margin-top: 15px;
-        font-weight: 500;
-        font-size: 1.1rem;
-      }
-
-      .btn-container {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 30px;
-      }
-
-      .btn {
-        padding: 15px 30px;
-        font-size: 1rem;
-        font-weight: 600;
-        border: none;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: 0.3s ease;
-        background: #000;
-        color: white;
-        display: flex;
-        align-items: center;
-        min-width: 150px;
-        justify-content: center;
-      }
-
-      .btn:hover {
-        background: #1e4520;
-        transform: translateY(-2px);
-      }
-
-      a {
-        color: white;
-        text-decoration: none;
-      }
-
-      .step {
-        display: none;
-        animation: fadeIn 0.5s ease;
-      }
-
-      .step.active {
-        display: block;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .triangle {
-        width: 0;
-        height: 0;
-        border-style: solid;
-        margin: 0 8px;
-      }
-
-      .btn.prev .triangle {
-        border-width: 8px 12px 8px 0;
-        border-color: transparent #fff transparent transparent;
-      }
-
-      .btn.next .triangle {
-        border-width: 8px 0 8px 12px;
-        border-color: transparent transparent transparent #fff;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <div class="progress-bar">
-        <div class="progress" id="progress"></div>
-      </div>
-
-      <form id="onboardingForm" method="POST">
-        <!-- Step 1 -->
-        <div class="step active" id="step1">
-          <h2>Welcome! Let's get to know you.</h2>
-          <div class="info-box">
-            Did you know? Your body uses calories to fuel essential functions
-            like breathing and digestion.
-          </div>
-          <label for="name">Your Name:</label>
-          <input type="text" id="name" name="name" required />
-
-          <label for="email">Your Email:</label>
-          <input type="email" id="email" name="email" required />
-
-          <label for="password">Your Password:</label>
-          <input type="password" id="pass" name="password" required />
-
-          <label for="confirmpassword">Confirm Password:</label>
-          <input
-            type="password"
-            id="confirmpass"
-            name="confirmpassword"
-            required
-          />
-
-          <div class="btn-container">
-            <button type="button" class="btn next">
-              Next
-              <div class="triangle"></div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 2 -->
-        <div class="step" id="step2">
-          <h2>Your Current Details</h2>
-          <div class="info-box">
-            Knowing your weight, height, age, and gender helps us calculate your
-            BMR, which is essential for understanding your daily calorie needs.
-          </div>
-          <label for="weight">Weight (kg):</label>
-          <input type="number" id="weight" name="weight" required />
-
-          <label for="height">Height (cm):</label>
-          <input type="number" id="height" name="height" required />
-
-          <label for="age">Age:</label>
-          <input type="number" id="age" name="age" required />
-
-          <label for="gender">Gender:</label>
-          <select id="gender" name="gender" required>
-            <option value="" disabled selected>Select your gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-
-          <div class="btn-container">
-            <button type="button" class="btn prev">
-              <div class="triangle"></div>
-              Back
-            </button>
-            <button type="button" class="btn next">
-              Next
-              <div class="triangle"></div>
-            </button>
-          </div>
-        </div>
-        <!-- Step 3 -->
-        <div class="step" id="step3">
-          <h2>Lifestyle Choices</h2>
-          <div class="info-box">
-            Personal habits and preferences influence one's health and calorie
-            needs.
-          </div>
-          <label for="activity">Activity Level:</label>
-          <select id="activity" name="activity" required>
-            <option value="sedentary">Sedentary</option>
-            <option value="light">Lightly Active</option>
-            <option value="moderate">Moderately Active</option>
-            <option value="active">Very Active</option>
-          </select>
-
-          <label for="diet">Diet Style:</label>
-          <select id="diet" name="diet">
-            <option value="none">Choose your preference</option>
-            <option value="high_protein">High Protein</option>
-            <option value="low_carb">Low Carb</option>
-            <option value="balanced">Balanced</option>
-          </select>
-
-          <div class="btn-container">
-            <button type="button" class="btn prev">
-              <div class="triangle"></div>
-              Back
-            </button>
-            <button type="button" class="btn next">
-              Next
-              <div class="triangle"></div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 4 -->
-        <div class="step" id="step4">
-          <h2>Set Your Goals</h2>
-          <div class="info-box">
-            Safe and sustainable weight changes range between 0.5-1 kg per week.
-          </div>
-          <label for="goal">Target Weight (kg):</label>
-          <input type="number" id="goal" name="goal" required />
-
-          <label for="slider"
-            >Value: <span id="sliderValue">0.25</span> kg</label
-          >
-          <input
-            name="lossperweek"
-            type="range"
-            id="slider"
-            min="0"
-            max="1"
-            step="0.25"
-            value="0.25"
-            id="lossperweek"
-            oninput="updateValue(this.value)"
-          />
-
-          <script>
-            function updateValue(val) {
-              document.getElementById("sliderValue").innerText = val;
-            }
-          </script>
-
-          <div class="btn-container">
-            <button type="button" class="btn prev">
-              <div class="triangle"></div>
-              Back
-            </button>
-            <button type="button" class="btn next">
-              Next
-              <div class="triangle"></div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 5 -->
-        <div class="step" id="step5">
-          <h2>You're Ready to Start!</h2>
-          <div class="info-box">
-            Your personalized plan is ready. Let's begin your journey to a
-            healthier you!
-          </div>
-
-          <div class="btn-container">
-            <button type="submit" class="btn" id="finishButton"></button>
-          </div>
-        </div>
-      </form>
+<body>
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
     </div>
 
-    <script>
-      const steps = document.querySelectorAll(".step");
-      const progress = document.getElementById("progress");
-      const nextButtons = document.querySelectorAll(".next");
-      const prevButtons = document.querySelectorAll(".prev");
+    <form id="onboardingForm" method="POST">
+      <!-- Step 1 -->
+      <div class="step active" id="step1">
+        <h2>Welcome! Let's get to know you.</h2>
+        <div class="info-box">
+          Did you know? Your body uses calories to fuel essential functions
+          like breathing and digestion.
+        </div>
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" name="name" required />
 
-      let currentStep = 0;
+        <label for="email">Your Email:</label>
+        <input type="email" id="email" name="email" required />
 
-      nextButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          if (validateCurrentStep()) {
-            steps[currentStep].classList.remove("active");
-            currentStep++;
-            steps[currentStep].classList.add("active");
-            updateProgress();
+        <label for="password">Your Password:</label>
+        <input type="password" id="pass" name="password" required />
+
+        <label for="confirmpassword">Confirm Password:</label>
+        <input type="password" id="confirmpass" name="confirmpassword" required />
+
+        <div class="btn-container">
+          <button type="button" class="btn next">
+            Next
+            <div class="triangle"></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step" id="step2">
+        <h2>Your Current Details</h2>
+        <div class="info-box">
+          Knowing your weight, height, age, and gender helps us calculate your
+          BMR, which is essential for understanding your daily calorie needs.
+        </div>
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" name="weight" required />
+
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" name="height" required />
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required />
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+          <option value="" disabled selected>Select your gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+
+        <div class="btn-container">
+          <button type="button" class="btn prev">
+            <div class="triangle"></div>
+            Back
+          </button>
+          <button type="button" class="btn next">
+            Next
+            <div class="triangle"></div>
+          </button>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div class="step" id="step3">
+        <h2>Lifestyle Choices</h2>
+        <div class="info-box">
+          Personal habits and preferences influence one's health and calorie
+          needs.
+        </div>
+        <label for="activity">Activity Level:</label>
+        <select id="activity" name="activity" required>
+          <option value="sedentary">Sedentary</option>
+          <option value="light">Lightly Active</option>
+          <option value="moderate">Moderately Active</option>
+          <option value="active">Very Active</option>
+        </select>
+
+        <label for="diet">Diet Style:</label>
+        <select id="diet" name="diet">
+          <option value="none">Choose your preference</option>
+          <option value="high_protein">High Protein</option>
+          <option value="low_carb">Low Carb</option>
+          <option value="balanced">Balanced</option>
+        </select>
+
+        <div class="btn-container">
+          <button type="button" class="btn prev">
+            <div class="triangle"></div>
+            Back
+          </button>
+          <button type="button" class="btn next">
+            Next
+            <div class="triangle"></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step" id="step4">
+        <h2>Set Your Goals</h2>
+        <div class="info-box">
+          Safe and sustainable weight changes range between 0.5-1 kg per week.
+        </div>
+        <label for="goal">Target Weight (kg):</label>
+        <input type="number" id="goal" name="goal" required />
+
+        <label for="slider">
+          Value: <span id="sliderValue">0.25</span> kg per week
+        </label>
+        <input name="lossperweek" type="range" id="slider" min="0.25" max="1" step="0.25" value="0.25"
+          oninput="updateValueAndWeeks(this.value)" />
+
+        <div id="weeksMessage" style="margin-top: 10px; font-weight: 500;">
+          It will take approximately <span id="weeks">0</span> weeks to reach your goal.
+        </div>
+
+        <script>
+          function updateValueAndWeeks(val) {
+            // Update the slider value display
+            document.getElementById("sliderValue").innerText = val;
+
+            // Get the target weight and current weight
+            const targetWeight = parseFloat(document.getElementById("goal").value || 0);
+            const currentWeight = parseFloat(document.getElementById("weight").value || 0);
+
+            // Get the selected activity level
+            const activityLevel = document.getElementById("activity").value;
+
+            // Define activity level multipliers (example values)
+            const activityMultipliers = {
+              sedentary: 1,
+              light: 1.1,
+              moderate: 1.2,
+              active: 1.3,
+            };
+
+            // Get the multiplier for the selected activity level
+            const activityMultiplier = activityMultipliers[activityLevel] || 1;
+
+            // Calculate the weight difference
+            const weightDifference = Math.abs(currentWeight - targetWeight);
+
+            // Adjust the weight loss rate based on activity level
+            const adjustedLossPerWeek = val * activityMultiplier;
+
+            // Calculate the total number of weeks based on the adjusted weight loss rate
+            const totalWeeks = weightDifference > 0 && adjustedLossPerWeek > 0
+              ? Math.ceil(weightDifference / adjustedLossPerWeek)
+              : 0;
+
+            // Update the message
+            const message = `It will take approximately ${totalWeeks} week(s) to reach your goal.`;
+            document.getElementById("weeksMessage").innerText = message;
           }
-        });
-      });
 
-      prevButtons.forEach((button) => {
-        button.addEventListener("click", () => {
+          // Add event listeners to update the message when the goal, weight, or activity level inputs change
+          document.getElementById("goal").addEventListener("input", () => {
+            const sliderValue = document.getElementById("slider").value;
+            updateValueAndWeeks(sliderValue);
+          });
+
+          document.getElementById("weight").addEventListener("input", () => {
+            const sliderValue = document.getElementById("slider").value;
+            updateValueAndWeeks(sliderValue);
+          });
+
+          document.getElementById("activity").addEventListener("change", () => {
+            const sliderValue = document.getElementById("slider").value;
+            updateValueAndWeeks(sliderValue);
+          });
+        </script>
+
+        <div class="btn-container">
+          <button type="button" class="btn prev">
+            <div class="triangle"></div>
+            Back
+          </button>
+          <button type="button" class="btn next">
+            Next
+            <div class="triangle"></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step" id="step5">
+        <h2>You're Ready to Start!</h2>
+        <div class="info-box">
+          Your personalized plan is ready. Let's begin your journey to a
+          healthier you!
+        </div>
+
+        <div class="btn-container">
+          <button type="submit" class="btn" id="finishButton">Start Now</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const steps = document.querySelectorAll(".step");
+    const progress = document.getElementById("progress");
+    const nextButtons = document.querySelectorAll(".next");
+    const prevButtons = document.querySelectorAll(".prev");
+
+    let currentStep = 0;
+
+    nextButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (validateCurrentStep()) {
           steps[currentStep].classList.remove("active");
-          currentStep--;
+          currentStep++;
           steps[currentStep].classList.add("active");
           updateProgress();
-        });
-      });
-
-      function validateCurrentStep() {
-        const currentStepElement = steps[currentStep];
-        const inputs = currentStepElement.querySelectorAll("input, select");
-        let isValid = true;
-
-        inputs.forEach((input) => {
-          if (input.hasAttribute("required") && !input.value) {
-            isValid = false;
-            input.style.borderColor = "red";
-          } else {
-            input.style.borderColor = "#e0e0e0";
-          }
-        });
-
-        return isValid;
-      }
-
-      function updateProgress() {
-        progress.style.width = `${(currentStep / (steps.length - 1)) * 100}%`;
-      }
-
-      function validatePasswords() {
-        // Get the password field values
-        const password = document.getElementById("pass").value;
-        const confirmPassword = document.getElementById("confirmpass").value;
-
-        // Check if passwords match
-        if (password !== confirmPassword) {
-          alert("Passwords do not match!");
-          return false;
         }
+      });
+    });
 
-        // If we get here, passwords match
-        return true;
-      }
+    prevButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        steps[currentStep].classList.remove("active");
+        currentStep--;
+        steps[currentStep].classList.add("active");
+        updateProgress();
+      });
+    });
 
-      // Add blur event listener to confirm password field
-      document
-        .getElementById("confirmpass")
-        .addEventListener("blur", function () {
-          validatePasswords();
-        });
+    function validateCurrentStep() {
+      const currentStepElement = steps[currentStep];
+      const inputs = currentStepElement.querySelectorAll("input, select");
+      let isValid = true;
 
-      // Keep the click validation for the next button
-      document.querySelector(".next").addEventListener("click", function (e) {
-        if (!validatePasswords()) {
-          e.preventDefault(); // Prevent form submission if passwords don't match
-
-          // Optional: Add visual feedback
-          document.getElementById("confirmpass").classList.add("error");
+      inputs.forEach((input) => {
+        if (input.hasAttribute("required") && !input.value) {
+          isValid = false;
+          input.style.borderColor = "red";
         } else {
-          document.getElementById("confirmpass").classList.remove("error");
-          // Continue with form submission or next step
+          input.style.borderColor = "#e0e0e0";
         }
       });
 
-      function validateEmail(email) {
-        // Regular expression for basic email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return isValid;
+    }
 
-        if (!emailRegex.test(email)) {
-          alert("Please enter a valid email address");
-          return false;
-        }
+    function updateProgress() {
+      progress.style.width = `${(currentStep / (steps.length - 1)) * 100}%`;
+    }
 
-        return true;
+    function validatePasswords() {
+      // Get the password field values
+      const password = document.getElementById("pass").value;
+      const confirmPassword = document.getElementById("confirmpass").value;
+
+      // Check if passwords match
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return false;
       }
 
-      // Add blur event listener to email field
-      document.getElementById("email").addEventListener("blur", function () {
-        const email = this.value;
-        if (!validateEmail(email)) {
-          this.classList.add("error");
-        } else {
-          this.classList.remove("error");
-        }
+      // If we get here, passwords match
+      return true;
+    }
+
+    // Add blur event listener to confirm password field
+    document
+      .getElementById("confirmpass")
+      .addEventListener("blur", function () {
+        validatePasswords();
       });
 
-      // Validation on next button click
-      document.querySelector(".next").addEventListener("click", function (e) {
-        const email = document.getElementById("email").value;
+    // Keep the click validation for the next button
+    document.querySelector(".next").addEventListener("click", function (e) {
+      if (!validatePasswords()) {
+        e.preventDefault(); // Prevent form submission if passwords don't match
 
-        if (!validateEmail(email)) {
-          e.preventDefault(); // Prevent form submission if validation fails
-          document.getElementById("email").classList.add("error");
-        } else {
-          document.getElementById("email").classList.remove("error");
-          // Continue with form submission or next step
-        }
-      });
-    </script>
-  </body>
+        // Optional: Add visual feedback
+        document.getElementById("confirmpass").classList.add("error");
+      } else {
+        document.getElementById("confirmpass").classList.remove("error");
+        // Continue with form submission or next step
+      }
+    });
+
+    function validateEmail(email) {
+      // Regular expression for basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address");
+        return false;
+      }
+
+      return true;
+    }
+
+    // Add blur event listener to email field
+    document.getElementById("email").addEventListener("blur", function () {
+      const email = this.value;
+      if (!validateEmail(email)) {
+        this.classList.add("error");
+      } else {
+        this.classList.remove("error");
+      }
+    });
+
+    // Validation on next button click
+    document.querySelector(".next").addEventListener("click", function (e) {
+      const email = document.getElementById("email").value;
+
+      if (!validateEmail(email)) {
+        e.preventDefault(); // Prevent form submission if validation fails
+        document.getElementById("email").classList.add("error");
+      } else {
+        document.getElementById("email").classList.remove("error");
+        // Continue with form submission or next step
+      }
+    });
+  </script>
+</body>
+
 </html>
