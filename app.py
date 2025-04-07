@@ -1,10 +1,12 @@
-from flask import Flask,render_template,request, session, redirect, url_for,jsonify, url_for # type: ignore,
+from flask import Flask,render_template,request, session, redirect, url_for,jsonify, url_for,request # type: ignore,
 from pymongo import MongoClient
 import bcrypt  # Add bcrypt to hash passwords
+import requests
 from bson.objectid import ObjectId
 from datetime import datetime
 from werkzeug.security import check_password_hash
 
+GEMINI_API_KEY = 'AIzaSyDF2aQzKl0Krv9F30Qj6hLYB0kN3sZfiXs'
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -103,14 +105,6 @@ def calc_macros_to_eat(cals_to_eat, weight, goal="balanced"):
     }
 
 # Define a route
-@app.route('/trial', methods=['GET', 'POST'])
-def hello1():
-    if request.method == "POST":
-        name = request.form.get("name")
-        password = request.form.get("password")
-        return f"Received: Name - {name}, Password - {password}"
-        
-    return render_template("trial.html")
 
 @app.route('/')
 def hello():
@@ -529,6 +523,7 @@ def update_health_goals():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 @app.route('/api/get_weight_log', methods=['GET'])
 def get_weight_log():
     try:
@@ -680,6 +675,35 @@ def get_water():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+
+@app.route('/ask_ai', methods=['POST'])
+def ask_ai():
+    user_prompt = request.json.get("prompt", "Explain how AI works")
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "contents": [
+            {
+                "role": "user",
+                "parts": [{"text": user_prompt}]
+            }
+        ],
+        "system_instruction": {
+            "parts": [{
+                "text": "You are SARAH (Smart Assistant for Recipes and Helpful Eating), a friendly and knowledgeable virtual chef and health guide. Your primary role is to assist users with anything related to food, nutrition, and fitness. This includes providing recipes, cooking tips, information about ingredients and cuisines, healthy eating suggestions, smart food alternatives, as well as basic workout routines and fitness guidance. You should only respond to questions within these topics. If a user asks something unrelated, politely respond with: “I'm here to help with food, nutrition, or fitness. How can I assist you with your meal planning or healthy lifestyle today?” Keep all your responses concise, relevant, and easy to understand. Do not share the meaning behind your name unless the user specifically asks."
+            }]
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({"error": response.text}), response.status_code
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True)

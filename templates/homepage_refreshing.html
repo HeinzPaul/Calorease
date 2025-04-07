@@ -1053,694 +1053,922 @@
         <div class="msg-button">
             <span class="progress-msg"></span>
 
-        </div>
-    </div>
+            <!-- Chatbox -->
+            <div class="chatbox-container minimized" id="chatboxContainer">
+                <div class="chatbox-header" onclick="toggleChatbox()">
+                    <h3>Chat with S.A.R.A.H</h3>
+                </div>
+                <div class="chatbox-messages" id="chatboxMessages">
+                    <!-- Messages will appear here -->
+                </div>
+                <div class="chatbox-input">
+                    <input type="text" id="chatInput" placeholder="Type your message..." />
+                    <button onclick="sendMessage()">Send</button>
+                    <button onclick="clearChat()">Clear</button>
+                </div>
+            </div>
 
-    <div class="container">
-        <!-- Meal Sections -->
-        <div class="mealbox">
-            <span>Breakfast</span>
-            <button onclick="openCard('Breakfast')">+</button>
-        </div>
-        <div class="mealdata">No data added yet.</div>
-        <div class="progress-bars-container">
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Protein</span>
-                    <span class="progress-value">0g / 56g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="protein"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Carbs</span>
-                    <span class="progress-value">0g / 300g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="carbs"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fats</span>
-                    <span class="progress-value">0g / 65g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fats"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fiber</span>
-                    <span class="progress-value">0g / 30g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fiber"></div>
-                </div>
-            </div>
+            <style>
+                .chatbox-container {
+                    position: fixed;
+                    z-index: 100;
+                    bottom: 20px;
+                    right: 20px;
+                    width: 350px;
+                    background-color: #ffffff;
+                    border: 1px solid #ddd;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    transition: height 0.3s ease, width 0.3s ease;
+                }
+
+                .chatbox-container.minimized {
+                    height: 65px;
+                    width: 140px;
+                    cursor: pointer;
+                }
+
+                .chatbox-container:not(.minimized) {
+                    height: 450px;
+                }
+
+                .chatbox-header {
+                    background-color: #57b837;
+                    color: rgb(255, 255, 255);
+                    padding: 10px;
+                    text-align: center;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+
+                .chatbox-messages {
+                    flex: 1;
+                    padding: 10px;
+                    overflow-y: auto;
+                    max-height: 300px;
+                    display: none;
+                }
+
+                .chatbox-container:not(.minimized) .chatbox-messages {
+                    display: block;
+                }
+
+                .chatbox-input {
+                    display: none;
+                    padding: 10px;
+                    border-top: 1px solid #ddd;
+                }
+
+                .chatbox-container:not(.minimized) .chatbox-input {
+                    display: flex;
+                }
+
+                .chatbox-input input {
+                    flex: 1;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    margin-right: 10px;
+                }
+
+                .chatbox-input button {
+                    background-color: #57b837;
+                    color: rgb(0, 0, 0);
+                    border: none;
+                    border-radius: 5px;
+                    padding: 10px 15px;
+                    cursor: pointer;
+                    margin: 3px;
+                }
+
+                .chatbox-input button:hover {
+                    background-color: #2b9e44;
+                }
+
+                .chatbox-messages .user-message {
+                    text-align: right;
+                    color: #24882f;
+                }
+
+                .chatbox-messages .bot-message {
+                    text-align: left;
+                    color: #000;
+                }
+
+                .chatbox-messages .user-message,
+                .chatbox-messages .bot-message {
+                    max-width: 70%;
+                    padding: 10px;
+                    margin: 5px 10px;
+                    border-radius: 15px;
+                    font-size: 0.9rem;
+                    line-height: 1.4;
+                    word-wrap: break-word;
+                }
+
+                .chatbox-messages .user-message {
+                    background-color: #d1f7c4;
+                    color: #24882f;
+                    align-self: flex-end;
+                    text-align: right;
+                    margin-left: auto;
+                    /* Add this to push the message to the right */
+                    margin-right: 10px;
+                    /* Add some spacing from the right edge */
+                    max-width: 70%;
+                    padding: 10px;
+                    border-radius: 15px;
+                    font-size: 0.9rem;
+                    line-height: 1.4;
+                    word-wrap: break-word;
+                }
+
+                .chatbox-messages .bot-message {
+                    background-color: #f1f1f1;
+                    color: #000;
+                    align-self: flex-start;
+                    text-align: left;
+                }
+
+                .chatbox-messages {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                }
+            </style>
+            <script>
+
+                function toggleChatbox() {
+                    const chatbox = document.getElementById("chatboxContainer");
+                    chatbox.classList.toggle("minimized");
+                }
+
+                function clearChat() {
+                    const chatboxMessages = document.getElementById("chatboxMessages");
+                    chatboxMessages.innerHTML = ""; // Clear all messages
+                }
+
+                async function sendMessage() {
+                    const chatInput = document.getElementById("chatInput");
+                    const message = chatInput.value.trim();
+
+                    if (!message) {
+                        return; // Do nothing if the input is empty
+                    }
+
+                    // Display the user's message
+                    const chatboxMessages = document.getElementById("chatboxMessages");
+                    const userMessage = document.createElement("div");
+                    userMessage.className = "user-message";
+                    userMessage.textContent = message;
+                    chatboxMessages.appendChild(userMessage);
+
+                    // Clear the input field
+                    chatInput.value = "";
+
+                    // Scroll to the bottom of the chatbox
+                    chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+
+                    try {
+                        // Send the message to the Flask backend
+                        const response = await fetch("/ask_ai", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ prompt: message }),
+                        });
+
+                        if (!response.ok) {
+                            throw new Error("Failed to send message");
+                        }
+
+                        const data = await response.json();
+                        console.log(data); // Log the response to inspect its structure
+
+                        // Display the bot's response
+                        const botMessage = document.createElement("div");
+                        botMessage.className = "bot-message";
+
+                        // Access the nested content field
+                        if (
+                            data.candidates &&
+                            data.candidates[0] &&
+                            data.candidates[0].content &&
+                            data.candidates[0].content.parts &&
+                            data.candidates[0].content.parts[0] &&
+                            data.candidates[0].content.parts[0].text
+                        ) {
+                            botMessage.textContent = data.candidates[0].content.parts[0].text;
+                        } else {
+                            botMessage.textContent = "Error: Unexpected response format.";
+                        }
+
+                        chatboxMessages.appendChild(botMessage);
+
+                        // Scroll to the bottom of the chatbox
+                        chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+                    } catch (error) {
+                        console.error("Error sending message:", error);
+                        const errorMessage = document.createElement("div");
+                        errorMessage.className = "bot-message";
+                        errorMessage.textContent = "Error: Unable to connect to SARAH.";
+                        chatboxMessages.appendChild(errorMessage);
+                    }
+                }
+            </script>
+
         </div>
 
-        <div class="mealbox">
-            <span>Morning Snack</span>
-            <button onclick="openCard('Morning Snack')">+</button>
-        </div>
-        <div class="mealdata">No data added yet.</div>
-        <div class="progress-bars-container">
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Protein</span>
-                    <span class="progress-value">0g / 56g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="protein"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Carbs</span>
-                    <span class="progress-value">0g / 300g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="carbs"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fats</span>
-                    <span class="progress-value">0g / 65g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fats"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fiber</span>
-                    <span class="progress-value">0g / 30g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fiber"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mealbox">
-            <span>Lunch</span>
-            <button onclick="openCard('Lunch')">+</button>
-        </div>
-        <div class="mealdata">No data added yet.</div>
-        <div class="progress-bars-container">
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Protein</span>
-                    <span class="progress-value">0g / 56g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="protein"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Carbs</span>
-                    <span class="progress-value">0g / 300g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="carbs"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fats</span>
-                    <span class="progress-value">0g / 65g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fats"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fiber</span>
-                    <span class="progress-value">0g / 30g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fiber"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mealbox">
-            <span>Evening Snack</span>
-            <button onclick="openCard('Evening Snack')">+</button>
-        </div>
-        <div class="mealdata">No data added yet.</div>
-        <div class="progress-bars-container">
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Protein</span>
-                    <span class="progress-value">0g / 56g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="protein"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Carbs</span>
-                    <span class="progress-value">0g / 300g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="carbs"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fats</span>
-                    <span class="progress-value">0g / 65g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fats"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fiber</span>
-                    <span class="progress-value">0g / 30g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fiber"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mealbox">
-            <span>Dinner</span>
-            <button onclick="openCard('Dinner')">+</button>
-        </div>
-        <div class="mealdata">No data added yet.</div>
-        <div class="progress-bars-container">
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Protein</span>
-                    <span class="progress-value">0g / 56g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="protein"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Carbs</span>
-                    <span class="progress-value">0g / 300g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="carbs"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fats</span>
-                    <span class="progress-value">0g / 65g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fats"></div>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <div class="progress-bar-label">
-                    <span>Fiber</span>
-                    <span class="progress-value">0g / 30g</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" data-nutrient="fiber"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div style="margin-top:30px; background-color:rgb(213, 200, 82)" class="container">
-        <div class="mealbox">
-            <span>Weight Tracking</span>
-            <button onclick="toggleWeightSection()">+</button>
-        </div>
-        <div class="weightdata">
-            <div class="weight-input-row">
-                <input type="number" class="weight-input" id="weightInput" placeholder="Enter weight (kg)" step="0.1">
-                <button class="weight-add-btn" onclick="addWeight()">Add</button>
-            </div>
-            <div class="weight-stats">
-                <div class="stat-item">
-                    <span class="stat-label">Starting</span>
-                    <span class="stat-value" id="startWeight">0.0 kg</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Current</span>
-                    <span class="stat-value" id="currentWeight">0.0 kg</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Change</span>
-                    <span class="stat-value" id="weightChange">0.0 kg</span>
-                </div>
-            </div>
-            <div class="chart-container">
-                <canvas id="weightChart"></canvas>
-            </div>
-            <div class="weight-history" id="weightHistory"></div>
-        </div>
-    </div>
-
-    <div class="tracker-container">
-        <div style="background-color: #87CEEB" class="container water-tracker">
+        <div class="container">
+            <!-- Meal Sections -->
             <div class="mealbox">
-                <span>Water Intake</span>
-                <div class="water-buttons">
-                    <button onclick="addWater()">+</button>
-                    <button onclick="resetWater()" style="background-color: #e63946; color: white;">Reset</button>
+                <span>Breakfast</span>
+                <button onclick="openCard('Breakfast')">+</button>
+            </div>
+            <div class="mealdata">No data added yet.</div>
+            <div class="progress-bars-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Protein</span>
+                        <span class="progress-value">0g / 56g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="protein"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Carbs</span>
+                        <span class="progress-value">0g / 300g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="carbs"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fats</span>
+                        <span class="progress-value">0g / 65g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fats"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fiber</span>
+                        <span class="progress-value">0g / 30g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fiber"></div>
+                    </div>
                 </div>
             </div>
-            <div class="water-progress">
-                <div class="water-progress-fill"></div>
-            </div>
-            <div class="water-details">
-                <span id="water-count">0/8 glasses</span>
-            </div>
-        </div>
-        <div style="background-color: rgb(194, 110, 213)" class="container weight-tracker">
+
             <div class="mealbox">
-                <span>Workouts</span>
-                <button onclick="openWorkoutModal()">+</button>
+                <span>Morning Snack</span>
+                <button onclick="openCard('Morning Snack')">+</button>
             </div>
-            <div class="workout-list" id="workout-list"></div>
-            <div style="background-color: #FFD700" class="container workout-tracker">
-                <strong>Total Calories Burned: <span id="total-workout-calories">0</span></strong>
+            <div class="mealdata">No data added yet.</div>
+            <div class="progress-bars-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Protein</span>
+                        <span class="progress-value">0g / 56g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="protein"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Carbs</span>
+                        <span class="progress-value">0g / 300g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="carbs"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fats</span>
+                        <span class="progress-value">0g / 65g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fats"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fiber</span>
+                        <span class="progress-value">0g / 30g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fiber"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mealbox">
+                <span>Lunch</span>
+                <button onclick="openCard('Lunch')">+</button>
+            </div>
+            <div class="mealdata">No data added yet.</div>
+            <div class="progress-bars-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Protein</span>
+                        <span class="progress-value">0g / 56g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="protein"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Carbs</span>
+                        <span class="progress-value">0g / 300g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="carbs"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fats</span>
+                        <span class="progress-value">0g / 65g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fats"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fiber</span>
+                        <span class="progress-value">0g / 30g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fiber"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mealbox">
+                <span>Evening Snack</span>
+                <button onclick="openCard('Evening Snack')">+</button>
+            </div>
+            <div class="mealdata">No data added yet.</div>
+            <div class="progress-bars-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Protein</span>
+                        <span class="progress-value">0g / 56g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="protein"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Carbs</span>
+                        <span class="progress-value">0g / 300g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="carbs"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fats</span>
+                        <span class="progress-value">0g / 65g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fats"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fiber</span>
+                        <span class="progress-value">0g / 30g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fiber"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mealbox">
+                <span>Dinner</span>
+                <button onclick="openCard('Dinner')">+</button>
+            </div>
+            <div class="mealdata">No data added yet.</div>
+            <div class="progress-bars-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Protein</span>
+                        <span class="progress-value">0g / 56g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="protein"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Carbs</span>
+                        <span class="progress-value">0g / 300g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="carbs"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fats</span>
+                        <span class="progress-value">0g / 65g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fats"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-label">
+                        <span>Fiber</span>
+                        <span class="progress-value">0g / 30g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" data-nutrient="fiber"></div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+        <div style="margin-top:30px; background-color:rgb(213, 200, 82)" class="container">
+            <div class="mealbox">
+                <span>Weight Tracking</span>
+                <button onclick="toggleWeightSection()">+</button>
+            </div>
+            <div class="weightdata">
+                <div class="weight-input-row">
+                    <input type="number" class="weight-input" id="weightInput" placeholder="Enter weight (kg)"
+                        step="0.1">
+                    <button class="weight-add-btn" onclick="addWeight()">Add</button>
+                </div>
+                <div class="weight-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Starting</span>
+                        <span class="stat-value" id="startWeight">0.0 kg</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Current</span>
+                        <span class="stat-value" id="currentWeight">0.0 kg</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Change</span>
+                        <span class="stat-value" id="weightChange">0.0 kg</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="weightChart"></canvas>
+                </div>
+                <div class="weight-history" id="weightHistory"></div>
+            </div>
+        </div>
+
+        <div class="tracker-container">
+            <div style="background-color: #87CEEB" class="container water-tracker">
+                <div class="mealbox">
+                    <span>Water Intake</span>
+                    <div class="water-buttons">
+                        <button onclick="addWater()">+</button>
+                        <button onclick="resetWater()" style="background-color: #e63946; color: white;">Reset</button>
+                    </div>
+                </div>
+                <div class="water-progress">
+                    <div class="water-progress-fill"></div>
+                </div>
+                <div class="water-details">
+                    <span id="water-count">0/8 glasses</span>
+                </div>
+            </div>
+            <div style="background-color: rgb(194, 110, 213)" class="container weight-tracker">
+                <div class="mealbox">
+                    <span>Workouts</span>
+                    <button onclick="openWorkoutModal()">+</button>
+                </div>
+                <div class="workout-list" id="workout-list"></div>
+                <div style="background-color: #FFD700" class="container workout-tracker">
+                    <strong>Total Calories Burned: <span id="total-workout-calories">0</span></strong>
+                </div>
+            </div>
+        </div>
 
 
-    <!-- Workout Modal -->
-    <div class="workout-modal-card" id="workout-modal">
-        <h2>Add Workout</h2>
-        <button class="close-btn" onclick="closeWorkoutModal()">Close</button>
-        <select id="workout-type">
-            <option value="">Select Workout</option>
-            <option value="Walking">Walking</option>
-            <option value="Running">Running</option>
-            <option value="Dancing">Dancing</option>
-            <option value="WeightTraining">Weight Training</option>
-            <option value="Aerobics">Aerobics</option>
-            <option value="Football">Football</option>
-            <option value="Cricket">Cricket</option>
-            <option value="Swimming">Swimming</option>
-            <option value="WeightLifting">Weight Lifting</option>
-            <option value="Cycling">Cycling</option>
-            <option value="Yoga">Yoga</option>
+        <!-- Workout Modal -->
+        <div class="workout-modal-card" id="workout-modal">
+            <h2>Add Workout</h2>
+            <button class="close-btn" onclick="closeWorkoutModal()">Close</button>
+            <select id="workout-type">
+                <option value="">Select Workout</option>
+                <option value="Walking">Walking</option>
+                <option value="Running">Running</option>
+                <option value="Dancing">Dancing</option>
+                <option value="WeightTraining">Weight Training</option>
+                <option value="Aerobics">Aerobics</option>
+                <option value="Football">Football</option>
+                <option value="Cricket">Cricket</option>
+                <option value="Swimming">Swimming</option>
+                <option value="WeightLifting">Weight Lifting</option>
+                <option value="Cycling">Cycling</option>
+                <option value="Yoga">Yoga</option>
 
-        </select>
-        <input type="number" id="workout-duration" placeholder="Duration (minutes)">
-        <button class="done-btn" onclick="saveWorkout()">Save Workout</button>
-    </div>
-    <!-- Modal Card -->
-    <div class="blur-background"></div>
-    <div class="modal-card">
-        <h2 id="modal-title">Meal Details</h2>
-        <button class="close-btn" onclick="closeCard()">Close</button>
-        <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
-        <div id="searchResults" class="search-results"></div>
-        <div id="nutritionInfo" class="nutrition-info"><button
-                onclick="window.location.href='{{ url_for('suggest') }}';">Add new food</button></div>
-    </div>
+            </select>
+            <input type="number" id="workout-duration" placeholder="Duration (minutes)">
+            <button class="done-btn" onclick="saveWorkout()">Save Workout</button>
+        </div>
+        <!-- Modal Card -->
+        <div class="blur-background"></div>
+        <div class="modal-card">
+            <h2 id="modal-title">Meal Details</h2>
+            <button class="close-btn" onclick="closeCard()">Close</button>
+            <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
+            <div id="searchResults" class="search-results"></div>
+            <div id="nutritionInfo" class="nutrition-info"><button
+                    onclick="window.location.href='{{ url_for('suggest') }}';">Add new food</button></div>
+        </div>
 
-    <script>
-        let dailyTargets = {};
-        let waterIntake = 0; // Declare waterIntake globally
-        let weightChart = null; // Declare weightChart globally
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
+        <script>
+            let dailyTargets = {};
+            let waterIntake = 0; // Declare waterIntake globally
+            let weightChart = null; // Declare weightChart globally
+            document.addEventListener('DOMContentLoaded', async () => {
+                try {
 
-                await fetchDailyTargets(); // Wait for daily targets to be fetched
-                fetchWaterData(); // Fetch water data
-                initializePage(); // Initialize the page after daily targets are ready
+                    await fetchDailyTargets(); // Wait for daily targets to be fetched
+                    fetchWaterData(); // Fetch water data
+                    initializePage(); // Initialize the page after daily targets are ready
 
-            } catch (error) {
-                console.error('Error during initialization:', error);
-            }
-        });
-
-        let john = []
-
-
-        async function fetchDailyTargets() {
-            try {
-                const response = await fetch('/api/daily_targets');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch daily targets');
+                } catch (error) {
+                    console.error('Error during initialization:', error);
                 }
+            });
 
-                const data = await response.json();
-                if (data.error) {
-                    console.error(data.error);
-                    return;
-                }
-
-                // Total daily targets
-                const totalTargets = {
-                    protein: data.protein,
-                    carbs: data.carbs,
-                    fats: data.fats,
-                    fiber: data.fiber
-                };
-
-                console.log('Total Daily Targets:', totalTargets);
-
-                // Allocate percentages for each meal section
-                const mealAllocation = {
-                    breakfast: 0.3, // 30%
-                    lunch: 0.3,     // 30%
-                    dinner: 0.3,    // 30%
-                    morning_snack: 0.05, // 5%
-                    evening_snack: 0.05  // 5%
-                };
-
-                // Calculate macros for each meal section
-                const mealTargets = {};
-                for (const meal in mealAllocation) {
-                    mealTargets[meal] = {
-                        protein: (totalTargets.protein * mealAllocation[meal]).toFixed(1),
-                        carbs: (totalTargets.carbs * mealAllocation[meal]).toFixed(1),
-                        fats: (totalTargets.fats * mealAllocation[meal]).toFixed(1),
-                        fiber: (totalTargets.fiber * mealAllocation[meal]).toFixed(1)
-                    };
-                }
-
-                console.log('Meal Targets:', mealTargets);
-
-                // Update the global dailyTargets object
-                dailyTargets = {
-                    total: totalTargets,
-                    meals: mealTargets
-                };
-
-                console.log('Updated Daily Targets:', dailyTargets);
-
-            } catch (error) {
-                console.error('Error fetching daily targets:', error);
-            }
-        }
-
-        let debounceTimeout; // Declare a global variable for the debounce timeout
-        let foodItems = []; // Global array to store food items
-
-        function progressload() {
-            // Helper function to set the color based on percentage
-            function setRingColor(element, percentage) {
-                element.classList.remove('red', 'yellow', 'green'); // Remove existing color classes
-                if (percentage > 100) {
-                    element.classList.add('red'); // Above 100% is red
-                } else if (percentage <= 40) {
-                    element.classList.add('red'); // Below or equal to 40% is red
-                } else if (percentage <= 70) {
-                    element.classList.add('yellow'); // Between 41% and 70% is yellow
-                } else {
-                    element.classList.add('green'); // Between 71% and 100% is green
-                }
-            }
-
-            // Helper function to calculate and set progress
-            function setProgress(element, percentageElement, eaten, toEat, progressElement) {
-                const progressValue = (eaten / toEat) * 100;
-                const cappedProgressValue = Math.min(progressValue, 100); // Cap the progress at 100%
-                const strokeDashoffset = 100 - cappedProgressValue;
-
-                progressElement.style.strokeDashoffset = strokeDashoffset; // Set the visual progress
-                percentageElement.textContent = `${progressValue.toFixed(1)}%`; // Show the actual percentage (even if > 100%)
-
-                setRingColor(progressElement, progressValue); // Set the color based on the actual percentage
-            }
-
-            // Main progress
-            const progressElement = document.querySelector('.circle-progress');
-            const percentageElement = document.querySelector('.percentage');
-
-            if (!progressElement || !percentageElement) {
-                console.error('Progress elements not found in the DOM.');
-                return;
-            }
-
-            const caloriesEaten = parseFloat(document.getElementById('calories-eaten').textContent);
-            const caloriesToEat = parseFloat(document.getElementById('calories-to-eat').textContent);
-
-            setProgress(progressElement, percentageElement, caloriesEaten, caloriesToEat, progressElement);
-
-            // Carbs progress
-            const carb_progressElement = document.querySelector('.carbs-circle-progress');
-            const carb_percentageElement = document.querySelector('.carbs-percentage');
-
-            const carbsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
-            const carbsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
-
-            setProgress(carb_progressElement, carb_percentageElement, carbsEaten, carbsToEat, carb_progressElement);
-
-            // Protein progress
-            const protein_progressElement = document.querySelector('.proteins-circle-progress');
-            const protein_percentageElement = document.querySelector('.protein-percentage');
-
-            const proteinsEaten = parseFloat(document.getElementById('proteins-eaten').textContent);
-            const proteinsToEat = parseFloat(document.getElementById('proteins-to-eat').textContent);
-
-            setProgress(protein_progressElement, protein_percentageElement, proteinsEaten, proteinsToEat, protein_progressElement);
-
-            // Fat progress
-            const fat_progressElement = document.querySelector('.fats-circle-progress');
-            const fat_percentageElement = document.querySelector('.fat-percentage');
-
-            const fatsEaten = parseFloat(document.getElementById('fats-eaten').textContent);
-            const fatsToEat = parseFloat(document.getElementById('fats-to-eat').textContent);
-
-            setProgress(fat_progressElement, fat_percentageElement, fatsEaten, fatsToEat, fat_progressElement);
-
-            // Fiber progress
-            const fibre_progressElement = document.querySelector('.fibre-circle-progress');
-            const fibre_percentageElement = document.querySelector('.fibre-percentage');
-
-            const fiberEaten = parseFloat(document.getElementById('fiber-eaten').textContent);
-            const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
-
-            setProgress(fibre_progressElement, fibre_percentageElement, fiberEaten, fiberToEat, fibre_progressElement);
-
-            cal_msg = document.getElementsByClassName('progress-msg');
-            calpercent = (caloriesEaten / caloriesToEat) * 100;
-            if (calpercent === 0) {
-                cal_msg[0].textContent = "Uh Oh! You haven't entered any food data";
-            }
-            else if (calpercent > 0 && calpercent <= 30) {
-                cal_msg[0].textContent = "Remember to eat healthy!";
-            }
-            else if (calpercent > 30 && calpercent <= 50) {
-                cal_msg[0].textContent = "Good start!";
-            }
-            else if (calpercent > 50 && calpercent <= 60) {
-                cal_msg[0].textContent = "Great! You're halfway there";
-            }
-            else if (calpercent > 60 && calpercent <= 90) {
-                cal_msg[0].textContent = "Don't give up!";
-            }
-            else if (calpercent > 90 && calpercent <= 99) {
-                cal_msg[0].textContent = "Almost there!";
-            }
-            else if (calpercent > 99 && calpercent <= 102) {
-                cal_msg[0].textContent = "You've reached today's calorie goal!"
-            }
-            else {
-                cal_msg[0].textContent = "Oh no! You've eaten too many calories"
-            }
-        }
-
-        progressload();
-
-        function refresh_rings() {
-            progressload();
-        }
-
-        function togglePopup() {
-            var popup = document.getElementById("myPopup");
-            var overlay = document.getElementById("overlay");
-            popup.style.display = popup.style.display === "none" ? "block" : "none";
-            overlay.style.display = popup.style.display;
-        }
+            let john = []
 
 
+            async function fetchDailyTargets() {
+                try {
+                    const response = await fetch('/api/daily_targets');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch daily targets');
+                    }
 
-        // for the hamburger menu
-        function toggleMenu() {
-            const menu = document.querySelector('.nav-menu');
-            const hamburger = document.querySelector('.hamburger');
-            menu.classList.toggle('active');
-            hamburger.classList.toggle('active');
-        }
-        let weightLog = [];
-        async function initializePage() {
-            try {
-                // Fetch meals, progress, workouts, and weight tracking data from the backend
-                const response = await fetch('/api/get_meals_and_progress');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch meals and progress data');
-                }
-
-                const data = await response.json();
-                if (data.error) {
-                    console.error(data.error);
-                    return;
-                }
-
-                console.log('Fetched data:', data);
-
-                // Populate meal boxes
-                const mealSections = ['breakfast', 'morning_Snack', 'lunch', 'evening_Snack', 'dinner'];
-                mealSections.forEach(meal => {
-                    const mealKey = meal.toLowerCase(); // Normalize to lowercase
-                    const mealData = data.meals[mealKey]; // Get meal data from the backend
-
-                    // Skip if the mealData is undefined or empty
-                    if (!mealData || mealData.length === 0) {
-                        console.log(`Skipping ${meal} as it has no data.`);
+                    const data = await response.json();
+                    if (data.error) {
+                        console.error(data.error);
                         return;
                     }
 
-                    populateMealBox(meal.charAt(0).toUpperCase() + meal.slice(1).replace('_', ' '), mealData);
-                    updateProgressBarsFromDB(meal.charAt(0).toUpperCase() + meal.slice(1).replace('_', ' '), mealData);
-                });
+                    // Total daily targets
+                    const totalTargets = {
+                        protein: data.protein,
+                        carbs: data.carbs,
+                        fats: data.fats,
+                        fiber: data.fiber
+                    };
 
-                // Update daily targets for progress bars
-                dailyTargets = {
-                    protein: data.proteins_to_eat,
-                    carbs: data.carbs_to_eat,
-                    fats: data.fats_to_eat,
-                    fiber: data.fiber_to_eat
-                };
+                    console.log('Total Daily Targets:', totalTargets);
 
-                // Update main progress bars
-                document.getElementById('calories-eaten').textContent = data.calories_currently_eaten;
-                document.getElementById('calories-to-eat').textContent = data.cals_to_eat;
+                    // Allocate percentages for each meal section
+                    const mealAllocation = {
+                        breakfast: 0.3, // 30%
+                        lunch: 0.3,     // 30%
+                        dinner: 0.3,    // 30%
+                        morning_snack: 0.05, // 5%
+                        evening_snack: 0.05  // 5%
+                    };
 
-                // Update workout section
-                if (data.workouts && data.workouts.length > 0) {
-                    updateWorkoutDisplayFromBackend(data.workouts, data.calories_currently_burned);
-                } else {
-                    console.log('No workout data found.');
+                    // Calculate macros for each meal section
+                    const mealTargets = {};
+                    for (const meal in mealAllocation) {
+                        mealTargets[meal] = {
+                            protein: (totalTargets.protein * mealAllocation[meal]).toFixed(1),
+                            carbs: (totalTargets.carbs * mealAllocation[meal]).toFixed(1),
+                            fats: (totalTargets.fats * mealAllocation[meal]).toFixed(1),
+                            fiber: (totalTargets.fiber * mealAllocation[meal]).toFixed(1)
+                        };
+                    }
+
+                    console.log('Meal Targets:', mealTargets);
+
+                    // Update the global dailyTargets object
+                    dailyTargets = {
+                        total: totalTargets,
+                        meals: mealTargets
+                    };
+
+                    console.log('Updated Daily Targets:', dailyTargets);
+
+                } catch (error) {
+                    console.error('Error fetching daily targets:', error);
                 }
-
-                // Update weight tracking section
-                if (data.weight_log && data.weight_log.length > 0) {
-                    weightLog = data.weight_log; // Store weight log data in the global variable
-                    updateWeightHistory(weightLog);
-                    updateWeightStats(weightLog);
-                } else {
-                    console.log('No weight log data found.');
-                }
-
-                progressload(); // Update the main progress rings
-            } catch (error) {
-                console.error('Error initializing page:', error);
             }
-        }
 
-        function openCard(meal) {
-            const modalCard = document.querySelector('.modal-card');
-            const blurBackground = document.querySelector('.blur-background');
-            const searchResults = document.getElementById('searchResults');
+            let debounceTimeout; // Declare a global variable for the debounce timeout
+            let foodItems = []; // Global array to store food items
 
-            document.getElementById('modal-title').textContent = meal;
-            modalCard.classList.add('active');
-            blurBackground.classList.add('active');
+            function progressload() {
+                // Helper function to set the color based on percentage
+                function setRingColor(element, percentage) {
+                    element.classList.remove('red', 'yellow', 'green'); // Remove existing color classes
+                    if (percentage > 100) {
+                        element.classList.add('red'); // Above 100% is red
+                    } else if (percentage <= 40) {
+                        element.classList.add('red'); // Below or equal to 40% is red
+                    } else if (percentage <= 70) {
+                        element.classList.add('yellow'); // Between 41% and 70% is yellow
+                    } else {
+                        element.classList.add('green'); // Between 71% and 100% is green
+                    }
+                }
 
-            showSearchView();
-        }
+                // Helper function to calculate and set progress
+                function setProgress(element, percentageElement, eaten, toEat, progressElement) {
+                    const progressValue = (eaten / toEat) * 100;
+                    const cappedProgressValue = Math.min(progressValue, 100); // Cap the progress at 100%
+                    const strokeDashoffset = 100 - cappedProgressValue;
 
-        function showSearchView() {
-            const modalContent = document.querySelector('.modal-card');
-            const searchHTML = `
+                    progressElement.style.strokeDashoffset = strokeDashoffset; // Set the visual progress
+                    percentageElement.textContent = `${progressValue.toFixed(1)}%`; // Show the actual percentage (even if > 100%)
+
+                    setRingColor(progressElement, progressValue); // Set the color based on the actual percentage
+                }
+
+                // Main progress
+                const progressElement = document.querySelector('.circle-progress');
+                const percentageElement = document.querySelector('.percentage');
+
+                if (!progressElement || !percentageElement) {
+                    console.error('Progress elements not found in the DOM.');
+                    return;
+                }
+
+                const caloriesEaten = parseFloat(document.getElementById('calories-eaten').textContent);
+                const caloriesToEat = parseFloat(document.getElementById('calories-to-eat').textContent);
+
+                setProgress(progressElement, percentageElement, caloriesEaten, caloriesToEat, progressElement);
+
+                // Carbs progress
+                const carb_progressElement = document.querySelector('.carbs-circle-progress');
+                const carb_percentageElement = document.querySelector('.carbs-percentage');
+
+                const carbsEaten = parseFloat(document.getElementById('carbs-eaten').textContent);
+                const carbsToEat = parseFloat(document.getElementById('carbs-to-eat').textContent);
+
+                setProgress(carb_progressElement, carb_percentageElement, carbsEaten, carbsToEat, carb_progressElement);
+
+                // Protein progress
+                const protein_progressElement = document.querySelector('.proteins-circle-progress');
+                const protein_percentageElement = document.querySelector('.protein-percentage');
+
+                const proteinsEaten = parseFloat(document.getElementById('proteins-eaten').textContent);
+                const proteinsToEat = parseFloat(document.getElementById('proteins-to-eat').textContent);
+
+                setProgress(protein_progressElement, protein_percentageElement, proteinsEaten, proteinsToEat, protein_progressElement);
+
+                // Fat progress
+                const fat_progressElement = document.querySelector('.fats-circle-progress');
+                const fat_percentageElement = document.querySelector('.fat-percentage');
+
+                const fatsEaten = parseFloat(document.getElementById('fats-eaten').textContent);
+                const fatsToEat = parseFloat(document.getElementById('fats-to-eat').textContent);
+
+                setProgress(fat_progressElement, fat_percentageElement, fatsEaten, fatsToEat, fat_progressElement);
+
+                // Fiber progress
+                const fibre_progressElement = document.querySelector('.fibre-circle-progress');
+                const fibre_percentageElement = document.querySelector('.fibre-percentage');
+
+                const fiberEaten = parseFloat(document.getElementById('fiber-eaten').textContent);
+                const fiberToEat = parseFloat(document.getElementById('fiber-to-eat').textContent);
+
+                setProgress(fibre_progressElement, fibre_percentageElement, fiberEaten, fiberToEat, fibre_progressElement);
+
+                cal_msg = document.getElementsByClassName('progress-msg');
+                calpercent = (caloriesEaten / caloriesToEat) * 100;
+                if (calpercent === 0) {
+                    cal_msg[0].textContent = "Uh Oh! You haven't entered any food data";
+                }
+                else if (calpercent > 0 && calpercent <= 30) {
+                    cal_msg[0].textContent = "Remember to eat healthy!";
+                }
+                else if (calpercent > 30 && calpercent <= 50) {
+                    cal_msg[0].textContent = "Good start!";
+                }
+                else if (calpercent > 50 && calpercent <= 60) {
+                    cal_msg[0].textContent = "Great! You're halfway there";
+                }
+                else if (calpercent > 60 && calpercent <= 90) {
+                    cal_msg[0].textContent = "Don't give up!";
+                }
+                else if (calpercent > 90 && calpercent <= 99) {
+                    cal_msg[0].textContent = "Almost there!";
+                }
+                else if (calpercent > 99 && calpercent <= 102) {
+                    cal_msg[0].textContent = "You've reached today's calorie goal!"
+                }
+                else {
+                    cal_msg[0].textContent = "Oh no! You've eaten too many calories"
+                }
+            }
+
+            progressload();
+
+            function refresh_rings() {
+                progressload();
+            }
+
+            function togglePopup() {
+                var popup = document.getElementById("myPopup");
+                var overlay = document.getElementById("overlay");
+                popup.style.display = popup.style.display === "none" ? "block" : "none";
+                overlay.style.display = popup.style.display;
+            }
+
+
+
+            // for the hamburger menu
+            function toggleMenu() {
+                const menu = document.querySelector('.nav-menu');
+                const hamburger = document.querySelector('.hamburger');
+                menu.classList.toggle('active');
+                hamburger.classList.toggle('active');
+            }
+            let weightLog = [];
+            async function initializePage() {
+                try {
+                    // Fetch meals, progress, workouts, and weight tracking data from the backend
+                    const response = await fetch('/api/get_meals_and_progress');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch meals and progress data');
+                    }
+
+                    const data = await response.json();
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    console.log('Fetched data:', data);
+
+                    // Populate meal boxes
+                    const mealSections = ['breakfast', 'morning_Snack', 'lunch', 'evening_Snack', 'dinner'];
+                    mealSections.forEach(meal => {
+                        const mealKey = meal.toLowerCase(); // Normalize to lowercase
+                        const mealData = data.meals[mealKey]; // Get meal data from the backend
+
+                        // Skip if the mealData is undefined or empty
+                        if (!mealData || mealData.length === 0) {
+                            console.log(`Skipping ${meal} as it has no data.`);
+                            return;
+                        }
+
+                        populateMealBox(meal.charAt(0).toUpperCase() + meal.slice(1).replace('_', ' '), mealData);
+                        updateProgressBarsFromDB(meal.charAt(0).toUpperCase() + meal.slice(1).replace('_', ' '), mealData);
+                    });
+
+                    // Update daily targets for progress bars
+                    dailyTargets = {
+                        protein: data.proteins_to_eat,
+                        carbs: data.carbs_to_eat,
+                        fats: data.fats_to_eat,
+                        fiber: data.fiber_to_eat
+                    };
+
+                    // Update main progress bars
+                    document.getElementById('calories-eaten').textContent = data.calories_currently_eaten;
+                    document.getElementById('calories-to-eat').textContent = data.cals_to_eat;
+
+                    // Update workout section
+                    if (data.workouts && data.workouts.length > 0) {
+                        updateWorkoutDisplayFromBackend(data.workouts, data.calories_currently_burned);
+                    } else {
+                        console.log('No workout data found.');
+                    }
+
+                    // Update weight tracking section
+                    if (data.weight_log && data.weight_log.length > 0) {
+                        weightLog = data.weight_log; // Store weight log data in the global variable
+                        updateWeightHistory(weightLog);
+                        updateWeightStats(weightLog);
+                    } else {
+                        console.log('No weight log data found.');
+                    }
+
+                    progressload(); // Update the main progress rings
+                } catch (error) {
+                    console.error('Error initializing page:', error);
+                }
+            }
+
+            function openCard(meal) {
+                const modalCard = document.querySelector('.modal-card');
+                const blurBackground = document.querySelector('.blur-background');
+                const searchResults = document.getElementById('searchResults');
+
+                document.getElementById('modal-title').textContent = meal;
+                modalCard.classList.add('active');
+                blurBackground.classList.add('active');
+
+                showSearchView();
+            }
+
+            function showSearchView() {
+                const modalContent = document.querySelector('.modal-card');
+                const searchHTML = `
         <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
         <button class="close-btn" onclick="closeCard()">Close</button>
         <input type="text" class="search-bar" id="searchInput" placeholder="Search food..." onkeyup="searchItems()">
         <div id="searchResults" class="search-results"></div>
         <div id="nutritionInfo" class="nutrition-info"><button onclick="window.location.href='{{ url_for('suggest') }}';">Add new food</button></div>
     `;
-            modalContent.innerHTML = searchHTML;
+                modalContent.innerHTML = searchHTML;
 
-            // Fetch and display random items
-            fetch('/api/random_food')
-                .then(response => response.json())
-                .then(data => {
-                    data; // Populate the global foodItems array
-                    console.log('Food Items:', foodItems); // Debugging log
-                    const searchResults = document.getElementById('searchResults');
-                    searchResults.innerHTML = ''; // Clear previous results
+                // Fetch and display random items
+                fetch('/api/random_food')
+                    .then(response => response.json())
+                    .then(data => {
+                        data; // Populate the global foodItems array
+                        console.log('Food Items:', foodItems); // Debugging log
+                        const searchResults = document.getElementById('searchResults');
+                        searchResults.innerHTML = ''; // Clear previous results
 
-                    data.forEach(item => {
-                        const searchItem = document.createElement('div');
-                        searchItem.classList.add('search-item');
-                        searchItem.innerHTML = `
+                        data.forEach(item => {
+                            const searchItem = document.createElement('div');
+                            searchItem.classList.add('search-item');
+                            searchItem.innerHTML = `
                     <div>
                         <strong>${item.name}</strong> (${item.unit}) - ${item.calories} cal
                     </div>
                     <button class="add-btn" onclick="addToMeal('${item.name}', '${item.unit}', ${item.calories}, ${item.protein}, ${item.fats}, ${item.carbs}, ${item.fiber})">Add</button>
                 `;
-                        searchResults.appendChild(searchItem);
+                            searchResults.appendChild(searchItem);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching random food data:', error);
+                        document.getElementById('searchResults').innerHTML = '<p>Error loading random items.</p>';
                     });
-                })
-                .catch(error => {
-                    console.error('Error fetching random food data:', error);
-                    document.getElementById('searchResults').innerHTML = '<p>Error loading random items.</p>';
-                });
-        }
+            }
 
-        function searchItems() {
-            clearTimeout(debounceTimeout); // Clear the previous timeout if it exists
+            function searchItems() {
+                clearTimeout(debounceTimeout); // Clear the previous timeout if it exists
 
-            debounceTimeout = setTimeout(() => {
-                const searchInput = document.getElementById('searchInput').value.toLowerCase();
-                const searchResults = document.getElementById('searchResults');
-                searchResults.innerHTML = ''; // Clear previous results
+                debounceTimeout = setTimeout(() => {
+                    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+                    const searchResults = document.getElementById('searchResults');
+                    searchResults.innerHTML = ''; // Clear previous results
 
-                if (!searchInput) return;
+                    if (!searchInput) return;
 
-                // Fetch data from the backend API
-                fetch(`/api/search_food?q=${encodeURIComponent(searchInput)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.length === 0) {
-                            searchResults.innerHTML = '<p>No results found.</p>';
-                            return;
-                        }
+                    // Fetch data from the backend API
+                    fetch(`/api/search_food?q=${encodeURIComponent(searchInput)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                searchResults.innerHTML = '<p>No results found.</p>';
+                                return;
+                            }
 
-                        // Display search results
-                        data.forEach(item => {
-                            const searchItem = document.createElement('div');
-                            searchItem.classList.add('search-item');
-                            searchItem.innerHTML = `
+                            // Display search results
+                            data.forEach(item => {
+                                const searchItem = document.createElement('div');
+                                searchItem.classList.add('search-item');
+                                searchItem.innerHTML = `
                         <div>
                             <strong>${item.name}</strong> (${item.unit}) - ${item.calories} cal
                         </div>
                         <button class="add-btn" onclick="addToMeal('${item.name}', '${item.unit}', '${item.calories}', '${item.protein}', '${item.fats}', '${item.carbs}', '${item.fiber}')">Add</button>
                     `;
-                            searchResults.appendChild(searchItem);
+                                searchResults.appendChild(searchItem);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching food data:', error);
+                            searchResults.innerHTML = '<p>Error fetching data.</p>';
                         });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching food data:', error);
-                        searchResults.innerHTML = '<p>Error fetching data.</p>';
-                    });
-            }, 500); // Wait for 500 milliseconds before executing the search
-        }
+                }, 500); // Wait for 500 milliseconds before executing the search
+            }
 
-        function addToMeal(name, unit, calories, protein, fats, carbs, fiber) {
-            console.log('addToMeal called with:', { name, unit, calories, protein, fats, carbs, fiber });
-            const modalCard = document.querySelector('.modal-card');
-            let quantity = 1;
-            let john = { name, unit, calories, protein, fats, carbs, fiber }; // Use an object for better readability
-            console.log('Generated john object:', john);
-            const detailsHTML = `
+            function addToMeal(name, unit, calories, protein, fats, carbs, fiber) {
+                console.log('addToMeal called with:', { name, unit, calories, protein, fats, carbs, fiber });
+                const modalCard = document.querySelector('.modal-card');
+                let quantity = 1;
+                let john = { name, unit, calories, protein, fats, carbs, fiber }; // Use an object for better readability
+                console.log('Generated john object:', john);
+                const detailsHTML = `
         <h2 id="modal-title">${document.getElementById('modal-title').textContent}</h2>
         <button class="close-btn" onclick="closeCard()">Close</button>
         <button class="back-button" onclick="showSearchView()">← Back to Search</button>
@@ -1776,392 +2004,529 @@
         </div>
     `;
 
-            modalCard.innerHTML = detailsHTML;
-        }
+                modalCard.innerHTML = detailsHTML;
+            }
 
-        function updateNutrientLevels(change, fooddetails) {
-            const quantityElement = document.getElementById('quantity');
-            let currentQuantity = parseInt(quantityElement.textContent);
-            const newQuantity = Math.max(1, currentQuantity + change);
-            quantityElement.textContent = newQuantity;
+            function updateNutrientLevels(change, fooddetails) {
+                const quantityElement = document.getElementById('quantity');
+                let currentQuantity = parseInt(quantityElement.textContent);
+                const newQuantity = Math.max(1, currentQuantity + change);
+                quantityElement.textContent = newQuantity;
 
-            console.log('Food Item:', fooddetails); // Debug: Check if the correct food item is passed
+                console.log('Food Item:', fooddetails); // Debug: Check if the correct food item is passed
 
-            // Update calories and nutrient values
-            const caloriesDisplay = document.getElementById('calories-display');
-            caloriesDisplay.textContent = `${(fooddetails.calories * newQuantity).toFixed(1)} calories`;
+                // Update calories and nutrient values
+                const caloriesDisplay = document.getElementById('calories-display');
+                caloriesDisplay.textContent = `${(fooddetails.calories * newQuantity).toFixed(1)} calories`;
 
-            document.getElementById('protein').textContent = (fooddetails.protein * newQuantity).toFixed(1) + 'g';
-            document.getElementById('carbs').textContent = (fooddetails.carbs * newQuantity).toFixed(1) + 'g';
-            document.getElementById('fats').textContent = (fooddetails.fats * newQuantity).toFixed(1) + 'g';
-            document.getElementById('fiber').textContent = (fooddetails.fiber * newQuantity).toFixed(1) + 'g';
-        }
+                document.getElementById('protein').textContent = (fooddetails.protein * newQuantity).toFixed(1) + 'g';
+                document.getElementById('carbs').textContent = (fooddetails.carbs * newQuantity).toFixed(1) + 'g';
+                document.getElementById('fats').textContent = (fooddetails.fats * newQuantity).toFixed(1) + 'g';
+                document.getElementById('fiber').textContent = (fooddetails.fiber * newQuantity).toFixed(1) + 'g';
+            }
 
-        async function addToMealBox(foodName, fooddetails) {
-            const mealTitle = document.getElementById('modal-title').textContent.trim();
-            const quantity = parseInt(document.getElementById('quantity').textContent);
+            async function addToMealBox(foodName, fooddetails) {
+                const mealTitle = document.getElementById('modal-title').textContent.trim();
+                const quantity = parseInt(document.getElementById('quantity').textContent);
 
-            const foodItem = {
-                name: foodName,
-                quantity: quantity,
-                unit: fooddetails.unit,
-                calories: fooddetails.calories * quantity,
-                protein: fooddetails.protein * quantity,
-                fats: fooddetails.fats * quantity,
-                carbs: fooddetails.carbs * quantity,
-                fiber: fooddetails.fiber * quantity
-            };
+                const foodItem = {
+                    name: foodName,
+                    quantity: quantity,
+                    unit: fooddetails.unit,
+                    calories: fooddetails.calories * quantity,
+                    protein: fooddetails.protein * quantity,
+                    fats: fooddetails.fats * quantity,
+                    carbs: fooddetails.carbs * quantity,
+                    fiber: fooddetails.fiber * quantity
+                };
 
-            try {
-                // Send the meal data to the backend
-                const response = await fetch('/api/add_food', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        meal_name: mealTitle.toLowerCase().replace(' ', '_'), // Convert meal title to match MongoDB field
-                        food_item: foodItem
-                    })
+                try {
+                    // Send the meal data to the backend
+                    const response = await fetch('/api/add_food', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            meal_name: mealTitle.toLowerCase().replace(' ', '_'), // Convert meal title to match MongoDB field
+                            food_item: foodItem
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to add food item');
+                    }
+
+                    const updatedData = await response.json();
+                    console.log('Updated data from backend:', updatedData);
+
+                    // Wait for daily targets to be updated
+                    await fetchDailyTargets();
+
+                    // Update the mealbox and progress bars with the updated data
+                    populateMealBox(mealTitle, updatedData.meals[mealTitle.toLowerCase().replace(' ', '_')]);
+                    updateProgressBarsFromDB(mealTitle, updatedData.meals[mealTitle.toLowerCase().replace(' ', '_')]);
+
+                    // Update total calories and other nutrients dynamically
+                    const caloriesEatenElement = document.getElementById('calories-eaten');
+                    const carbsEatenElement = document.getElementById('carbs-eaten');
+                    const proteinsEatenElement = document.getElementById('proteins-eaten');
+                    const fatsEatenElement = document.getElementById('fats-eaten');
+                    const fiberEatenElement = document.getElementById('fiber-eaten');
+
+                    // Update the values in the DOM
+                    caloriesEatenElement.textContent = parseFloat(updatedData.calories_currently_eaten).toFixed(1);
+                    carbsEatenElement.textContent = parseFloat(updatedData.carbs_currently_eaten).toFixed(1);
+                    proteinsEatenElement.textContent = parseFloat(updatedData.proteins_currently_eaten).toFixed(1);
+                    fatsEatenElement.textContent = parseFloat(updatedData.fats_currently_eaten).toFixed(1);
+                    fiberEatenElement.textContent = parseFloat(updatedData.fiber_currently_eaten).toFixed(1);
+
+                    // Refresh the progress rings
+                    progressload();
+
+                    alert('Food item added successfully!');
+                } catch (error) {
+                    console.error('Error adding food item:', error);
+                    alert('An error occurred while adding the food item.');
+                }
+
+                closeCard(); // Close the modal
+
+            }
+            function updateProgressBarsFromDB(mealTitle, mealData) {
+                // Find the specific progress container for the given meal title
+                const mealboxes = document.querySelectorAll('.mealbox');
+                let targetMealbox = null;
+
+                mealboxes.forEach(box => {
+                    if (box.querySelector('span').textContent === mealTitle) {
+                        targetMealbox = box;
+                    }
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to add food item');
+                if (!targetMealbox) {
+                    console.error(`Mealbox for "${mealTitle}" not found.`);
+                    return;
                 }
 
-                const updatedData = await response.json();
-                console.log('Updated data from backend:', updatedData);
-
-                // Wait for daily targets to be updated
-                await fetchDailyTargets();
-
-                // Update the mealbox and progress bars with the updated data
-                populateMealBox(mealTitle, updatedData.meals[mealTitle.toLowerCase().replace(' ', '_')]);
-                updateProgressBarsFromDB(mealTitle, updatedData.meals[mealTitle.toLowerCase().replace(' ', '_')]);
-
-                // Update total calories and other nutrients dynamically
-                const caloriesEatenElement = document.getElementById('calories-eaten');
-                const carbsEatenElement = document.getElementById('carbs-eaten');
-                const proteinsEatenElement = document.getElementById('proteins-eaten');
-                const fatsEatenElement = document.getElementById('fats-eaten');
-                const fiberEatenElement = document.getElementById('fiber-eaten');
-
-                // Update the values in the DOM
-                caloriesEatenElement.textContent = parseFloat(updatedData.calories_currently_eaten).toFixed(1);
-                carbsEatenElement.textContent = parseFloat(updatedData.carbs_currently_eaten).toFixed(1);
-                proteinsEatenElement.textContent = parseFloat(updatedData.proteins_currently_eaten).toFixed(1);
-                fatsEatenElement.textContent = parseFloat(updatedData.fats_currently_eaten).toFixed(1);
-                fiberEatenElement.textContent = parseFloat(updatedData.fiber_currently_eaten).toFixed(1);
-
-                // Refresh the progress rings
-                progressload();
-
-                alert('Food item added successfully!');
-            } catch (error) {
-                console.error('Error adding food item:', error);
-                alert('An error occurred while adding the food item.');
-            }
-
-            closeCard(); // Close the modal
-
-        }
-        function updateProgressBarsFromDB(mealTitle, mealData) {
-            // Find the specific progress container for the given meal title
-            const mealboxes = document.querySelectorAll('.mealbox');
-            let targetMealbox = null;
-
-            mealboxes.forEach(box => {
-                if (box.querySelector('span').textContent === mealTitle) {
-                    targetMealbox = box;
-                }
-            });
-
-            if (!targetMealbox) {
-                console.error(`Mealbox for "${mealTitle}" not found.`);
-                return;
-            }
-
-            const progressContainer = targetMealbox.nextElementSibling.nextElementSibling; // Progress container is after mealdata
-            if (!progressContainer || !progressContainer.classList.contains('progress-bars-container')) {
-                console.error(`Progress container for "${mealTitle}" not found.`);
-                return;
-            }
-
-            progressContainer.style.display = 'block'; // Ensure the container is visible
-
-            // Calculate total macros for the meal
-            const totalMacros = {
-                protein: 0,
-                carbs: 0,
-                fats: 0,
-                fiber: 0
-            };
-
-            mealData.forEach(item => {
-                totalMacros.protein += item.protein;
-                totalMacros.carbs += item.carbs;
-                totalMacros.fats += item.fats;
-                totalMacros.fiber += item.fiber;
-            });
-
-            // Update progress bars for each nutrient
-            const nutrients = ['protein', 'carbs', 'fats', 'fiber'];
-            nutrients.forEach(nutrient => {
-                const progressFill = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`);
-                const progressValue = progressFill.parentElement.previousElementSibling.querySelector('.progress-value');
-
-                // Fetch the `toEat` value for the specific meal and nutrient
-                const mealKey = mealTitle.toLowerCase().replace(' ', '_'); // Convert meal title to match the key format in dailyTargets
-                const toEat = dailyTargets.meals[mealKey]?.[nutrient] || 0; // Use meal-specific targets
-
-                const currentlyEaten = totalMacros[nutrient];
-
-                // Calculate percentage
-                const percentage = toEat > 0 ? (currentlyEaten / toEat) * 100 : 0;
-                progressFill.style.width = `${Math.min(percentage, 100)}%`;
-
-                // Update progress bar color
-                progressFill.classList.remove('red', 'yellow', 'green');
-                if (percentage <= 35) {
-                    progressFill.classList.add('red');
-                } else if (percentage <= 70) {
-                    progressFill.classList.add('yellow');
-                } else {
-                    progressFill.classList.add('green');
+                const progressContainer = targetMealbox.nextElementSibling.nextElementSibling; // Progress container is after mealdata
+                if (!progressContainer || !progressContainer.classList.contains('progress-bars-container')) {
+                    console.error(`Progress container for "${mealTitle}" not found.`);
+                    return;
                 }
 
-                // Update numerical value next to the progress bar
-                progressValue.textContent = `${currentlyEaten}g / ${toEat}g`;
-            });
-        }
-        function populateMealBox(mealTitle, mealData) {
+                progressContainer.style.display = 'block'; // Ensure the container is visible
 
-            const mealboxes = document.querySelectorAll('.mealbox');
-            let targetMealbox = null;
+                // Calculate total macros for the meal
+                const totalMacros = {
+                    protein: 0,
+                    carbs: 0,
+                    fats: 0,
+                    fiber: 0
+                };
 
-            mealboxes.forEach(box => {
-                if (box.querySelector('span').textContent === mealTitle) {
-                    targetMealbox = box;
+                mealData.forEach(item => {
+                    totalMacros.protein += item.protein;
+                    totalMacros.carbs += item.carbs;
+                    totalMacros.fats += item.fats;
+                    totalMacros.fiber += item.fiber;
+                });
+
+                // Update progress bars for each nutrient
+                const nutrients = ['protein', 'carbs', 'fats', 'fiber'];
+                nutrients.forEach(nutrient => {
+                    const progressFill = progressContainer.querySelector(`[data-nutrient="${nutrient}"]`);
+                    const progressValue = progressFill.parentElement.previousElementSibling.querySelector('.progress-value');
+
+                    // Fetch the `toEat` value for the specific meal and nutrient
+                    const mealKey = mealTitle.toLowerCase().replace(' ', '_'); // Convert meal title to match the key format in dailyTargets
+                    const toEat = dailyTargets.meals[mealKey]?.[nutrient] || 0; // Use meal-specific targets
+
+                    const currentlyEaten = totalMacros[nutrient];
+
+                    // Calculate percentage
+                    const percentage = toEat > 0 ? (currentlyEaten / toEat) * 100 : 0;
+                    progressFill.style.width = `${Math.min(percentage, 100)}%`;
+
+                    // Update progress bar color
+                    progressFill.classList.remove('red', 'yellow', 'green');
+                    if (percentage <= 35) {
+                        progressFill.classList.add('red');
+                    } else if (percentage <= 70) {
+                        progressFill.classList.add('yellow');
+                    } else {
+                        progressFill.classList.add('green');
+                    }
+
+                    // Update numerical value next to the progress bar
+                    progressValue.textContent = `${currentlyEaten}g / ${toEat}g`;
+                });
+            }
+            function populateMealBox(mealTitle, mealData) {
+
+                const mealboxes = document.querySelectorAll('.mealbox');
+                let targetMealbox = null;
+
+                mealboxes.forEach(box => {
+                    if (box.querySelector('span').textContent === mealTitle) {
+                        targetMealbox = box;
+                    }
+                });
+
+                if (targetMealbox) {
+                    const targetMealdata = targetMealbox.nextElementSibling;
+
+                    if (mealData.length === 0) {
+                        targetMealdata.innerHTML = 'No data added yet.';
+                    } else {
+                        targetMealdata.innerHTML = ''; // Clear existing data
+                        mealData.forEach(item => {
+                            const mealItem = document.createElement('div');
+                            mealItem.className = 'meal-item';
+                            mealItem.innerHTML = `<span><span style="font-weight:bold">${item.name}</span> (${item.quantity} ${item.unit})</span><span>${item.calories} cal</span>`;
+                            targetMealdata.appendChild(mealItem);
+                        });
+                    }
                 }
-            });
+            }
 
-            if (targetMealbox) {
-                const targetMealdata = targetMealbox.nextElementSibling;
+            function closeCard() {
+                const modalCard = document.querySelector('.modal-card');
+                const blurBackground = document.querySelector('.blur-background');
+                modalCard.classList.remove('active');
+                blurBackground.classList.remove('active');
+            }
 
-                if (mealData.length === 0) {
-                    targetMealdata.innerHTML = 'No data added yet.';
-                } else {
-                    targetMealdata.innerHTML = ''; // Clear existing data
-                    mealData.forEach(item => {
-                        const mealItem = document.createElement('div');
-                        mealItem.className = 'meal-item';
-                        mealItem.innerHTML = `<span><span style="font-weight:bold">${item.name}</span> (${item.quantity} ${item.unit})</span><span>${item.calories} cal</span>`;
-                        targetMealdata.appendChild(mealItem);
-                    });
+
+
+            function initializeChart(weightData) {
+                console.log("Initializing chart with weight data:", weightData);
+                const ctx = document.getElementById('weightChart').getContext('2d');
+
+                // Handle empty or undefined weightData
+                if (!weightData || weightData.length === 0) {
+                    console.log('No weight data available to render the chart.');
+                    ctx.font = '16px Arial';
+                    ctx.fillText('No weight data available', 50, 50);
+                    return;
                 }
-            }
-        }
 
-        function closeCard() {
-            const modalCard = document.querySelector('.modal-card');
-            const blurBackground = document.querySelector('.blur-background');
-            modalCard.classList.remove('active');
-            blurBackground.classList.remove('active');
-        }
+                // Destroy the existing chart if it exists
+                if (weightChart) {
+                    console.log('Destroying existing chart instance.');
+                    weightChart.destroy();
+                }
 
-
-
-        function initializeChart(weightData) {
-            console.log("Initializing chart with weight data:", weightData);
-            const ctx = document.getElementById('weightChart').getContext('2d');
-
-            // Handle empty or undefined weightData
-            if (!weightData || weightData.length === 0) {
-                console.log('No weight data available to render the chart.');
-                ctx.font = '16px Arial';
-                ctx.fillText('No weight data available', 50, 50);
-                return;
-            }
-
-            // Destroy the existing chart if it exists
-            if (weightChart) {
-                console.log('Destroying existing chart instance.');
-                weightChart.destroy();
-            }
-
-            // Create a new chart
-            weightChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: weightData.map(entry => new Date(entry.date).toLocaleDateString()), // Dates as labels
-                    datasets: [{
-                        label: 'Weight Progress',
-                        data: weightData.map(entry => entry.weight), // Weights as data points
-                        borderColor: '#57b837',
-                        backgroundColor: 'rgba(87, 184, 55, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+                // Create a new chart
+                weightChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: weightData.map(entry => new Date(entry.date).toLocaleDateString()), // Dates as labels
+                        datasets: [{
+                            label: 'Weight Progress',
+                            data: weightData.map(entry => entry.weight), // Weights as data points
+                            borderColor: '#57b837',
+                            backgroundColor: 'rgba(87, 184, 55, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            title: {
-                                display: true,
-                                text: 'Weight (kg)'
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
                             }
                         },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date'
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                title: {
+                                    display: true,
+                                    text: 'Weight (kg)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Date'
+                                }
                             }
                         }
                     }
-                }
-            });
-        }
-        function updateWeightHistory(weightLog) {
-            const historyContainer = document.getElementById('weightHistory');
-            historyContainer.innerHTML = '';
+                });
+            }
+            function updateWeightHistory(weightLog) {
+                const historyContainer = document.getElementById('weightHistory');
+                historyContainer.innerHTML = '';
 
-            weightLog.slice().reverse().forEach(entry => {
-                const weightEntry = document.createElement('div');
-                weightEntry.className = 'weight-entry';
-                weightEntry.innerHTML = `
+                weightLog.slice().reverse().forEach(entry => {
+                    const weightEntry = document.createElement('div');
+                    weightEntry.className = 'weight-entry';
+                    weightEntry.innerHTML = `
             <span class="entry-weight">${entry.weight.toFixed(1)} kg</span>
             <span class="entry-date">${new Date(entry.date).toLocaleDateString()}</span>
         `;
-                historyContainer.appendChild(weightEntry);
-            });
-        }
-
-        async function addWeight() {
-            const weightInput = document.getElementById('weightInput');
-            const weight = parseFloat(weightInput.value);
-
-            if (isNaN(weight) || weight <= 0) {
-                alert('Please enter a valid weight');
-                return;
+                    historyContainer.appendChild(weightEntry);
+                });
             }
 
-            const newEntry = {
-                weight: weight,
-                date: new Date().toISOString().split('T')[0] // Format date as YYYY-MM-DD
-            };
+            async function addWeight() {
+                const weightInput = document.getElementById('weightInput');
+                const weight = parseFloat(weightInput.value);
 
-            try {
-                const response = await fetch('/api/add_weight', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(newEntry)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to add weight entry');
+                if (isNaN(weight) || weight <= 0) {
+                    alert('Please enter a valid weight');
+                    return;
                 }
 
-                const updatedData = await response.json();
-                console.log('Updated weight log:', updatedData);
-
-                // Update the frontend with the new weight log
-                updateWeightHistory(updatedData.weight_log);
-                updateWeightStats(updatedData.weight_log);
-
-                initializeChart(updatedData.weight_log); // Reinitialize the chart with updated data    
-
-                weightInput.value = ''; // Clear the input field
-            } catch (error) {
-                console.error('Error adding weight entry:', error);
-                alert('An error occurred while adding the weight entry.');
-            }
-        }
-
-
-
-        function updateWeightStats(weightLog) {
-            if (weightLog.length === 0) {
-                document.getElementById('startWeight').textContent = '0.0 kg';
-                document.getElementById('currentWeight').textContent = '0.0 kg';
-                document.getElementById('weightChange').textContent = '0.0 kg';
-                return;
-            }
-
-            const startWeight = weightLog[0].weight;
-            const currentWeight = weightLog[weightLog.length - 1].weight;
-            const change = currentWeight - startWeight;
-
-            document.getElementById('startWeight').textContent = `${startWeight.toFixed(1)} kg`;
-            document.getElementById('currentWeight').textContent = `${currentWeight.toFixed(1)} kg`;
-            document.getElementById('weightChange').textContent = `${change >= 0 ? '+' : ''}${change.toFixed(1)} kg`;
-
-            const weightChangeElement = document.getElementById('weightChange');
-            weightChangeElement.style.color = change > 0 ? '#e63946' : change < 0 ? '#2b9e44' : '#666';
-        }
-        async function toggleWeightSection() {
-            console.log('toggleWeightSection called'); // Debugging log
-            const weightDataContainer = document.querySelector('.weightdata'); // DOM element for the weight section
-
-            if (weightDataContainer.style.display === 'none' || weightDataContainer.style.display === '') {
-                weightDataContainer.style.display = 'block';
+                const newEntry = {
+                    weight: weight,
+                    date: new Date().toISOString().split('T')[0] // Format date as YYYY-MM-DD
+                };
 
                 try {
-                    // Make an API call to fetch weight log data
-                    const response = await fetch('/api/get_weight_log');
+                    const response = await fetch('/api/add_weight', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newEntry)
+                    });
+
                     if (!response.ok) {
-                        throw new Error('Failed to fetch weight log data');
+                        throw new Error('Failed to add weight entry');
+                    }
+
+                    const updatedData = await response.json();
+                    console.log('Updated weight log:', updatedData);
+
+                    // Update the frontend with the new weight log
+                    updateWeightHistory(updatedData.weight_log);
+                    updateWeightStats(updatedData.weight_log);
+
+                    initializeChart(updatedData.weight_log); // Reinitialize the chart with updated data    
+
+                    weightInput.value = ''; // Clear the input field
+                } catch (error) {
+                    console.error('Error adding weight entry:', error);
+                    alert('An error occurred while adding the weight entry.');
+                }
+            }
+
+
+
+            function updateWeightStats(weightLog) {
+                if (weightLog.length === 0) {
+                    document.getElementById('startWeight').textContent = '0.0 kg';
+                    document.getElementById('currentWeight').textContent = '0.0 kg';
+                    document.getElementById('weightChange').textContent = '0.0 kg';
+                    return;
+                }
+
+                const startWeight = weightLog[0].weight;
+                const currentWeight = weightLog[weightLog.length - 1].weight;
+                const change = currentWeight - startWeight;
+
+                document.getElementById('startWeight').textContent = `${startWeight.toFixed(1)} kg`;
+                document.getElementById('currentWeight').textContent = `${currentWeight.toFixed(1)} kg`;
+                document.getElementById('weightChange').textContent = `${change >= 0 ? '+' : ''}${change.toFixed(1)} kg`;
+
+                const weightChangeElement = document.getElementById('weightChange');
+                weightChangeElement.style.color = change > 0 ? '#e63946' : change < 0 ? '#2b9e44' : '#666';
+            }
+            async function toggleWeightSection() {
+                console.log('toggleWeightSection called'); // Debugging log
+                const weightDataContainer = document.querySelector('.weightdata'); // DOM element for the weight section
+
+                if (weightDataContainer.style.display === 'none' || weightDataContainer.style.display === '') {
+                    weightDataContainer.style.display = 'block';
+
+                    try {
+                        // Make an API call to fetch weight log data
+                        const response = await fetch('/api/get_weight_log');
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch weight log data');
+                        }
+
+                        const data = await response.json();
+                        console.log('Fetched weight log data:', data);
+
+                        // Check if weight log data exists
+                        if (data.weight_log && data.weight_log.length > 0) {
+                            initializeChart(data.weight_log); // Pass the weight log data to the chart
+                        } else {
+                            console.log('No weight data available to render the chart.');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching weight log data:', error);
+                    }
+                } else {
+                    weightDataContainer.style.display = 'none';
+                }
+            }
+
+
+            const workouts = {
+                Walking: { caloriesPerMinute: 3.5 },
+                Running: { caloriesPerMinute: 11.4 },
+                Dancing: { caloriesPerMinute: 7.2 },
+                Aerobics: { caloriesPerMinute: 7.5 },
+                Football: { caloriesPerMinute: 9.5 },
+                Cricket: { caloriesPerMinute: 7.0 },
+                Swimming: { caloriesPerMinute: 9.8 },
+                WeightLifting: { caloriesPerMinute: 6.0 },
+                Cycling: { caloriesPerMinute: 8.5 },
+                Yoga: { caloriesPerMinute: 3.0 }
+            };
+
+
+
+            async function addWater() {
+                if (waterIntake < 8) {
+                    waterIntake++;
+                    console.log('Water intake incremented:', waterIntake); // Debugging log
+                    updateWaterProgress();
+                    console.log('Water intake incremented:', waterIntake); // Debugging log
+                    try {
+                        console.log('Water intake incremented:', waterIntake);
+                        const response = await fetch('/api/update_water', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ glasses: waterIntake })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Failed to update water glasses');
+                        }
+
+                        console.log('Water glasses updated successfully');
+                    } catch (error) {
+                        console.error('Error updating water glasses:', error);
+                    }
+                } else {
+                    alert('You have reached the daily limit of 8 glasses.');
+                }
+            }
+
+            async function fetchWaterData() {
+                try {
+                    const response = await fetch('/api/get_water');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch water data');
                     }
 
                     const data = await response.json();
-                    console.log('Fetched weight log data:', data);
+                    console.log('Fetched water data:', data);
 
-                    // Check if weight log data exists
-                    if (data.weight_log && data.weight_log.length > 0) {
-                        initializeChart(data.weight_log); // Pass the weight log data to the chart
-                    } else {
-                        console.log('No weight data available to render the chart.');
-                    }
+                    // Update the frontend with the fetched water glasses count
+                    waterIntake = data.water_glasses || 0;
+                    updateWaterProgress();
                 } catch (error) {
-                    console.error('Error fetching weight log data:', error);
+                    console.error('Error fetching water data:', error);
                 }
-            } else {
-                weightDataContainer.style.display = 'none';
             }
-        }
 
+            function updateWaterProgress() {
+                const waterProgressFill = document.querySelector('.water-progress-fill');
+                const waterCountDisplay = document.getElementById('water-count');
 
-        const workouts = {
-            Walking: { caloriesPerMinute: 3.5 },
-            Running: { caloriesPerMinute: 11.4 },
-            Dancing: { caloriesPerMinute: 7.2 },
-            Aerobics: { caloriesPerMinute: 7.5 },
-            Football: { caloriesPerMinute: 9.5 },
-            Cricket: { caloriesPerMinute: 7.0 },
-            Swimming: { caloriesPerMinute: 9.8 },
-            WeightLifting: { caloriesPerMinute: 6.0 },
-            Cycling: { caloriesPerMinute: 8.5 },
-            Yoga: { caloriesPerMinute: 3.0 }
-        };
+                // Update the progress bar and display
+                waterProgressFill.style.width = `${(waterIntake / 8) * 100}%`;
+                waterCountDisplay.textContent = `${waterIntake}/8 glasses`;
+            }
 
+            function openWorkoutModal() {
+                const modal = document.getElementById('workout-modal');
+                modal.classList.add('active');
+                document.querySelector('.blur-background').classList.add('active');
+            }
 
+            function closeWorkoutModal() {
+                const modal = document.getElementById('workout-modal');
+                modal.classList.remove('active');
+                document.querySelector('.blur-background').classList.remove('active');
+            }
 
-        async function addWater() {
-            if (waterIntake < 8) {
-                waterIntake++;
-                console.log('Water intake incremented:', waterIntake); // Debugging log
-                updateWaterProgress();
-                console.log('Water intake incremented:', waterIntake); // Debugging log
+            async function saveWorkout() {
+                const workoutType = document.getElementById('workout-type').value;
+                const duration = parseInt(document.getElementById('workout-duration').value);
+
+                if (!workoutType || !duration) {
+                    alert('Please select a workout and enter duration');
+                    return;
+                }
+
+                const caloriesBurned = Math.round(workouts[workoutType].caloriesPerMinute * duration);
+
+                const workout = {
+                    exercise: workoutType,
+                    duration: duration,
+                    calories_burned: caloriesBurned
+                };
+
                 try {
-                    console.log('Water intake incremented:', waterIntake);
+                    // Send the workout data to the backend
+                    const response = await fetch('/api/add_workout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(workout)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        alert(`Error: ${errorData.error}`);
+                        return;
+                    }
+
+                    const updatedData = await response.json();
+                    console.log('Updated data from backend:', updatedData);
+
+                    // Update the frontend display with the updated data
+                    updateWorkoutDisplayFromBackend(updatedData.workouts, updatedData.calories_currently_burned);
+                    alert('Workout added successfully!');
+                } catch (error) {
+                    console.error('Error adding workout:', error);
+                    alert('An error occurred while adding the workout.');
+                }
+
+                closeWorkoutModal(); // Close the modal
+            }
+
+            function updateWorkoutDisplayFromBackend(workouts, totalCaloriesBurned) {
+                const workoutList = document.getElementById('workout-list');
+                const totalCaloriesElement = document.getElementById('total-workout-calories');
+
+                workoutList.innerHTML = '';
+                workouts.forEach((workout) => {
+                    const workoutItem = document.createElement('div');
+                    workoutItem.className = 'workout-item';
+                    workoutItem.innerHTML = `
+            <div>
+                <span>${workout.exercise} (${workout.minutes} mins)</span>
+                <span>${workout.calories_burned} cal</span>
+            </div>
+        `;
+                    workoutList.appendChild(workoutItem);
+                });
+
+                totalCaloriesElement.textContent = totalCaloriesBurned;
+            }
+
+
+
+
+
+
+            async function resetWater() {
+                waterIntake = 0;
+                updateWaterProgress();
+
+                try {
                     const response = await fetch('/api/update_water', {
                         method: 'POST',
                         headers: {
@@ -2171,187 +2536,50 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error('Failed to update water glasses');
+                        throw new Error('Failed to reset water glasses');
                     }
 
-                    console.log('Water glasses updated successfully');
+                    console.log('Water glasses reset successfully');
                 } catch (error) {
-                    console.error('Error updating water glasses:', error);
+                    console.error('Error resetting water glasses:', error);
                 }
-            } else {
-                alert('You have reached the daily limit of 8 glasses.');
             }
-        }
 
-        async function fetchWaterData() {
-            try {
-                const response = await fetch('/api/get_water');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch water data');
+
+
+            function generateCalendar(daysBefore = 6) {
+                const calendarContainer = document.getElementById("calendarDays");
+                calendarContainer.innerHTML = "";
+                const today = new Date();
+
+                for (let i = daysBefore; i >= 0; i--) {
+                    let date = new Date();
+                    date.setDate(today.getDate() - i);
+
+                    let dayElement = document.createElement("div");
+                    dayElement.classList.add("calendar-day");
+                    if (i === 0) {
+                        dayElement.classList.add("today");
+                    }
+                    dayElement.textContent = date.getDate();
+                    calendarContainer.appendChild(dayElement);
                 }
-
-                const data = await response.json();
-                console.log('Fetched water data:', data);
-
-                // Update the frontend with the fetched water glasses count
-                waterIntake = data.water_glasses || 0;
-                updateWaterProgress();
-            } catch (error) {
-                console.error('Error fetching water data:', error);
-            }
-        }
-
-        function updateWaterProgress() {
-            const waterProgressFill = document.querySelector('.water-progress-fill');
-            const waterCountDisplay = document.getElementById('water-count');
-
-            // Update the progress bar and display
-            waterProgressFill.style.width = `${(waterIntake / 8) * 100}%`;
-            waterCountDisplay.textContent = `${waterIntake}/8 glasses`;
-        }
-
-        function openWorkoutModal() {
-            const modal = document.getElementById('workout-modal');
-            modal.classList.add('active');
-            document.querySelector('.blur-background').classList.add('active');
-        }
-
-        function closeWorkoutModal() {
-            const modal = document.getElementById('workout-modal');
-            modal.classList.remove('active');
-            document.querySelector('.blur-background').classList.remove('active');
-        }
-
-        async function saveWorkout() {
-            const workoutType = document.getElementById('workout-type').value;
-            const duration = parseInt(document.getElementById('workout-duration').value);
-
-            if (!workoutType || !duration) {
-                alert('Please select a workout and enter duration');
-                return;
             }
 
-            const caloriesBurned = Math.round(workouts[workoutType].caloriesPerMinute * duration);
-
-            const workout = {
-                exercise: workoutType,
-                duration: duration,
-                calories_burned: caloriesBurned
-            };
-
-            try {
-                // Send the workout data to the backend
-                const response = await fetch('/api/add_workout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(workout)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    alert(`Error: ${errorData.error}`);
-                    return;
-                }
-
-                const updatedData = await response.json();
-                console.log('Updated data from backend:', updatedData);
-
-                // Update the frontend display with the updated data
-                updateWorkoutDisplayFromBackend(updatedData.workouts, updatedData.calories_currently_burned);
-                alert('Workout added successfully!');
-            } catch (error) {
-                console.error('Error adding workout:', error);
-                alert('An error occurred while adding the workout.');
+            function prevDays() {
+                generateCalendar(10); // Show older dates
             }
 
-            closeWorkoutModal(); // Close the modal
-        }
+            function nextDays() {
+                generateCalendar(6); // Go back to recent dates
+            }
 
-        function updateWorkoutDisplayFromBackend(workouts, totalCaloriesBurned) {
-            const workoutList = document.getElementById('workout-list');
-            const totalCaloriesElement = document.getElementById('total-workout-calories');
-
-            workoutList.innerHTML = '';
-            workouts.forEach((workout) => {
-                const workoutItem = document.createElement('div');
-                workoutItem.className = 'workout-item';
-                workoutItem.innerHTML = `
-            <div>
-                <span>${workout.exercise} (${workout.minutes} mins)</span>
-                <span>${workout.calories_burned} cal</span>
-            </div>
-        `;
-                workoutList.appendChild(workoutItem);
+            document.addEventListener("DOMContentLoaded", () => {
+                generateCalendar();
             });
 
-            totalCaloriesElement.textContent = totalCaloriesBurned;
-        }
 
-
-
-
-
-
-        async function resetWater() {
-            waterIntake = 0;
-            updateWaterProgress();
-
-            try {
-                const response = await fetch('/api/update_water', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ glasses: waterIntake })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to reset water glasses');
-                }
-
-                console.log('Water glasses reset successfully');
-            } catch (error) {
-                console.error('Error resetting water glasses:', error);
-            }
-        }
-
-
-
-        function generateCalendar(daysBefore = 6) {
-            const calendarContainer = document.getElementById("calendarDays");
-            calendarContainer.innerHTML = "";
-            const today = new Date();
-
-            for (let i = daysBefore; i >= 0; i--) {
-                let date = new Date();
-                date.setDate(today.getDate() - i);
-
-                let dayElement = document.createElement("div");
-                dayElement.classList.add("calendar-day");
-                if (i === 0) {
-                    dayElement.classList.add("today");
-                }
-                dayElement.textContent = date.getDate();
-                calendarContainer.appendChild(dayElement);
-            }
-        }
-
-        function prevDays() {
-            generateCalendar(10); // Show older dates
-        }
-
-        function nextDays() {
-            generateCalendar(6); // Go back to recent dates
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            generateCalendar();
-        });
-
-
-    </script>
+        </script>
 </body>
 
 </html>
